@@ -1,0 +1,20 @@
+body{
+    background-color: #ffeffe;
+    color: #f1b0b7;
+    font-family: ;
+}
+.navbar{
+    background: #efefef;
+    color: #f1b0b7;
+}
+a{
+    color: #f1b0b7;
+    font-size: 30px;
+    font-weight: bold;
+}
+.navbar-toggler{
+    background-color: #f1b0b7;
+}
+.navbar-toggler-icon{
+    background-color: #f2c1c8;
+}
