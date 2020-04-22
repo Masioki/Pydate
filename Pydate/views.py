@@ -26,3 +26,15 @@ def register(request):
     else:
         form = RegisterForm()
     return render(request, 'html_pages/register.html', {'form': form})
+
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            login(request, user)
+        else:
+            return redirect('html_pages/login.html')
+    return render(request, 'html_pages/login')
