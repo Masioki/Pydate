@@ -2,13 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>PyDate</title>
+    <!-- css sheets -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
+    <link rel="stylesheet" href="{% static "css_pages/register.css" %}"/>
 </head>
 <body>
 <form action="/register/" method="post">
     {% csrf_token %}
     {{ form }}
-    <input type="submit" value="Register">
+    <button type="submit" value="Register">Register</button>
 </form>
 </body>
 </html>
