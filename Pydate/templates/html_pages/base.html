@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block header %}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>PyDate</title>
+        <!-- css sheets -->
+        {% load static %}
+        <link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
+        <link rel="stylesheet" href="{% static "css_pages/base.css" %}"/>
+    {% endblock %}
+</head>
+<body>
+
+    {% block navbar %}
+        <header class="sticky-top">
+            <nav class="navbar navbar-expand-lg">
+                <a class="mx-3 float-left" id="logo" href="/">PyDate</a>
+
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-menu" >
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse ml-auto" id="main-menu" >
+                    <ul class="navbar-nav navbar-right ml-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">Home</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="../../login">Log in</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="../../register">Register</a>
+                        </li>
+                        <span style="clear: both"></span>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+    {% endblock %}
+    {% block content %}
+        <main class="d-flex row min-vh-100 justify-content-center mw-100">
+            <h1 id="pydateintro" class="col-11 col-lg-8 text-center align-self-center">
+                Welcome to PyDate, the application that connects you to your soulmate &hearts;
+            </h1>
+            <div class="container col-xl-6 col-lg-4 col-md-6 col-sm-6 col-9 justify-content-center">
+                <div id="app_description" class="text-justify">
+                    <p id="app_description_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque accumsan tristique lectus.
+                        Aenean pretium id nulla non ultricies. Morbi ut ex felis. Proin finibus leo nec posuere egestas.
+                        Vivamus eu tortor ultrices, tincidunt odio vitae, commodo sapien. In posuere felis et justo maximus,
+                        et sodales erat porta. Vestibulum eget dolor eget magna maximus pharetra. Morbi dignissim ex rutrum
+                        justo euismod, ut cursus purus lacinia. Pellentesque auctor malesuada sollicitudin. Nam auctor arcu
+                        scelerisque, finibus nisi non, lacinia lorem. Phasellus neque nunc, varius vel elit aliquet, lobortis
+                        blandit tortor. Sed pulvinar justo libero, nec blandit eros tincidunt vitae. Mauris sit amet tincidunt
+                        nulla. Sed rhoncus gravida ex at mollis. Nulla egestas magna et leo accumsan, rutrum placerat felis
+                        volutpat. Phasellus sed metus eget est volutpat tincidunt.
+                    </p>
+                    <a href="../../login"><div id="invite_text" class="invite_text d-inline-block col-5 mr-3 px-0 text-center">Log in</div></a>
+                    <a href="../../register"><div class="invite_text d-inline-block col-5 ml-3 px-0 text-center float-right">Join us!</div></a>
+                </div>
+            </div>
+        </main>
+    {% endblock %}
+    {% block footer %}
+        <footer id="footer" class="card-footer fixed-bottom">
+            Thank you for visiting our page. Python project 2020 &reg;
+        </footer>
+    {% endblock %}
+    <!-- js scripts -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="{% static "/js/bootstrap.min.js" %}"></script>
+</body>
+</html>
