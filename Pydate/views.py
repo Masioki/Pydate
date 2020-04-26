@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth import logout
 
 from .forms import RegisterForm
 
@@ -38,3 +39,6 @@ def login_view(request):
         else:
             return redirect('html_pages/login.html')
     return render(request, 'html_pages/login')
+
+def logout_view(request):
+    logout(request)
