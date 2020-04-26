@@ -1,3 +1,4 @@
+from channels.db import database_sync_to_async
 from django.db import models
 from Pydate.models import user_data
 
@@ -14,7 +15,13 @@ class UserChat(models.Model):
     @staticmethod
     def user_belongs_to(user, chat_id):
         # TODO: sprawdź czy użytkownik przynależy do danego czatu
-        return False
+        return True
+
+    @staticmethod
+    @database_sync_to_async
+    def get_available_chats(user):
+        # TODO
+        return []
 
 
 class ChatMessage(models.Model):
@@ -32,4 +39,4 @@ class ChatMessage(models.Model):
     @staticmethod
     def get_latest(chat_id, start, end):
         # TODO: wyciągnij wiadomości z range(start,end), np. range(0,10) oznacza 10 najnowszych wiadomości
-        return None
+        return []
