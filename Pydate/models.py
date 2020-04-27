@@ -1,4 +1,7 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
+from django.conf import settings
+
 
 ####################
 #UŻYTKOWNICY
@@ -10,7 +13,7 @@ class user_data(models.Model):
     facebook=models.CharField(max_length=100)
     instagram=models.CharField(max_length=100)
     sex=models.CharField(max_length=2,null=False)
-    personality=models.IntegerField(null=False)
+    personality=models.CharField(max_length=4)
     description=models.CharField(max_length=300)
     photo=models.FileField()
     location=models.IntegerField()
@@ -27,18 +30,38 @@ class personal_question_content(models.Model):
 
 class personal_question_user(models.Model):
     questionID=models.ForeignKey(personal_question_content,on_delete=models.CASCADE)
-    userID=models.ForeignKey(user_data,on_delete=models.CASCADE)          #ten co pyta
 
 class personal_question_answer(models.Model):
     userID=models.ForeignKey(user_data,on_delete=models.CASCADE)          #ten co odpowiada
-    questionID=models.ForeignKey(personal_question_content,on_delete=models.CASCADE)
+
     content=models.CharField(max_length=300)
 
 ####################
 #PYTANIA STARTOWE
 ####################
 
-#TODO: Jarosławie, pisz tu tabele twoją
+class personality_test_item(models.Model):
+    itemID = models.IntegerField(primary_key=True)
+    first_option = models.CharField(max_length=250)
+    second_option = models.CharField(max_length=250)
+    class Question_Type(models.TextChoices):
+        TypeIE = 'IE', _('TypeIE')
+        TypeSN = 'SN', _('TypeSN')
+        TypeFT = 'FT', _('TypeFT')
+        TypeJP = 'JP', _('TypeJP')
+    type = models.CharField(
+        max_length=2,
+        choices=Question_Type.choices,
+    )
+    inversion = models.BooleanField(default=False)
+
+class personality_test_answer(models.Model):
+    itemID = models.ForeignKey(personality_test_item, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+    answer = models.IntegerField(null=True)
 
 
 ####################

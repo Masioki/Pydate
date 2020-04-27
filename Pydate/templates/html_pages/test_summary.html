@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+{% extends 'html_pages/base.html' %}
+<html lang="en">
+    <head>
+        {% block header %}
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+            <title>Register</title>
+            <!-- css sheets -->
+            {% load static %}
+            <link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
+            <link rel="stylesheet" href="{% static "css_pages/base.css" %}"/>
+            <link rel="stylesheet" href="{% static "css_pages/register.css" %}"/>
+        {% endblock %}
+    </head>
+    <body>
+        {% block content %}
+            <main class="d-flex row min-vh-100 justify-content-center mw-100">
+                <div class="container col-xl-6 col-lg-4 col-md-6 col-sm-6 col-9 justify-content-center align-self-center"> 
+                    Thank you for completing our test :)
+                </div>
+            </main>
+        {% endblock %}
+    </body>
+</html>
