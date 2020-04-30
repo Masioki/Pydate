@@ -1,6 +1,6 @@
 from channels.db import database_sync_to_async
 from django.db import models
-from Pydate.models import user_data
+from Pydate.models import UserData
 
 
 class Chat(models.Model):
@@ -10,7 +10,7 @@ class Chat(models.Model):
 
 class UserChat(models.Model):
     chatID = models.ForeignKey(Chat, on_delete=models.CASCADE)
-    userID = models.ForeignKey(user_data, on_delete=models.CASCADE)
+    userID = models.ForeignKey(UserData, on_delete=models.CASCADE)
 
     @staticmethod
     def user_belongs_to(user, chat_id):
