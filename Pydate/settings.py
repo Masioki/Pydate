@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'channels',
     'Pydate',
     'Chat'
+    'Pydate.apps.PydateConfig',
 ]
 
 MIDDLEWARE = [
