@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
+LOGIN_URL = '/login'
+LOGIN_REDIRECT_URL = '/'
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -26,6 +28,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+ASGI_APPLICATION = "Pydate.routing.application"
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'  # 'channels_redis.core.RedisChannelLayer',
+    },
+}
 # Application definition
 
 INSTALLED_APPS = [
@@ -35,6 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
+    'Pydate',
+    'Chat'
     'Pydate.apps.PydateConfig',
 ]
 
@@ -133,4 +144,5 @@ TEMPLATE_DIRS = (
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "Pydate/templates/html_pages/static"),
+    'Chat/templates/static'
 )

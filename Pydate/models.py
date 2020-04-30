@@ -1,9 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 ####################
-#UŻYTKOWNICY
+# UŻYTKOWNICY
 ####################
+
 class User_data(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     birth = models.DateField(null=False)
@@ -17,9 +19,11 @@ class User_data(models.Model):
     nick=models.CharField(max_length=20,null=False)
 
 
+
 ####################
-#PYTANIA UŻYTKOWNIKÓW
+# PYTANIA UŻYTKOWNIKÓW
 ####################
+
 
 class Personal_question_content(models.Model):
     questionID= models.AutoField(auto_created=True, serialize=False, primary_key=True)
@@ -34,33 +38,24 @@ class Personal_question_answer(models.Model):
     questionID=models.ForeignKey(Personal_question_content,on_delete=models.CASCADE)
     content=models.CharField(max_length=300)
 
-####################
-#PYTANIA STARTOWE
-####################
-
-#TODO: Jarosławie, pisz tu tabele twoją
 
 
-####################
-#CZAT
-####################
+class personal_question_answer(models.Model):
+    userID = models.ForeignKey(user_data, on_delete=models.CASCADE)  # ten co odpowiada
+    questionID = models.ForeignKey(personal_question_content, on_delete=models.CASCADE)
+    content = models.CharField(max_length=300)
 
-class Chat(models.Model):   #id czatu oraz informacja o tym czy czat nie jest zablokowany
-    chatID = models.AutoField(auto_created=True, serialize=False, primary_key=True)
-    agreement=models.IntegerField(default=0)
-
-class User_chat(models.Model):  #uzytkownicy podlaczeni do danego czatu
-    chatID=models.ForeignKey(Chat,on_delete=models.CASCADE)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-
-class Chat_message(models.Model):   #zawartosc czatu
-    chatID=models.ForeignKey(Chat,on_delete=models.CASCADE)
-    message=models.CharField(max_length=300)
-    date=models.DateField(auto_now=True)
 
 ####################
-#STATYSTYKI
+# PYTANIA STARTOWE
 ####################
+
+
+
+####################
+# STATYSTYKI
+####################
+
 
 class User_log(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -69,3 +64,4 @@ class User_log(models.Model):
     likes_receive=models.IntegerField(default=0)
     mess_sent=models.IntegerField(default=0)
     mess_receive=models.IntegerField(default=0)
+
