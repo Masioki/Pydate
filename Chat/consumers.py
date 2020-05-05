@@ -1,7 +1,9 @@
 from channels.generic.websocket import WebsocketConsumer, AsyncJsonWebsocketConsumer
+import json
+from django.core.serializers.json import DjangoJSONEncoder
 from twisted.protocols.memcache import ClientError
 
-from Chat.models import UserChat
+from Chat.models import UserChat, ChatMessage
 
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
@@ -68,12 +70,16 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
     async def chat_message(self, event):
         print(event["message"])
-        # TODO: save message to db
+        chat_id = event["chat_id"]
+        username = event["username"]
+        message = event["message"]
+        date = json.dumps(await ChatMessage.save_message(username, chat_id, message), cls=DjangoJSONEncoder)
         await self.send_json(
             {
                 "type": "MESSAGE",
-                "chat_id": event["chat_id"],
-                "username": event["username"],
-                "message": event["message"],
+                "chat_id": chat_id,
+                "username": username,
+                "message": message,
+                "date": date
             },
         )
