@@ -44,8 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',
-    'Pydate',
-    'Chat'
+    'Chat',
     'Pydate.apps.PydateConfig',
 ]
 

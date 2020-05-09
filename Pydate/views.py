@@ -2,8 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import logout
-
-from .forms import RegisterForm
+from Pydate.forms import RegisterForm
 
 
 def base(request):
@@ -16,12 +15,17 @@ def base(request):
 def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
-        form.save()
         if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
+            user = form.save()
+            user.refresh_from_db()
+            user.profile.facebook = form.cleaned_data.get('facebook')
+            user.profile.instagram = form.cleaned_data.get('instagram')
+            user.profile.birth = form.cleaned_data.get('birth_date')
+            user.profile.sex = form.cleaned_data.get('sex')
+            user.profile.email = form.cleaned_data.get('email')
+            user.save()
             raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=raw_password)
+            user = authenticate(username=user.username, password=raw_password)
             login(request, user)
             return redirect('/')
     else:
