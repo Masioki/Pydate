@@ -1,4 +1,4 @@
-from channels.generic.websocket import WebsocketConsumer, AsyncJsonWebsocketConsumer
+from channels.generic.websocket import AsyncJsonWebsocketConsumer
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 from twisted.protocols.memcache import ClientError
@@ -14,12 +14,14 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         self.open_chats = []
 
     async def connect(self):
+        """
+        After connection list available chats ids is stored in Consumer object
+        """
         user = self.scope["user"]
-        self.available_chats = await UserChat.get_available_chats(user)
-        self.available_chats.append(1)  # TODO: Usunąć, to tylko dla testu
         if user.is_anonymous:
             await self.close()
         else:
+            self.available_chats = await UserChat.get_available_chats(user)
             await self.accept()
 
     async def receive_json(self, content, **kwargs):
@@ -58,28 +60,26 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
     async def send_chat(self, chat_id, message):
         if chat_id not in self.open_chats:
             raise ClientError("Access denied")
+        username = self.scope["user"].username
+        date = json.dumps(await ChatMessage.save_message(username, chat_id, message), cls=DjangoJSONEncoder)
         await self.channel_layer.group_send(
             str(chat_id),
             {
                 "type": "chat_message",
                 "chat_id": chat_id,
-                "username": self.scope["user"].first_name,
+                "username": username,
                 "message": message,
+                "date": date
             }
         )
 
     async def chat_message(self, event):
-        print(event["message"])
-        chat_id = event["chat_id"]
-        username = event["username"]
-        message = event["message"]
-        date = json.dumps(await ChatMessage.save_message(username, chat_id, message), cls=DjangoJSONEncoder)
         await self.send_json(
             {
                 "type": "MESSAGE",
-                "chat_id": chat_id,
-                "username": username,
-                "message": message,
-                "date": date
+                "chat_id": event["chat_id"],
+                "username": event["username"],
+                "message": event["message"],
+                "date": event["date"]
             },
         )

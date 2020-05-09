@@ -9,7 +9,7 @@ class Chat(models.Model):
 
 
 class UserChat(models.Model):
-    chatID = models.ForeignKey(Chat, on_delete=models.CASCADE)
+    chatID = models.ForeignKey(Chat, on_delete=models.CASCADE)  # TODO: zmienic na chat
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     @staticmethod
@@ -19,7 +19,7 @@ class UserChat(models.Model):
     @staticmethod
     @database_sync_to_async
     def get_available_chats(user):
-        return list(UserChat.objects.filter(user=user))
+        return [i.chatID.chatID for i in list(UserChat.objects.filter(user=user))]
 
 
 class ChatMessage(models.Model):
@@ -44,6 +44,8 @@ class ChatMessage(models.Model):
 
     @staticmethod
     def get_latest(chat_id, start, end):
-        return []
-        # chat = Chat.objects.get(chatID=chat_id)
-        # return list(ChatMessage.objects.filter(chat=chat).order_by('date'))[start:end]
+        chat = Chat.objects.get(chatID=chat_id)
+        mes_list = list(ChatMessage.objects.filter(chat=chat).order_by('date'))
+        end = min(max(end, 0), len(mes_list))
+        start = max(start, 0)
+        return mes_list[start:end]
