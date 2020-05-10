@@ -33,10 +33,12 @@ window.onload = function () {
         addMessage(JSON.parse(mes.data))
     }
 
-    let mes = JSON.parse(document.getElementById('messages').textContent);
+    /*
+    let mes = JSON.parse(document.getElementById('messages').innerText);
+    //alert(mes[0][0].data)
     for (let i in mes) {
         addMessage(JSON.parse(i.data))
-    }
+    }*/
 }
 
 window.onclose = function () {
