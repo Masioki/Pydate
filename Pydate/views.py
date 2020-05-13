@@ -2,8 +2,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import logout
-
-from .forms import RegisterForm
+from Pydate.forms import RegisterForm
+from Pydate.models import UserData
 
 
 def base(request):
@@ -16,12 +16,16 @@ def base(request):
 def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
-        form.save()
         if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
+            user = form.save()
+            user.refresh_from_db()
+            profile = UserData(user=user)
+            profile.birth = form.cleaned_data.get('birth_date')
+            profile.sex = form.cleaned_data.get('sex')
+            profile.searching_for = form.cleaned_data.get('searching_for')
+            profile.save()
             raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=raw_password)
+            user = authenticate(username=user.username, password=raw_password)
             login(request, user)
             return redirect('/')
     else:

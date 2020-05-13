@@ -7,16 +7,17 @@ from django.contrib.auth.models import User
 ####################
 
 class UserData(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    birth = models.DateField(null=False)
-    facebook = models.CharField(max_length=100)
-    instagram = models.CharField(max_length=100)
-    sex = models.CharField(max_length=2, null=False)
-    personality = models.IntegerField(null=False)
-    description = models.CharField(max_length=300)
-    photo = models.ImageField()
-    location = models.IntegerField()
-    nick = models.CharField(max_length=20, null=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    birth = models.DateField(null=True)
+    sex = models.CharField(max_length=2, null=True)
+    personality = models.IntegerField(null=True)
+    description = models.CharField(max_length=300, null=True)
+    photo = models.ImageField(null=True)
+    location = models.IntegerField(null=True)
+    searching_for = models.CharField(max_length=5, null=True)
+
+    def __str__(self):
+        return self.user.username
 
 
 ####################
