@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.urls import path, include
 from Pydate import views
 from django.contrib.auth import views as auth_views
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,3 +27,4 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(), name="login"),
     path('chat/', include('Chat.urls'))
 ]
+urlpatterns += staticfiles_urlpatterns()

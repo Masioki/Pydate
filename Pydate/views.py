@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import logout
 from Pydate.forms import RegisterForm
+from Pydate.models import UserData
 
 
 def base(request):
@@ -18,12 +19,11 @@ def register(request):
         if form.is_valid():
             user = form.save()
             user.refresh_from_db()
-            user.profile.facebook = form.cleaned_data.get('facebook')
-            user.profile.instagram = form.cleaned_data.get('instagram')
-            user.profile.birth = form.cleaned_data.get('birth_date')
-            user.profile.sex = form.cleaned_data.get('sex')
-            user.profile.email = form.cleaned_data.get('email')
-            user.save()
+            profile = UserData(user=user)
+            profile.birth = form.cleaned_data.get('birth_date')
+            profile.sex = form.cleaned_data.get('sex')
+            profile.searching_for = form.cleaned_data.get('searching_for')
+            profile.save()
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=user.username, password=raw_password)
             login(request, user)

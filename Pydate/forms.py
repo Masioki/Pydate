@@ -1,4 +1,6 @@
 import datetime
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.forms import UserCreationForm
 from Pydate.models import User
@@ -6,13 +8,19 @@ from django import forms
 
 
 class RegisterForm(UserCreationForm):
-    birth_date = forms.DateField(initial=datetime.date.today)
+    initial_date = datetime.date.today() - datetime.timedelta(days=365*18)
+    birth_date = forms.DateField(initial=initial_date)
     username = forms.CharField(max_length=20)
     email = forms.EmailField(max_length=200)
-    facebook = forms.CharField(max_length=100)
-    instagram = forms.CharField(max_length=100)
-    sex = forms.ChoiceField(choices=((1, ("F")), (2, ("M"))))
+    sex = forms.ChoiceField(choices=(("F", "F"), ("M", "M")))
+    searching_for = forms.ChoiceField(choices=(("F", "F"), ("M", "M"), ("Both", "Both")))
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password1', 'password2', 'birth_date', 'facebook', 'instagram', 'sex')
+        fields = ('username', 'email', 'password1', 'password2', 'birth_date', 'sex', 'searching_for')
+
+    def clean_birth_date(self):
+        data = self.cleaned_data['birth_date']
+        if data > datetime.date.today() - datetime.timedelta(days=365*18):
+            raise ValidationError(_('You have to be an adult to create a profile!'))
+        return data

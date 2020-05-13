@@ -1,7 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 
 ####################
@@ -10,26 +8,16 @@ from django.dispatch import receiver
 
 class UserData(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    email = models.EmailField(unique=True)
-    username = models.CharField(max_length=20, null=True)
     birth = models.DateField(null=True)
-    facebook = models.CharField(max_length=100, null=True)
-    instagram = models.CharField(max_length=100, null=True)
     sex = models.CharField(max_length=2, null=True)
     personality = models.IntegerField(null=True)
     description = models.CharField(max_length=300, null=True)
     photo = models.ImageField(null=True)
     location = models.IntegerField(null=True)
+    searching_for = models.CharField(max_length=5, null=True)
 
     def __str__(self):
         return self.user.username
-
-
-@receiver(post_save, sender=User)
-def update_profile_signal(sender, instance, created, **kwargs):
-    if created:
-        profile = UserData(user=instance)
-        profile.save()
 
 
 ####################
