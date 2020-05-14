@@ -29,16 +29,25 @@ class PersonalQuestionContent(models.Model):
     questionID = models.AutoField(auto_created=True, serialize=False, primary_key=True)
     content = models.CharField(max_length=250)
 
+    def __str__(self):
+        return str(self.questionID)
+
 
 class PersonalQuestionUser(models.Model):
     questionID = models.ForeignKey(PersonalQuestionContent, on_delete=models.CASCADE)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)  # ten co pyta
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)  # ten co pyta
+
+    def __str__(self):
+        return str(self.questionID)
 
 
 class PersonalQuestionAnswer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)  # ten co odpowiada
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)  # ten co odpowiada
     questionID = models.ForeignKey(PersonalQuestionContent, on_delete=models.CASCADE)
-    content = models.CharField(max_length=300)
+    content = models.CharField(max_length=300, blank=False, null=False)
+
+    def __str__(self):
+        return str(self.questionID)
 
 
 ####################
@@ -59,3 +68,6 @@ class UserLog(models.Model):
     likes_receive = models.IntegerField(default=0)
     mess_sent = models.IntegerField(default=0)
     mess_receive = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.user.username

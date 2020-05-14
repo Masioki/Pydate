@@ -24,17 +24,36 @@
 
                 <div class="collapse navbar-collapse ml-auto" id="main-menu" >
                     <ul class="navbar-nav navbar-right ml-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/">Home</a>
-                        </li>
+                        {% if request.user %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/view_people">Home</a>
+                            </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="../../login">Log in</a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/personal_questionnaire">Matches</a>
+                            </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="../../register">Register</a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/view_answers">Answers</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url "logout" %}">Log out</a>
+                            </li>
+
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/">Home</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="../../login">Log in</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="../../register">Register</a>
+                            </li>
+                        {% endif %}
                         <span style="clear: both"></span>
                     </ul>
                 </div>
