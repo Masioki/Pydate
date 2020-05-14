@@ -6,6 +6,8 @@ main{
     background-color: #ABC0CC;
     padding: 30px;
     margin-bottom: 60px;
+    border-radius: 5px;
+
 }
 
 #invitation_div{

@@ -122,7 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = 'pl-pl'
+LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Europe/Warsaw'
 
@@ -135,7 +135,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_URL = os.path.join(os.path.dirname(__file__), 'templates/html_pages/static/')
+STATIC_URL = os.path.join(os.path.dirname(__file__), '/static/')
 
 TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'templates'),
@@ -143,5 +143,5 @@ TEMPLATE_DIRS = (
 
 STATICFILES_DIRS = (
     'Chat/templates/static',
-    os.path.join(os.path.dirname(__file__), 'templates/html_pages/static')
+    os.path.join(os.path.dirname(__file__), '/static')
 )
