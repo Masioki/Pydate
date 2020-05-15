@@ -7,16 +7,17 @@ from django.contrib.auth.models import User
 ####################
 
 class UserData(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    birth = models.DateField(null=False)
-    facebook = models.CharField(max_length=100)
-    instagram = models.CharField(max_length=100)
-    sex = models.CharField(max_length=2, null=False)
-    personality = models.IntegerField(null=False)
-    description = models.CharField(max_length=300)
-    photo = models.ImageField()
-    location = models.IntegerField()
-    nick = models.CharField(max_length=20, null=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    birth = models.DateField(null=True)
+    sex = models.CharField(max_length=2, null=True)
+    personality = models.IntegerField(null=True)
+    description = models.CharField(max_length=300, null=True)
+    photo = models.ImageField(null=True)
+    location = models.IntegerField(null=True)
+    searching_for = models.CharField(max_length=5, null=True)
+
+    def __str__(self):
+        return self.user.username
 
 
 ####################
@@ -28,16 +29,25 @@ class PersonalQuestionContent(models.Model):
     questionID = models.AutoField(auto_created=True, serialize=False, primary_key=True)
     content = models.CharField(max_length=250)
 
+    def __str__(self):
+        return str(self.questionID)
+
 
 class PersonalQuestionUser(models.Model):
     questionID = models.ForeignKey(PersonalQuestionContent, on_delete=models.CASCADE)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)  # ten co pyta
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)  # ten co pyta
+
+    def __str__(self):
+        return str(self.questionID)
 
 
 class PersonalQuestionAnswer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)  # ten co odpowiada
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)  # ten co odpowiada
     questionID = models.ForeignKey(PersonalQuestionContent, on_delete=models.CASCADE)
-    content = models.CharField(max_length=300)
+    content = models.CharField(max_length=300, blank=False, null=False)
+
+    def __str__(self):
+        return str(self.questionID)
 
 
 ####################
@@ -58,3 +68,6 @@ class UserLog(models.Model):
     likes_receive = models.IntegerField(default=0)
     mess_sent = models.IntegerField(default=0)
     mess_receive = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.user.username

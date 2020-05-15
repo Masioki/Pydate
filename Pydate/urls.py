@@ -17,11 +17,19 @@ from django.contrib import admin
 from django.urls import path, include
 from Pydate import views
 from django.contrib.auth import views as auth_views
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.conf.urls import url
+
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.base),
     path('register/', views.register),
     path('login/', auth_views.LoginView.as_view(), name="login"),
-    path('chat/', include('Chat.urls'))
+    path('chat/', include('Chat.urls')),
+    path('personal_questionnaire/', views.personal_questionnaire, name="personal_questionnaire"),
+    url(r'^logout/$', views.logout_view, name='logout')
+
 ]
+urlpatterns += staticfiles_urlpatterns()
