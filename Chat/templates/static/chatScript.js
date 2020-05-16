@@ -1,64 +1,84 @@
-let chatID = null;
-let chatSocket = null;
 let username = null;
-let chatVisible = false;
+let openChats = {}
 
-function popupChat() {
-    let display = "";
-    if (chatVisible) {
-        chatVisible = false;
-        display = "none";
-    } else {
-        chatVisible = true;
-        display = "block";
-    }
+function displayChat() {
+    document.getElementById("chat-window").style.display = "block";
+    document.getElementById("chat-list-button").style.display = "none";
+}
 
-    document.getElementById("chat").style.display = display;
+function hideChat() {
+    document.getElementById("chat-window").style.display = "none";
+    document.getElementById("chat-list-button").style.display = "block";
 }
 
 window.onload = function () {
     username = JSON.parse(document.getElementById('username').textContent);
-    chatID = JSON.parse(document.getElementById('chat_id').textContent);
-    chatSocket = new WebSocket(
-        "ws://"
-        + window.location.host
-        + '/ws/chat/'
-        + chatID
-        + '/'
-    );
-    chatSocket.onopen = function () {
-        send("JOIN", "")
-    }
-    chatSocket.onmessage = function (mes) {
-        addMessage(JSON.parse(mes.data))
-    }
-
-    /*
-    let mes = JSON.parse(document.getElementById('messages').innerText);
-    //alert(mes[0][0].data)
-    for (let i in mes) {
-        addMessage(JSON.parse(i.data))
-    }*/
 }
 
 window.onclose = function () {
-    send("LEAVE", "")
+    for (var id in openChats) {
+        send("LEAVE", "", id);
+    }
 }
 
-function sendMessage() {
-    const message = $('#chat-message-input')[0].value
-    send("MESSAGE", message)
+function send(command, content, chatID) {
+    if (chatID in openChats) {
+        let chatSocket = openChats[chatID];
+        chatSocket.send(JSON.stringify({
+            "type": command,
+            "chat_id": chatID,
+            "message": content
+        }));
+    }
 }
 
-function send(command, content) {
-    chatSocket.send(JSON.stringify({
-        "type": command,
-        "chat_id": chatID,
-        "message": content
-    }));
+function sendMessage(chatID) {
+    if (chatID in openChats) {
+        var popup = $(chatID);
+        var content = popup.send("MESSAGE", content, chatID)
+    }
 }
 
-function addMessage(message) {
+
+function openChat(chatID) {
+    if (!(chatID in openChats)) {
+        let chatSocket = new WebSocket(
+            "ws://"
+            + window.location.host
+            + '/ws/chat/'
+            + chatID
+            + '/'
+        );
+        chatSocket.onopen = function () {
+            send("JOIN", "", chatID)
+        }
+        chatSocket.onmessage = function (mes) {
+            addMessage(JSON.parse(mes.data))
+        }
+        openChats[chatID] = chatSocket;
+
+        $.get({
+            url: '/chat/messages/' + chatID,
+            success: [function (data) {
+                showNewChatPopup(chatID);
+                for (var mes in data.messages) {
+                    addMessage(mes, chatID);
+                }
+            }]
+        });
+    }
+}
+
+function showNewChatPopup(chatID) {
+    var chatPopup = '<div id="' + chatID + '" class="msg_box">' +
+        '<div class="close">x</div> ' +
+        '<div class="msg_wrap"> <div class="msg_body"> <div class="msg_push"></div> </div>' +
+        '<div class="msg_footer"><textarea class="msg_input" rows="4">dupa</textarea></div> </div>' +
+        '</div>';
+    $("body").append(chatPopup);
+}
+
+function addMessage(message, chatID) {
 
     let control = null;
     if (message.username === username) {
@@ -87,8 +107,10 @@ function addMessage(message) {
     $("#chat-log").append(message.message)
 }
 
-
-
-
-
-
+function closeChat(chatID) {
+    if (chatID in openChats) {
+        send("LEAVE", "", chatID);
+        var element = document.getElementById(chatID);
+        element.parentNode.removeChild(element);
+    }
+}

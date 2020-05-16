@@ -48,6 +48,8 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             )
             self.open_chats.append(chat_id)
         else:
+            print(self.available_chats)
+            print(chat_id)
             raise ClientError("Cannot join chat")
 
     async def leave_chat(self, chat_id):

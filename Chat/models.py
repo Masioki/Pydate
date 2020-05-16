@@ -11,6 +11,8 @@ class Chat(models.Model):
     agreement = models.IntegerField(default=0)
 
 
+# TODO: do użytkownika nie chatu
+
 class UserChat(models.Model):
     chatID = models.ForeignKey(Chat, on_delete=models.CASCADE)  # TODO: zmienic na chat
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -23,6 +25,17 @@ class UserChat(models.Model):
     @database_sync_to_async
     def get_available_chats(user):
         return [i.chatID.chatID for i in list(UserChat.objects.filter(user=user))]
+
+    @staticmethod
+    def chats_info(user):
+        result = []
+        for i in list(UserChat.objects.filter(user=user)):
+            temp = {
+                "chat_id": i.chatID.chatID,
+                "username": list(UserChat.objects.filter(chatID=i.chatID.chatID).exclude(user=user))[0].user.username
+            }
+            result.append(temp)
+        return result
 
 
 class ChatMessage(models.Model):
@@ -46,7 +59,7 @@ class ChatMessage(models.Model):
         return mes.date
 
     @staticmethod
-    def get_latest_json(chat_id, start, end):
+    def get_latest(chat_id, start, end):
         chat = Chat.objects.get(chatID=chat_id)
         mes_list = list(ChatMessage.objects.filter(chat=chat).order_by('date'))
         end = min(max(end, 0), len(mes_list))
@@ -62,4 +75,4 @@ class ChatMessage(models.Model):
                 "date": json.dumps(i.date, cls=DjangoJSONEncoder)
             }
             json_list.append(temp)
-        return json.dumps(json_list)
+        return json_list
