@@ -30,6 +30,8 @@ urlpatterns = [
     path('chat/', include('Chat.urls')),
     path('personal_questionnaire/', views.personal_questionnaire, name="personal_questionnaire"),
     path('view_answers/', views.view_answers, name="view_answers"),
+    path('view_answers/', views.view_answers, name="view_answers"),
+    url(r'^view_answers/(?P<id>\d+)/delete$', views.question_delete, name='question_delete'),
     url(r'^logout/$', views.logout_view, name='logout')
 
 ]

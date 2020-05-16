@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import logout
 
@@ -99,24 +99,40 @@ def view_answers(request):
     descriptions=[]
     photos=[]
     names=[]
+    users_ids=[]
+    answer_ids=[]
     #tu juz nie
     questions_ids = []
-    personal_questions_user = PersonalQuestionUser.objects.filter(user=question_user)
+    i=0
+    personal_questions_user = PersonalQuestionUser.objects.filter(user=request.user)
     if personal_questions_user:
         for p in personal_questions_user:
-            answer = PersonalQuestionAnswer.objects.filter(user=request.user)
-            if answer:
-                return redirect('/')
             answerset = PersonalQuestionAnswer.objects.filter(questionID=str(p.id)).values("content").all()
-            desset= UserData.objects.filter(id=str(p.id)).values("description").all()
-            nameset= User.objects.filter(id=str(p.id)).values("username").all()
-            picset= UserData.objects.filter(id=str(p.id)).values("photo").all()
+            usersset = PersonalQuestionAnswer.objects.filter(questionID=str(p.id)).values("user")
+            idsset = PersonalQuestionAnswer.objects.filter(questionID=str(p.id)).values("id").all()
+
             if answerset:
                 questions += [q["content"] for q in answerset]
+                answer_ids += [q["id"] for q in idsset]
                 questions_ids.append(str(p.id))
-            descriptions+= [q["description"] for q in desset]
-            names+= [q["username"] for q in nameset]
-            photos+=[q["photo"] for q in picset]
+                users_ids+=[q["user"] for q in usersset]
+                desset = UserData.objects.filter(user=(users_ids[i])).values("description").all()
+                nameset = User.objects.filter(id=(users_ids[i])).values("username").all()
+                picset = UserData.objects.filter(user=(users_ids[i])).values("photo").all()
+                descriptions += [q["description"] for q in desset]
+                names += [q["username"] for q in nameset]
+                photos += [q["photo"] for q in picset]
+                i+=1
+
+    """
+    for i in range(len(users_ids)) :
+        desset= UserData.objects.filter(id=str(users_ids[i])).values("description").all()
+        nameset= User.objects.filter(id=str(users_ids[i])).values("username").all()
+        picset= UserData.objects.filter(id=str(users_ids[i])).values("photo").all()
+        descriptions+= [q["description"] for q in desset]
+        names+= [q["username"] for q in nameset]
+        photos+=[q["photo"] for q in picset]
+    """
 
 
 
@@ -124,17 +140,11 @@ def view_answers(request):
 
     if request.method == "POST":
         formset = formset_form(request.POST)
-        """
-        if formset.is_valid():
-            for i, form in enumerate(formset):
-                if form.is_valid():
-                    answer = form.save(commit=False)
-                    answer.user = request.user
-                    answer.questionID = PersonalQuestionContent.objects.get(pk=i + 1)
-                    answer.save()
-                   
-            return redirect('/')
-         """
     else:
         formset = formset_form()
-    return render(request, 'html_pages/view_answers.html', {"formset": formset, "question_id":questions_ids,"names":names, "descriptions": descriptions,"questions": questions,"img":photos, 'media_url': settings.STATIC_URL})
+    return render(request, 'html_pages/view_answers.html', {"formset": formset, "question_id":answer_ids,"names":names, "descriptions": descriptions,"questions": questions,"img":photos, 'media_url': settings.STATIC_URL})
+
+def question_delete(request, id=None):
+   instance = get_object_or_404(PersonalQuestionAnswer, id=id)
+   instance.delete()
+   return redirect("view_answers")

@@ -25,15 +25,18 @@
                     {% csrf_token %}
                     {{ formset.management_form }}
                     {% for form in formset %}
+
                         <label class="question">{{ names|list_item:forloop.counter0 }} </label>
                         <label class="question">{{ descriptions|list_item:forloop.counter0 }} </label>
                         <label class="question">pytanie {{ question_id|list_item:forloop.counter0 }}: {{ questions|list_item:forloop.counter0 }} </label>
+                        <div>
+                            <img src="{{media_url}}{{ img|list_item:forloop.counter0 }}" style="float: left" width="100" height="100"/>
+                        </div>
 
-                        <img src="{{media_url}}{{ img|list_item:forloop.counter0 }}"style="border: none"/>
 
-
+                        <button type="submit2" class="btn btn-primary" id="decline" ><a href="{% url 'question_delete' question_id|list_item:forloop.counter0 %}">decline</a></button>
+                        <!-- TODO : nie dziala accept bo nwm jak wyglada struktura czatu-->
                         <button type="submit2" class="btn btn-primary" id="accept" >accept</button>
-                        <button type="submit2" onclick="/logout_view/" class="btn btn-primary" id="decline" >decline</button>
 
                     {% endfor %}
 
