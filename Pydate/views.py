@@ -3,9 +3,12 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import logout
+
+from Pydate import settings
 from Pydate.forms import RegisterForm, PersonalQuestionsForm
 from Pydate.models import UserData, PersonalQuestionUser, PersonalQuestionContent, PersonalQuestionAnswer
 from django.forms import formset_factory
+from django.contrib.auth.models import User
 
 
 def base(request):
@@ -85,3 +88,53 @@ def personal_questionnaire(request):
         formset = formset_form()
     return render(request, 'html_pages/personal_questionnaire.html', {"formset": formset, "questions": questions})
 
+@login_required
+def view_answers(request):
+    # question_user = request.question_user / data
+    question_user = request.user  # to replace with the upper line
+    questions = []
+    users=[]
+    #tu pod usera rzeczy
+    ages=[]
+    descriptions=[]
+    photos=[]
+    names=[]
+    #tu juz nie
+    questions_ids = []
+    personal_questions_user = PersonalQuestionUser.objects.filter(user=question_user)
+    if personal_questions_user:
+        for p in personal_questions_user:
+            answer = PersonalQuestionAnswer.objects.filter(user=request.user)
+            if answer:
+                return redirect('/')
+            answerset = PersonalQuestionAnswer.objects.filter(questionID=str(p.id)).values("content").all()
+            desset= UserData.objects.filter(id=str(p.id)).values("description").all()
+            nameset= User.objects.filter(id=str(p.id)).values("username").all()
+            picset= UserData.objects.filter(id=str(p.id)).values("photo").all()
+            if answerset:
+                questions += [q["content"] for q in answerset]
+                questions_ids.append(str(p.id))
+            descriptions+= [q["description"] for q in desset]
+            names+= [q["username"] for q in nameset]
+            photos+=[q["photo"] for q in picset]
+
+
+
+    formset_form = formset_factory(PersonalQuestionsForm, extra=len(questions_ids))
+
+    if request.method == "POST":
+        formset = formset_form(request.POST)
+        """
+        if formset.is_valid():
+            for i, form in enumerate(formset):
+                if form.is_valid():
+                    answer = form.save(commit=False)
+                    answer.user = request.user
+                    answer.questionID = PersonalQuestionContent.objects.get(pk=i + 1)
+                    answer.save()
+                   
+            return redirect('/')
+         """
+    else:
+        formset = formset_form()
+    return render(request, 'html_pages/view_answers.html', {"formset": formset, "question_id":questions_ids,"names":names, "descriptions": descriptions,"questions": questions,"img":photos, 'media_url': settings.STATIC_URL})

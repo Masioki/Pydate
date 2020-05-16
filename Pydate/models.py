@@ -12,7 +12,7 @@ class UserData(models.Model):
     sex = models.CharField(max_length=2, null=True)
     personality = models.IntegerField(null=True)
     description = models.CharField(max_length=300, null=True)
-    photo = models.ImageField(null=True)
+    photo = models.ImageField(upload_to='images',null=True)
     location = models.IntegerField(null=True)
     searching_for = models.CharField(max_length=5, null=True)
 

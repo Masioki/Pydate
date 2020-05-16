@@ -145,3 +145,5 @@ STATICFILES_DIRS = (
     'Chat/templates/static',
     os.path.join(os.path.dirname(__file__), '/static')
 )
+
+MEDIA_ROOT = os.path.join(BASE_DIR,'static/')

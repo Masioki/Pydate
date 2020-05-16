@@ -29,6 +29,7 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(), name="login"),
     path('chat/', include('Chat.urls')),
     path('personal_questionnaire/', views.personal_questionnaire, name="personal_questionnaire"),
+    path('view_answers/', views.view_answers, name="view_answers"),
     url(r'^logout/$', views.logout_view, name='logout')
 
 ]
