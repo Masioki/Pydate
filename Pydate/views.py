@@ -1,3 +1,6 @@
+import json
+import urllib
+
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
@@ -31,6 +34,7 @@ def register(request):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=user.username, password=raw_password)
             login(request, user)
+            update_geolocation(request, user)
             return redirect('/')
     else:
         form = RegisterForm()
@@ -44,6 +48,7 @@ def login_view(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
+            update_geolocation(request, user)
         else:
             return redirect('html_pages/login.html')
     return render(request, 'html_pages/login')
@@ -78,10 +83,27 @@ def personal_questionnaire(request):
                 if form.is_valid():
                     answer = form.save(commit=False)
                     answer.user = request.user
-                    answer.questionID = PersonalQuestionContent.objects.get(pk=i+1)
+                    answer.questionID = PersonalQuestionContent.objects.get(pk=i + 1)
                     answer.save()
             return redirect('/')
     else:
         formset = formset_form()
     return render(request, 'html_pages/personal_questionnaire.html', {"formset": formset, "questions": questions})
 
+
+def update_geolocation(request, user):
+    ip = get_client_ip(request)
+    x = urllib.request.urlopen('http://ip-api.com/json/' + ip + '?fields=lat,lon')
+    data = x.read()
+    js = json.loads(data.decode('utf-8'))
+    user.latitude = js['lat']
+    user.longitude = js['lon']
+
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
