@@ -32,13 +32,6 @@ function send(command, content, chatID) {
     }
 }
 
-function sendMessage(chatID) {
-    if (chatID in openChats) {
-        var popup = $(chatID);
-        var content = popup.send("MESSAGE", content, chatID)
-    }
-}
-
 
 function openChat(chatID) {
     if (!(chatID in openChats)) {
@@ -70,47 +63,71 @@ function openChat(chatID) {
 }
 
 function showNewChatPopup(chatID) {
-    var chatPopup = '<div id="' + chatID + '" class="msg_box">' +
-        '<div class="close">x</div> ' +
-        '<div class="msg_wrap"> <div class="msg_body"> <div class="msg_push"></div> </div>' +
-        '<div class="msg_footer"><textarea class="msg_input" rows="4">dupa</textarea></div> </div>' +
-        '</div>';
-    $("body").append(chatPopup);
+    if (Object.keys(openChats).length >= 3) {
+        closeChat(Object.keys(openChats)[2]);
+    }
+    var chatPopup = '<div id="' + chatID + '" class="chat-popup">' +
+        '            <div class="chat-popup-header">' +
+        '                <div class="chat-popup-header-name">John</div>' +
+        '                <div class="chat-popup-header-close">x</div>' +
+        '            </div>' +
+        '            <div class="chat-popup-body">' +
+        '                <ul class="messages">' +
+        '                </ul>' +
+        '            </div>' +
+        '            <div class="chat-popup-input">' +
+        '                <input id="IN' + chatID + '" type="text" placeholder="Message...">' +
+        '                <button>Send</button>' +
+        '            </div>' +
+        '        </div>'
+    chatPopup = $(chatPopup);
+    chatPopup.find("button").click(function () {
+        let text = $("#IN" + chatID).val();
+        if (text !== "") {
+            alert(text);
+            send("MESSAGE", text, chatID);
+        }
+    });
+    chatPopup.find(".chat-popup-header-close").click(function () {
+        closeChat(chatID);
+    });
+    chatPopup.find(".chat-popup-header").click(function () {
+        minimize(chatID);
+    })
+    $("#popup-chat-list").append(chatPopup);
 }
 
 function addMessage(message, chatID) {
-
     let control = null;
-    if (message.username === username) {
-        control = '<li style="width:100%">' +
-            '<div class="msj macro">' +
-            //'<div class="avatar"><img class="img-circle" style="width:100%;" src="' + me.avatar + '" /></div>' +
-            '<div class="text text-l">' +
-            '<p>' + message.message + '</p>' +
-            '<p><small>' + message.date + '</small></p>' +
-            '</div>' +
-            '</div>' +
-            '</li>';
+    if (message.username.localeCompare(username)) {
+        control = '<li class="message-right">' +
+            message.message +
+            '     </li>'
     } else {
-        control = '<li style="width:100%;">' +
-            '<div class="msj-rta macro">' +
-            '<div class="text text-r">' +
-            '<p>' + message.message + '</p>' +
-            '<p><small>' + message.date + '</small></p>' +
-            '</div>' +
-            //'<div class="avatar" style="padding:0 0 0 10px !important"><img class="img-circle" style="width:100%;" src="' + you.avatar + '" /></div>' +
-            '</li>';
+        control = '<li class="message-left">' +
+            message.message +
+            '     </li>'
     }
-    let ul = $("ul");
-    ul.append(control).scrollTop(ul.prop('scrollHeight'));
-
-    $("#chat-log").append(message.message)
+    $("#" + chatID).find("ul").append($(control));
 }
 
 function closeChat(chatID) {
     if (chatID in openChats) {
         send("LEAVE", "", chatID);
-        var element = document.getElementById(chatID);
-        element.parentNode.removeChild(element);
+        $("#" + chatID).remove();
+        delete openChats[chatID];
+    }
+}
+
+function minimize(chatID) {
+    if (chatID in openChats) {
+        let element = $("#" + chatID);
+        if (element.find(".chat-popup-body").is(":visible")) {
+            element.find(".chat-popup-body").hide();
+            element.find(".chat-popup-input").hide();
+        } else {
+            element.find(".chat-popup-body").show();
+            element.find(".chat-popup-input").show();
+        }
     }
 }

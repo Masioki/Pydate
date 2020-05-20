@@ -8,7 +8,6 @@ from Chat.models import UserChat, ChatMessage
 def index(request):
     user = request.user
     chats = UserChat.chats_info(user)
-    print(chats)
     return render(request, 'index.html', {'chats': chats, 'username': user.username})
 
 
