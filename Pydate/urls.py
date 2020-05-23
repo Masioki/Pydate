@@ -19,7 +19,8 @@ from Pydate import views
 from django.contrib.auth import views as auth_views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls import url
-
+from django.conf.urls.static import static
+from django.conf import settings
 
 
 urlpatterns = [
@@ -28,8 +29,8 @@ urlpatterns = [
     path('register/', views.register),
     path('login/', auth_views.LoginView.as_view(), name="login"),
     path('chat/', include('Chat.urls')),
-    path('personal_questionnaire/', views.personal_questionnaire, name="personal_questionnaire"),
+    path('<str:username>/personal_questionnaire/', views.personal_questionnaire, name="personal_questionnaire"),
+    path('my_matches/', views.my_matches, name="my_matches"),
     url(r'^logout/$', views.logout_view, name='logout')
 
-]
-urlpatterns += staticfiles_urlpatterns()
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + staticfiles_urlpatterns()

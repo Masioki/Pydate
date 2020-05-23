@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
-from .models import UserData, PersonalQuestionContent, PersonalQuestionAnswer, PersonalQuestionUser, UserLog
+from .models import UserData, PersonalQuestionContent, PersonalQuestionAnswer, PersonalQuestionUser, UserLog, Match
 
 
 class ProfileInline(admin.StackedInline):
@@ -26,4 +26,5 @@ admin.site.register(User, CustomUserAdmin)
 admin.site.register(PersonalQuestionUser)
 admin.site.register(PersonalQuestionAnswer)
 admin.site.register(PersonalQuestionContent)
+admin.site.register(Match)
 admin.site.register(UserLog)

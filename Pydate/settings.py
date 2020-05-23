@@ -72,7 +72,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -135,13 +135,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_URL = os.path.join(os.path.dirname(__file__), '/static/')
+STATIC_URL = os.path.join(BASE_DIR, '/static/')
 
 TEMPLATE_DIRS = (
-    os.path.join(os.path.dirname(__file__), 'templates'),
+    os.path.join(BASE_DIR, 'templates'),
 )
 
 STATICFILES_DIRS = (
     'Chat/templates/static',
-    os.path.join(os.path.dirname(__file__), '/static')
+    os.path.join(BASE_DIR, '/static')
 )
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media').replace('\\', '/')
+MEDIA_URL = '/media/'
