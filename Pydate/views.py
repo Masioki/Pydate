@@ -8,6 +8,11 @@ from Pydate.models import UserData, PersonalQuestionUser, PersonalQuestionConten
 from django.forms import formset_factory
 
 
+@login_required
+def profile(request):
+    return render(request, 'html_pages/profile_editor.html', {'user_data': {'username': 'tomasz'}})
+
+
 def base(request):
     if request.user.is_authenticated:
         return render(request, 'html_pages/view_people.html', {})
@@ -78,10 +83,9 @@ def personal_questionnaire(request):
                 if form.is_valid():
                     answer = form.save(commit=False)
                     answer.user = request.user
-                    answer.questionID = PersonalQuestionContent.objects.get(pk=i+1)
+                    answer.questionID = PersonalQuestionContent.objects.get(pk=i + 1)
                     answer.save()
             return redirect('/')
     else:
         formset = formset_form()
     return render(request, 'html_pages/personal_questionnaire.html', {"formset": formset, "questions": questions})
-
