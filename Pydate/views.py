@@ -1,10 +1,11 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import logout
 from Pydate.forms import RegisterForm, PersonalQuestionsForm
-from Pydate.models import UserData, PersonalQuestionUser, PersonalQuestionContent, PersonalQuestionAnswer
+from Pydate.models import UserData, PersonalQuestionUser, PersonalQuestionContent, PersonalQuestionAnswer, Match
 from django.forms import formset_factory
 
 
@@ -55,9 +56,14 @@ def logout_view(request):
 
 
 @login_required
-def personal_questionnaire(request):
-    # question_user = request.question_user / data
-    question_user = request.user  # to replace with the upper line
+def personal_questionnaire(request, username):
+    question_user = User.objects.get(username=username)
+    match = Match.objects.filter(user1=request.user, user2=question_user)
+    if not match:
+        match = Match.objects.filter(user1=question_user, user2=request.user)
+        if not match:
+            return redirect("/")
+        # question_user = request.user  # to replace with the upper line
     questions = []
     questions_ids = []
     personal_questions_user = PersonalQuestionUser.objects.filter(user=question_user)
@@ -85,3 +91,31 @@ def personal_questionnaire(request):
         formset = formset_form()
     return render(request, 'html_pages/personal_questionnaire.html', {"formset": formset, "questions": questions})
 
+
+@login_required
+def my_matches(request):
+    matches_data = []
+    # search matches for user1=request.user
+    matches = Match.objects.filter(user1=request.user)
+    if matches:
+        for match in matches:
+            if match.personal_questions_match == "11":
+                u = UserData.objects.get(user=match.user2)
+                # matches_data.append({"username": u.user.username, "description": u.description, "photo": u.photo})
+                matches_data.append({"username": u.user.username, "description": u.description})
+    # search matches for user2=request.user
+    matches = Match.objects.filter(user2=request.user)
+    if matches:
+        for match in matches:
+            if match.personal_questions_match == "11":
+                u = UserData.objects.get(user=match.user1)
+                # matches_data.append({"username": u.user.username, "description": u.description, "photo": u.photo})
+                matches_data.append({"username": u.user.username, "description": u.description})
+    if len(matches_data) == 0:
+        display_no_matches_info = True
+    else:
+        info = ""
+        display_no_matches_info = False
+
+    return render(request, 'html_pages/my_matches.html',
+                  {"matches_data": matches_data, "display_no_matches_info": display_no_matches_info})
