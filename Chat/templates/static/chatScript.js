@@ -2,13 +2,18 @@ let username = null;
 let openChats = {}
 
 function displayChat() {
-    document.getElementById("chat-window").style.display = "block";
+    document.getElementById("chat-list-window").style.display = "block";
     document.getElementById("chat-list-button").style.display = "none";
 }
 
 function hideChat() {
-    document.getElementById("chat-window").style.display = "none";
+    document.getElementById("chat-list-window").style.display = "none";
     document.getElementById("chat-list-button").style.display = "block";
+}
+
+function findPersonOnList() {
+    var text = $("#search-input").val();
+
 }
 
 window.onload = function () {
@@ -33,7 +38,7 @@ function send(command, content, chatID) {
 }
 
 
-function openChat(chatID) {
+function openChat(chatID, user) {
     if (!(chatID in openChats)) {
         let chatSocket = new WebSocket(
             "ws://"
@@ -46,29 +51,29 @@ function openChat(chatID) {
             send("JOIN", "", chatID)
         }
         chatSocket.onmessage = function (mes) {
-            addMessage(JSON.parse(mes.data))
+            addMessage(JSON.parse(mes.data), chatID)
         }
         openChats[chatID] = chatSocket;
 
         $.get({
             url: '/chat/messages/' + chatID,
-            success: [function (data) {
-                showNewChatPopup(chatID);
-                for (var mes in data.messages) {
-                    addMessage(mes, chatID);
+            success: function (data) {
+                showNewChatPopup(chatID, user);
+                for (var i = 0; i < data.messages.length; i++) {
+                    addMessage(data.messages[i], chatID);
                 }
-            }]
+            }
         });
     }
 }
 
-function showNewChatPopup(chatID) {
+function showNewChatPopup(chatID, user) {
     if (Object.keys(openChats).length >= 3) {
         closeChat(Object.keys(openChats)[2]);
     }
     var chatPopup = '<div id="' + chatID + '" class="chat-popup">' +
         '            <div class="chat-popup-header">' +
-        '                <div class="chat-popup-header-name">John</div>' +
+        '                <div class="chat-popup-header-name">' + user + '</div>' +
         '                <div class="chat-popup-header-close">x</div>' +
         '            </div>' +
         '            <div class="chat-popup-body">' +
@@ -76,17 +81,18 @@ function showNewChatPopup(chatID) {
         '                </ul>' +
         '            </div>' +
         '            <div class="chat-popup-input">' +
-        '                <input id="IN' + chatID + '" type="text" placeholder="Message...">' +
+        '                <textarea id="IN' + chatID + '" type="text" placeholder="Message..."></textarea>' +
         '                <button>Send</button>' +
         '            </div>' +
         '        </div>'
     chatPopup = $(chatPopup);
     chatPopup.find("button").click(function () {
-        let text = $("#IN" + chatID).val();
+        let element = $("#IN" + chatID);
+        let text = element.val();
         if (text !== "") {
-            alert(text);
             send("MESSAGE", text, chatID);
         }
+        element.val("");
     });
     chatPopup.find(".chat-popup-header-close").click(function () {
         closeChat(chatID);
@@ -99,7 +105,7 @@ function showNewChatPopup(chatID) {
 
 function addMessage(message, chatID) {
     let control = null;
-    if (message.username.localeCompare(username)) {
+    if (message.username === username) {
         control = '<li class="message-right">' +
             message.message +
             '     </li>'
@@ -108,7 +114,7 @@ function addMessage(message, chatID) {
             message.message +
             '     </li>'
     }
-    $("#" + chatID).find("ul").append($(control));
+    $("#" + chatID + " ul").append($(control));
 }
 
 function closeChat(chatID) {

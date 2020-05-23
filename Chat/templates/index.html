@@ -14,25 +14,15 @@
         Chats
     </p>
 
-    <div id="chat-window" onmouseover="displayChat()" onmouseleave="hideChat()">
-        <div class="open-chat">
-            <div class="open-chat-header">
-
-            </div>
-            <ul class="messageList">
-                <li class="message">
-
-                </li>
-            </ul>
-        </div>
+    <div id="chat-list-window" onmouseover="displayChat()" onmouseleave="hideChat()">
         <div class="chat-history">
             <div class="search">
-                <input type="text" placeholder="search">
+                <input id="search-input" type="text" placeholder="search" oninput="findPersonOnList()">
             </div>
             <div class="history">
                 <ul>
                     {% for mes in chats %}
-                        <li class="person" onclick="openChat({{ mes.chat_id }})">
+                        <li class="person" onclick="openChat('{{ mes.chat_id }}','{{ mes.username }}')">
                             {{ mes.username }}
                         </li>
                     {% endfor %}
@@ -41,7 +31,6 @@
         </div>
     </div> <!-- end chat-window -->
 </div>
-{{ chat_id|json_script:"chat_id" }}
 {{ username|json_script:"username" }}
 <script src="{% static "chatScript.js" %}"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

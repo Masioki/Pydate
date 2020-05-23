@@ -61,12 +61,12 @@ class ChatMessage(models.Model):
     @staticmethod
     def get_latest(chat_id, start, end):
         chat = Chat.objects.get(chatID=chat_id)
-        mes_list = list(ChatMessage.objects.filter(chat=chat).order_by('date'))
+        mes_list = list(ChatMessage.objects.filter(chat=chat).order_by('-date'))
         end = min(max(end, 0), len(mes_list))
         start = max(start, 0)
         mes_list = mes_list[start:end]
         json_list = []
-        for i in mes_list:
+        for i in mes_list[::-1]:
             temp = {
                 "type": "MESSAGE",
                 "chat_id": i.chat.chatID,
