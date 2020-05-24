@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -10,6 +12,9 @@ from Pydate.models import UserData, PersonalQuestionUser, PersonalQuestionConten
 from django.forms import formset_factory
 from django.contrib.auth.models import User
 
+def calculate_age(born):
+    today = date.today()
+    return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
 
 def base(request):
     if request.user.is_authenticated:
@@ -90,61 +95,47 @@ def personal_questionnaire(request):
 
 @login_required
 def view_answers(request):
-    # question_user = request.question_user / data
-    question_user = request.user  # to replace with the upper line
+#tu elementu ktore zwroce
     questions = []
-    users=[]
-    #tu pod usera rzeczy
-    ages=[]
     descriptions=[]
     photos=[]
-    names=[]
     users_ids=[]
-    answer_ids=[]
-    #tu juz nie
-    questions_ids = []
-    i=0
+    users_index=[]
+    ages=[]
+    question_content = []
+#tu juz nie
     personal_questions_user = PersonalQuestionUser.objects.filter(user=request.user)
+
     if personal_questions_user:
         for p in personal_questions_user:
-            answerset = PersonalQuestionAnswer.objects.filter(questionID=str(p.id)).values("content").all()
-            usersset = PersonalQuestionAnswer.objects.filter(questionID=str(p.id)).values("user")
-            idsset = PersonalQuestionAnswer.objects.filter(questionID=str(p.id)).values("id").all()
-
+            answerset = PersonalQuestionAnswer.objects.filter(questionID=str(p.id))
+            questionset = PersonalQuestionContent.objects.filter(questionID=str(p.id)).values("content").all()
             if answerset:
-                questions += [q["content"] for q in answerset]
-                answer_ids += [q["id"] for q in idsset]
-                questions_ids.append(str(p.id))
-                users_ids+=[q["user"] for q in usersset]
-                desset = UserData.objects.filter(user=(users_ids[i])).values("description").all()
-                nameset = User.objects.filter(id=(users_ids[i])).values("username").all()
-                picset = UserData.objects.filter(user=(users_ids[i])).values("photo").all()
-                descriptions += [q["description"] for q in desset]
-                names += [q["username"] for q in nameset]
-                photos += [q["photo"] for q in picset]
-                i+=1
+                for usr in answerset:
+                    if (str(usr.user) not in users_ids):
+                        questions += [[str(usr.content)]]
+                        users_ids+=[(str(usr.user))]
+                        question_content+=[[q["content"] for q in questionset]]
+                        #sets
+                        userset = UserData.objects.filter(user=str(usr.user.id)).values("id","description","photo","birth").all()
+                        #data from sets
+                        descriptions += [' '+q["description"] for q in userset]
+                        photos += [q["photo"] for q in userset]
+                        ages+= [calculate_age(q["birth"]) for q in userset]
+                        users_index+= [(q["id"]) for q in userset]
+                    else:
+                        for idu, u in enumerate(users_ids):
+                            if(str(usr.user) == u):
+                                questions[idu]+=[(str(usr.content))]
+                                question_content[idu] += [q["content"] for q in questionset]
 
-    """
-    for i in range(len(users_ids)) :
-        desset= UserData.objects.filter(id=str(users_ids[i])).values("description").all()
-        nameset= User.objects.filter(id=str(users_ids[i])).values("username").all()
-        picset= UserData.objects.filter(id=str(users_ids[i])).values("photo").all()
-        descriptions+= [q["description"] for q in desset]
-        names+= [q["username"] for q in nameset]
-        photos+=[q["photo"] for q in picset]
-    """
+    formset_form = formset_factory(PersonalQuestionsForm, extra=len(users_ids))
 
+    formset = formset_form()
+    return render(request, 'html_pages/view_answers.html', {"formset": formset, "question_content":question_content,"names":users_ids,"user_index":users_index, "descriptions": descriptions,"questions": questions,"age": ages, "img":photos, 'media_url': settings.STATIC_URL})
 
-
-    formset_form = formset_factory(PersonalQuestionsForm, extra=len(questions_ids))
-
-    if request.method == "POST":
-        formset = formset_form(request.POST)
-    else:
-        formset = formset_form()
-    return render(request, 'html_pages/view_answers.html', {"formset": formset, "question_id":answer_ids,"names":names, "descriptions": descriptions,"questions": questions,"img":photos, 'media_url': settings.STATIC_URL})
-
+#usuwanie wszytkich pytan i metchow dla zadanego uzytkownika
 def question_delete(request, id=None):
-   instance = get_object_or_404(PersonalQuestionAnswer, id=id)
+   instance = get_object_or_404(User, username=str(id))
    instance.delete()
    return redirect("view_answers")
