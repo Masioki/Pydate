@@ -14,7 +14,7 @@
 <div class="container bootstrap snippets">
     <div class="row">
         <div class="col-xs-12 col-sm-9">
-            <form class="form-horizontal">
+            <div class="form-horizontal">
                 <div class="panel panel-default">
                     <div class="panel-body text-center">
                         <img src="https://bootdey.com/img/Content/avatar/avatar6.png" class="img-circle profile-avatar"
@@ -23,19 +23,56 @@
                 </div>
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h4 class="panel-title">User info</h4>
+                        <h4 class="panel-title">Personal info</h4>
                     </div>
                     <div class="panel-body">
                         <div class="form-group">
                             <label class="col-sm-2 control-label">First name</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control">
+                                <input id="first_name" type="text" class="form-control"
+                                       value="{{ data.first_name }}">
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">Last name</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control">
+                                <input id="last_name" type="text" class="form-control"
+                                       value="{{ data.last_name }}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Birthday</label>
+                            <div class="col-sm-10">
+                                <input id="birth" type="date" class="form-control"
+                                       value="{{ data.birth|date:"Y-m-d" }}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="sex" class="col-sm-2 control-label">Sex</label>
+                            <div class="col-sm-10">
+                                <select id="sex" name="sex" class="auto-width setup-inline  form-control input-medium"
+                                        required>
+                                    <option value="M" {% if data.sex == 'M' %}selected{% endif %}>Male</option>
+                                    <option value="F" {% if data.sex == 'F' %}selected{% endif %}>Female</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="sex" class="col-sm-2 control-label">Looking for</label>
+                            <div class="col-sm-10">
+                                <select id="looking_for" name="sex"
+                                        class="auto-width setup-inline  form-control input-medium" required>
+                                    <option value="M" {% if data.looking_for == 'M' %}selected{% endif %}>Male</option>
+                                    <option value="F" {% if data.looking_for == 'F' %}selected{% endif %}>Female
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Description</label>
+                            <div class="col-sm-10">
+                                <textarea id="description" type="text" class="form-control" maxlength="400"
+                                          value="{{ data.description }}"></textarea>
                             </div>
                         </div>
                     </div>
@@ -47,15 +84,9 @@
                     </div>
                     <div class="panel-body">
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">Mobile number</label>
-                            <div class="col-sm-10">
-                                <input type="tel" class="form-control">
-                            </div>
-                        </div>
-                        <div class="form-group">
                             <label class="col-sm-2 control-label">E-mail address</label>
                             <div class="col-sm-10">
-                                <input type="email" class="form-control">
+                                <input id="email" type="email" class="form-control" value="{{ data.email }}">
                             </div>
                         </div>
                     </div>
@@ -69,21 +100,57 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">Password</label>
                             <div class="col-sm-10">
-                                <input type="password" class="form-control">
+                                <input id="password" type="password" class="form-control">
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-sm-10 col-sm-offset-2">
-                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <button onclick="update()" class="btn btn-primary"
+                                        style="background: lightblue;border: none">Update
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+    function update() {
+        let pass = $("#password").val();
+        if (pass !== "") {
+            let updated_data = {
+                'first_name': $("#first_name").val(),
+                'last_name': $("#last_name").val(),
+                'birth': $("#birth").val(),
+                'sex': $("#sex").val(),
+                'looking_for': $("#looking_for").val(),
+                'description': $("#description").val(),
+                'email': $("#email").val(),
+                'password': pass
+            }
+            $.post({
+                url: '/profile/edit/',
+                headers: {
+                    "X-CSRFToken": '{{ csrf_token }}'
+                },
+                data: updated_data,
+                success: function () {
+                    showMessage("Your data has been updated!");
+                },
+                error: function () {
+                    showMessage("Password error!");
+                }
+            });
+        }
+    }
+
+    function showMessage(message) {
+        alert(message)
+    }
+</script>
 </body>
 </html>

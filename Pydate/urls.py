@@ -28,6 +28,7 @@ urlpatterns = [
     path('chat/', include('Chat.urls')),
     path('personal_questionnaire/', views.personal_questionnaire, name="personal_questionnaire"),
     url(r'^logout/$', views.logout_view, name='logout'),
-    path('profile/', views.profile)
+    path('profile/', views.profile),
+    path('profile/edit/', views.update_profile)
 ]
 urlpatterns += staticfiles_urlpatterns()

@@ -75,3 +75,14 @@ form label {
     margin: 196px auto 0;
     border: 4px solid lightblue;
 }
+
+#description {
+    height: 80px;
+    min-height: 60px;
+    max-height: 120px;
+    -ms-overflow-style: auto;
+}
+
+#description::-webkit-scrollbar {
+    display: none;
+}
