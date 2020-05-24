@@ -8,4 +8,8 @@ Dating web app
 
 ``python manage.py migrate``
 
+#SuperUser Conf
+
+``./database_creation.sh``
+
 

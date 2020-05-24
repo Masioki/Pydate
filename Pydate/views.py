@@ -152,11 +152,12 @@ def view_answers(request):
                         question_content+=[[q["content"] for q in questionset]]
                         #sets
                         userset = UserData.objects.filter(user=str(usr.user.id)).values("id","description","photo","birth").all()
+                        userset2 = UserData.objects.filter(user=str(usr.user.id)).values("user_id").all()
                         #data from sets
                         descriptions += [' '+q["description"] for q in userset]
                         photos += [q["photo"] for q in userset]
                         ages+= [calculate_age(q["birth"]) for q in userset]
-                        users_index+= [(q["id"]) for q in userset]
+                        users_index+= [(q["user_id"]) for q in userset2]
                     else:
                         for idu, u in enumerate(users_ids):
                             if(str(usr.user) == u):
@@ -168,8 +169,37 @@ def view_answers(request):
     formset = formset_form()
     return render(request, 'html_pages/view_answers.html', {"formset": formset, "question_content":question_content,"names":users_ids,"user_index":users_index, "descriptions": descriptions,"questions": questions,"age": ages, "img":photos, 'media_url': settings.STATIC_URL})
 
-#usuwanie wszytkich pytan i metchow dla zadanego uzytkownika
+#usuwanie uzytkownika
 def question_delete(request, id=None):
-   instance = get_object_or_404(User, username=str(id))
+   instance = get_object_or_404(User, id=str(id))
    instance.delete()
    return redirect("view_answers")
+
+
+# usuwanie pytan
+def questions_delete(us1, us2):
+    personal_questions_user = PersonalQuestionUser.objects.filter(user=us1)
+    if personal_questions_user:
+        for ques in personal_questions_user:
+            PersonalQuestionAnswer.objects.filter( user=us2,questionID=ques.questionID).delete()
+
+#usuwanie matchow
+def match_delete(request, id=None):
+    comrade = User.objects.get(id=str(id))
+    Match.objects.filter(user1=request.user, user2=comrade).delete()
+    Match.objects.filter(user1=comrade, user2=request.user).delete()
+    questions_delete(request.user, comrade)
+    return redirect("view_answers")
+
+#deklarowanie ze user request chce miec kontakt z osoba o id=id
+def match_accept(request, id=None):
+    comrade = User.objects.get(id=str(id))
+    Match.objects.filter(user1=request.user, user2=comrade).delete()
+    Match.objects.filter(user1=comrade, user2=request.user).delete()
+    questions_delete(request.user, comrade)
+    return redirect("view_answers")
+
+
+
+
+

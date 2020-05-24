@@ -41,9 +41,10 @@
 
 
                         <!--TODO : nie dziala delete bo nwm jak wyglada struktura czatu-->
-                        <button type="submit2" class="btn btn-primary" id="decline" ><a href="{% url 'question_delete' user_index|list_item:forloop.counter0 %}">decline</a></button>
+                        <!--<button type="submit2" class="btn btn-primary" id="decline" ><a href="{% url 'question_delete' user_index|list_item:forloop.counter0 %}">declinezle</a></button>-->
+                        <button type="submit2" class="btn btn-primary" id="decline" ><a href="{% url 'match_delete' user_index|list_item:forloop.counter0 %}"></a>decline</button>
                         <!--TODO : nie dziala accept bo nwm jak wyglada struktura czatu-->
-                        <button type="submit2" class="btn btn-primary" id="accept" >accept</button>
+                        <button type="submit2" class="btn btn-primary" id="accept" ><a href="{% url 'match_accept' user_index|list_item:forloop.counter0 %}"></a>accept</button>
 
                     {% endfor %}
 
