@@ -9,7 +9,7 @@
             <title>Personal questionnaire</title>
             <!-- css sheets -->
             {% load static %}
-            <link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
             <link rel="stylesheet" href="{% static "css_pages/base.css" %}"/>
             <link rel="stylesheet" href="{% static "css_pages/view_answers.css" %}"/>
             <style>
@@ -25,19 +25,20 @@
                     {% for form in formset %}
 
                         <label class="question">{{ names|list_item:forloop.counter0 }}, {{ age|list_item:forloop.counter0 }} </label>
+                        <div>
+                            <img src="{{media_url}}{{ img|list_item:forloop.counter0 }}" style="float: left" width="200" height="150"/>
+                        </div>
                         <label class="question">{{ descriptions|list_item:forloop.counter0 }} </label>
 
+                        <label class="question">pytania</label>
                         {% for pyt in question_content|list_item:forloop.counter0 %}
-                            <label class="question">pytanie {{ pyt }}</label>
+                            <label class="question">{{ pyt }}</label>
                         {% endfor %}
-
+                        <label class="question">odpowiedzi</label>
                         {% for odp in questions|list_item:forloop.counter0 %}
-                            <label class="question">odpowiedz {{ odp }}</label>
+                            <label class="question">{{ odp }}</label>
                         {% endfor %}
 
-                        <div>
-                            <img src="{{media_url}}{{ img|list_item:forloop.counter0 }}" style="float: left" width="100" height="100"/>
-                        </div>
 
                         <!--TODO : nie dziala delete bo nwm jak wyglada struktura czatu-->
                         <button type="submit2" class="btn btn-primary" id="decline" ><a href="{% url 'question_delete' user_index|list_item:forloop.counter0 %}">decline</a></button>
