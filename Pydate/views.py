@@ -2,6 +2,7 @@ from datetime import date
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.http.response import HttpResponseNotFound
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import logout
@@ -169,37 +170,48 @@ def view_answers(request):
     formset = formset_form()
     return render(request, 'html_pages/view_answers.html', {"formset": formset, "question_content":question_content,"names":users_ids,"user_index":users_index, "descriptions": descriptions,"questions": questions,"age": ages, "img":photos, 'media_url': settings.STATIC_URL})
 
-#usuwanie uzytkownika
-def question_delete(request, id=None):
-   instance = get_object_or_404(User, id=str(id))
-   instance.delete()
-   return redirect("view_answers")
-
-
-# usuwanie pytan
 def questions_delete(us1, us2):
+    #usuwanie pytan
     personal_questions_user = PersonalQuestionUser.objects.filter(user=us1)
     if personal_questions_user:
         for ques in personal_questions_user:
             PersonalQuestionAnswer.objects.filter( user=us2,questionID=ques.questionID).delete()
 
-#usuwanie matchow
 def match_delete(request, id=None):
     comrade = User.objects.get(id=str(id))
+    #usuwanie matchow
     Match.objects.filter(user1=request.user, user2=comrade).delete()
     Match.objects.filter(user1=comrade, user2=request.user).delete()
-    questions_delete(request.user, comrade)
+
+    questions_delete(request.user, comrade)#usuwam odpowiedzi comrade'a na pytania zalogowanego uzytkownika
+    questions_delete(comrade,request.user )#a tu vice versa
     return redirect("view_answers")
 
-#deklarowanie ze user request chce miec kontakt z osoba o id=id
 def match_accept(request, id=None):
     comrade = User.objects.get(id=str(id))
-    Match.objects.filter(user1=request.user, user2=comrade).delete()
-    Match.objects.filter(user1=comrade, user2=request.user).delete()
-    questions_delete(request.user, comrade)
+    match=Match.objects.filter(user1=request.user, user2=comrade)
+    if match:
+        if (len(match) > 1):
+            return HttpResponseNotFound('<h1>Error. W bazie sa 2 takie same matche. Skontaktuj sie z administracja</h1>')
+        m = match[0]
+        if (m.personal_questions_match == Match.Agreement.AGREE_2_TO_1):
+            m.personal_questions_match = Match.Agreement.AGREE_BOTH
+        else:
+            m.personal_questions_match=Match.Agreement.AGREE_1_TO_2
+        m.save()
+    else:
+        match = Match.objects.filter(user2=request.user, user1=comrade)
+        if(len(match)>1):
+            return HttpResponseNotFound('<h1>Error. W bazie sa 2 takie same matche. Skontaktuj sie z administracja</h1>')
+        if match:
+            m = match[0]
+            if(m.personal_questions_match == Match.Agreement.AGREE_1_TO_2):
+                m.personal_questions_match = Match.Agreement.AGREE_BOTH
+            else:
+                m.personal_questions_match = Match.Agreement.AGREE_2_TO_1
+            m.save()
+        else:
+            return HttpResponseNotFound('<h1>Error. W bazie nie ma danego matcha. Skontaktuj sie z administracja</h1>')
+
+    questions_delete(request.user, comrade)#usuwam odpowiedzi comrade'a na pytania zalogowanego uzytkownika
     return redirect("view_answers")
-
-
-
-
-

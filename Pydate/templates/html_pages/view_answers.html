@@ -23,29 +23,28 @@
                 <div class="container col-xl-6 col-lg-4 col-md-6 col-sm-6 col-9 justify-content-center align-self-center">
                     <form action="/view_answers/">
                     {% for form in formset %}
+                        <div class="mw-100">
+                            <label class="question">{{ names|list_item:forloop.counter0 }}, {{ age|list_item:forloop.counter0 }} </label>
 
-                        <label class="question">{{ names|list_item:forloop.counter0 }}, {{ age|list_item:forloop.counter0 }} </label>
-                        <div>
-                            <img src="{{media_url}}{{ img|list_item:forloop.counter0 }}" style="float: left" width="200" height="150"/>
-                        </div>
-                        <label class="question">{{ descriptions|list_item:forloop.counter0 }} </label>
 
-                        <label class="question">pytania</label>
+                            <!--TODO : Feather DO ZROBIENIA: JAK SIE NAJEDZIE NA FOTKE TO SIE OTWORZY PROFIL wystarczy wpisac  w href link do profilu-->
+                            <a id="profpic" href="/"><img src="{{media_url}}{{ img|list_item:forloop.counter0 }}" alt="profile_pic" width="200" height="150" class="m-0 p-0"/></a>
+                            <p>
+                                <label class="question">{{ descriptions|list_item:forloop.counter0 }} </label>
+                            </p>
+                            <label class="question"><span style="color: navy">Questions</span></label>
                         {% for pyt in question_content|list_item:forloop.counter0 %}
                             <label class="question">{{ pyt }}</label>
                         {% endfor %}
-                        <label class="question">odpowiedzi</label>
+
+                        <label class="question"><span style="color: purple">Answers</span></label>
                         {% for odp in questions|list_item:forloop.counter0 %}
                             <label class="question">{{ odp }}</label>
                         {% endfor %}
 
-
-                        <!--TODO : nie dziala delete bo nwm jak wyglada struktura czatu-->
-                        <!--<button type="submit2" class="btn btn-primary" id="decline" ><a href="{% url 'question_delete' user_index|list_item:forloop.counter0 %}">declinezle</a></button>-->
-                        <button type="submit2" class="btn btn-primary" id="decline" ><a href="{% url 'match_delete' user_index|list_item:forloop.counter0 %}"></a>decline</button>
-                        <!--TODO : nie dziala accept bo nwm jak wyglada struktura czatu-->
-                        <button type="submit2" class="btn btn-primary" id="accept" ><a href="{% url 'match_accept' user_index|list_item:forloop.counter0 %}"></a>accept</button>
-
+                        <a href="{% url 'match_delete' user_index|list_item:forloop.counter0 %} %}"> <img src="{% static "images/decline.png" %}" width="96" height="70" id="decline" ></a></button>
+                        <a href="{% url 'match_accept' user_index|list_item:forloop.counter0 %}"> <img src="{% static "images/accept.png" %}" width="96" height="70" id="accept" ></a></button>
+                        </div>
                     {% endfor %}
 
                     </form>
