@@ -79,7 +79,7 @@ form label {
 #description {
     height: 80px;
     min-height: 60px;
-    max-height: 120px;
+    max-height: 150px;
     -ms-overflow-style: auto;
 }
 
