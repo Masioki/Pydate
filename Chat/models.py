@@ -14,8 +14,9 @@ class Chat(models.Model):
 # TODO: do użytkownika nie chatu
 
 class UserChat(models.Model):
-    chatID = models.ForeignKey(Chat, on_delete=models.CASCADE)  # TODO: zmienic na chat
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    userChatID = models.AutoField(primary_key=True,unique=True)
+    chatID = models.ForeignKey(Chat, unique=False, on_delete=models.CASCADE)
+    user = models.ForeignKey(User,unique=False, on_delete=models.CASCADE)
 
     @staticmethod
     def user_belongs_to(user, chat_id):
@@ -39,9 +40,10 @@ class UserChat(models.Model):
 
 
 class ChatMessage(models.Model):
+    messageID = models.AutoField(primary_key=True)
     chat = models.ForeignKey(Chat, unique=False, on_delete=models.CASCADE)
     message = models.CharField(max_length=300)
-    date = models.DateTimeField(auto_now=True)
+    date = models.DateTimeField(auto_now=True, unique=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     # zapisujemy bez niepotrzebnych spacji

@@ -73,10 +73,11 @@
     bottom: 20px;
     right: 250px;
     font-family: SansSerif, sans-serif;
+    padding: 5px;
 }
 
 .chat-popup {
-    display: block;
+    display: inline-block;
     width: 230px;
     border-radius: 10px;
     border: 3px solid pink;
