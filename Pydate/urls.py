@@ -31,7 +31,8 @@ urlpatterns = [
     path('<str:username>/personal_questionnaire/', views.personal_questionnaire, name="personal_questionnaire"),
     path('my_matches/', views.my_matches, name="my_matches"),
     path('view_answers/', views.view_answers, name="view_answers"),
-    url(r'^view_answers/(?P<id>\d+)/delete$', views.question_delete, name='question_delete'),
+    url(r'^view_answers/(?P<id>\d+)/delete_match$', views.match_delete, name='match_delete'),
+    url(r'^view_answers/(?P<id>\d+)/accept_match$', views.match_accept, name='match_accept'),
     url(r'^logout/$', views.logout_view, name='logout')
 
 ]
