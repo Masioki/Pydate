@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>Chat Room</title>
+    {% load static %}
+    <link type="text/javascript" href="{% static 'chatScript.js' %}">
+
+
+</head>
+<body>
+<label for="chat-log">Wiadomości</label><textarea id="chat-log" cols="100" rows="20"></textarea><br>
+<label for="chat-message-input">Pisz tutaj</label><input id="chat-message-input" type="text" size="100"><br>
+<input id="chat-message-submit" type="button" value="Send" onclick="sendMessage()">
+{{ chat_id|json_script:"chat_id" }}
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+<script src="{% static "chatScript.js" %}"></script>
+</body>
+</html>

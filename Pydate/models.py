@@ -1,44 +1,38 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
+from django.contrib.auth.models import User
 
-
-####################
-#UŻYTKOWNICY
-####################
-
-class user_data(models.Model):
-    userID= models.IntegerField(primary_key=True)
-    birth = models.DateField(null=False)
-    facebook=models.CharField(max_length=100)
-    instagram=models.CharField(max_length=100)
-    sex=models.CharField(max_length=2,null=False)
-    personality=models.CharField(max_length=4)
-    description=models.CharField(max_length=300)
-    photo=models.FileField()
-    location=models.IntegerField()
-    nick=models.CharField(max_length=20,null=False)
 
 
 ####################
-#PYTANIA UŻYTKOWNIKÓW
+# UŻYTKOWNICY
 ####################
 
-class personal_question_content(models.Model):
-    questionID= models.IntegerField(primary_key=True)
-    content=models.CharField(max_length=250)
+class UserData(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    birth = models.DateField(null=True)
+    sex = models.CharField(max_length=2, null=True)
+    personality = models.IntegerField(null=True)
+    description = models.CharField(max_length=300, null=True)
+    photo = models.ImageField(null=True)
+    location = models.IntegerField(null=True)
+    searching_for = models.CharField(max_length=5, null=True)
 
-class personal_question_user(models.Model):
-    questionID=models.ForeignKey(personal_question_content,on_delete=models.CASCADE)
+    def __str__(self):
+        return self.user.username
 
-class personal_question_answer(models.Model):
-    userID=models.ForeignKey(user_data,on_delete=models.CASCADE)          #ten co odpowiada
-
-    content=models.CharField(max_length=300)
 
 ####################
-#PYTANIA STARTOWE
+# PYTANIA UŻYTKOWNIKÓW
 ####################
+
+class PersonalQuestionContent(models.Model):
+    questionID = models.AutoField(auto_created=True, serialize=False, primary_key=True)
+    content = models.CharField(max_length=250)
+
+    def __str__(self):
+        return str(self.questionID)
 
 class personality_test_item(models.Model):
     itemID = models.IntegerField(primary_key=True)
@@ -63,32 +57,41 @@ class personality_test_answer(models.Model):
     )
     answer = models.IntegerField(null=True)
 
+class PersonalQuestionUser(models.Model):
+    questionID = models.ForeignKey(PersonalQuestionContent, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)  # ten co pyta
+
+    def __str__(self):
+        return str(self.questionID)
+
+
+class PersonalQuestionAnswer(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)  # ten co odpowiada
+    questionID = models.ForeignKey(PersonalQuestionContent, on_delete=models.CASCADE)
+    content = models.CharField(max_length=300, blank=False, null=False)
+
+    def __str__(self):
+        return str(self.questionID)
+
 
 ####################
-#CZAT
+# PYTANIA STARTOWE
 ####################
 
-class chat(models.Model):   #id czatu oraz informacja o tym czy czat nie jest zablokowany
-    chatID= models.IntegerField(primary_key=True)
-    agreement=models.IntegerField(default=0)
-
-class user_chat(models.Model):  #uzytkownicy podlaczeni do danego czatu
-    chatID=models.ForeignKey(chat,on_delete=models.CASCADE)
-    userID=models.ForeignKey(user_data,on_delete=models.CASCADE)
-
-class chat_message(models.Model):   #zawartosc czatu
-    chatID=models.ForeignKey(chat,on_delete=models.CASCADE)
-    message=models.CharField(max_length=300)
-    date=models.DateField(auto_now=True)
+# TODO
 
 ####################
-#STATYSTYKI
+# STATYSTYKI
 ####################
 
-class user_log(models.Model):
-    userID=models.ForeignKey(user_data,on_delete=models.CASCADE)
-    logins=models.IntegerField(default=1)
-    likes_sent=models.IntegerField(default=0)
-    likes_receive=models.IntegerField(default=0)
-    mess_sent=models.IntegerField(default=0)
-    mess_receive=models.IntegerField(default=0)
+
+class UserLog(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    logins = models.IntegerField(default=1)
+    likes_sent = models.IntegerField(default=0)
+    likes_receive = models.IntegerField(default=0)
+    mess_sent = models.IntegerField(default=0)
+    mess_receive = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.user.username
