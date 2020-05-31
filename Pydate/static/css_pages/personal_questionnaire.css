@@ -1,5 +1,5 @@
 .container{
-    background-color: #ABC0CC;
+    background-color: #BCD1DD;
     padding: 30px;
     margin-top: 40px;
     margin-bottom: 60px;
@@ -34,7 +34,7 @@
     border: #eee solid 2px;
 }
 
-#submit_questionnaire{
+.submit_questionnaire{
     background-color: #FA7388;
     border: #fff solid 1px;
     padding: 5px 10px;

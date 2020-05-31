@@ -1,10 +1,10 @@
-from ..models import personality_test_item, personality_test_answer
+from ..models import PersonalityTestItem, PersonalityTestAnswer
 from django.contrib.auth.models import User
 
 def get_personality_type(user_id):
     user = User.objects.get(pk=user_id)
-    answers = [answer.answer for answer in personality_test_answer.objects.filter(user=user_id)]
-    test_items_info = personality_test_item.objects.all()
+    answers = [answer.answer for answer in PersonalityTestAnswer.objects.filter(user=user_id)]
+    test_items_info = PersonalityTestItem.objects.all()
 
     resault_type = get_personality_trait("IE", answers)
     resault_type += get_personality_trait("SN", answers)
@@ -14,7 +14,7 @@ def get_personality_type(user_id):
     return resault_type
 
 def get_personality_trait(trait_type, aswners):
-    items = personality_test_item.objects.all().filter(type=trait_type)
+    items = PersonalityTestItem.objects.all().filter(type=trait_type)
     score = 0
     substraction_count = 0
 

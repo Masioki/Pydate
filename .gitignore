@@ -1,4 +1,13 @@
 /.idea
 /Pydate/__pycache__
 /Pydate/utlis/__pycache__
-/Pydate/migrations/__pycache__
+/Pydate/migrations/__pycache__Chat/__pycache__/__init__.cpython-37.pyc
+Chat/__pycache__/admin.cpython-37.pyc
+Chat/__pycache__/consumers.cpython-37.pyc
+Chat/__pycache__/models.cpython-37.pyc
+Chat/__pycache__/routing.cpython-37.pyc
+Chat/__pycache__/urls.cpython-37.pyc
+Chat/__pycache__/views.cpython-37.pyc
+Chat/migrations/__pycache__/0001_initial.cpython-37.pyc
+Chat/migrations/__pycache__/__init__.cpython-37.pyc
+Pydate/templatetags/__pycache__/list_item.cpython-37.pyc

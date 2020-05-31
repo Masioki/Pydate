@@ -15,11 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from Pydate import views
+from Pydate import views, settings
 from django.contrib.auth import views as auth_views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls import url
-
+from django.conf.urls.static import static
 
 
 urlpatterns = [
@@ -30,7 +30,12 @@ urlpatterns = [
     path('personality_test/', views.personality_test),
     path('personality_test/<int:test_item_id>/', views.test_vote, name='test_vote'),
     path('chat/', include('Chat.urls')),
-    path('personal_questionnaire/', views.personal_questionnaire, name="personal_questionnaire"),
+    path('<str:username>/personal_questionnaire/', views.personal_questionnaire, name="personal_questionnaire"),
+    path('my_matches/', views.my_matches, name="my_matches"),
+    path('view_answers/', views.view_answers, name="view_answers"),
+    url(r'^view_answers/(?P<id>\d+)/delete_match$', views.match_delete, name='match_delete'),
+    url(r'^view_answers/(?P<id>\d+)/accept_match$', views.match_accept, name='match_accept'),
     url(r'^logout/$', views.logout_view, name='logout')
 ]
-urlpatterns += staticfiles_urlpatterns()
+from django.conf import settings
+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + staticfiles_urlpatterns()
