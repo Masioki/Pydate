@@ -12,9 +12,9 @@ class UserData(models.Model):
     sex = models.CharField(max_length=2, null=True)
     personality = models.IntegerField(null=True)
     description = models.CharField(max_length=300, null=True)
-    photo = models.ImageField(null=True)
-    latitude = models.DecimalField(max_digits=9, decimal_places=5)
-    longitude = models.DecimalField(max_digits=9, decimal_places=5)
+    photo = models.ImageField(null=True, upload_to="images/user_profile_pictures/")
+    latitude = models.DecimalField(max_digits=9, decimal_places=5, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=5, null=True)
     searching_for = models.CharField(max_length=5, null=True)
 
     def __str__(self):
@@ -60,6 +60,24 @@ class PersonalQuestionAnswer(models.Model):
 ####################
 # STATYSTYKI
 ####################
+
+
+class Match(models.Model):
+    class Agreement(models.TextChoices):
+        AGREE_NONE = '00'
+        AGREE_1_TO_2 = '01'
+        AGREE_2_TO_1 = '10'
+        AGREE_BOTH = '11'
+    user1 = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="user1")
+    user2 = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="user2")
+    personal_questions_match = models.CharField(max_length=2, choices=Agreement.choices, default=Agreement.AGREE_NONE)
+    chatting_match = models.CharField(max_length=2, choices=Agreement.choices, default=Agreement.AGREE_NONE)
+
+    class Meta:
+        verbose_name_plural = "Matches"
+
+    def __str__(self):
+        return self.user1.username + " + " + self.user2.username
 
 
 class UserLog(models.Model):
