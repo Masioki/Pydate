@@ -5,18 +5,44 @@
     <title>Chat Room</title>
     {% load static %}
     <link type="text/javascript" href="{% static 'chatScript.js' %}">
-
+    <link rel="stylesheet" type="text/css" href="{% static 'chatStyle.css' %}">
 
 </head>
 <body>
+
+<div id="chat" class="col-sm-3 col-sm-offset-4 frame">
+    <ul></ul>
+    <div>
+        <div class="msj-rta macro">
+            <div class="text text-r" style="background:whitesmoke !important">
+                <input id="chat-message-input" class="mytext" placeholder="Type a message"/>
+            </div>
+        </div>
+        <div style="padding:10px;">
+            <span class="glyphicon glyphicon-share-alt" onclick="sendMessage()"></span>
+        </div>
+    </div>
+</div>
+
+<input id="popup-button" type="button" value="Show/Hide" onclick="popupChat()">
+<!--
 <label for="chat-log">Wiadomości</label><textarea id="chat-log" cols="100" rows="20"></textarea><br>
 <label for="chat-message-input">Pisz tutaj</label><input id="chat-message-input" type="text" size="100"><br>
-<input id="chat-message-submit" type="button" value="Send" onclick="sendMessage()">
+<input id="chat-message-submit" type="button" value="Send" onclick="sendMessage()"> -->
 {{ chat_id|json_script:"chat_id" }}
 
+{{ username|json_script:"username" }}
+<script>
+    alert("hej")
+    let x = {{ messages }}
+        console.log("dd")
+    alert(x)
+</script>
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
         integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
         crossorigin="anonymous"></script>
 <script src="{% static "chatScript.js" %}"></script>
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 </body>
 </html>

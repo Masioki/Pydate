@@ -1,35 +1,35 @@
 from channels.db import database_sync_to_async
+from django.contrib.auth.models import User
+import json
+
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
-from Pydate.models import UserData
 
 
 class Chat(models.Model):
-    chatID = models.IntegerField(primary_key=True)
+    chatID = models.AutoField(primary_key=True)
     agreement = models.IntegerField(default=0)
 
 
 class UserChat(models.Model):
-    chatID = models.ForeignKey(Chat, on_delete=models.CASCADE)
-    userID = models.ForeignKey(UserData, on_delete=models.CASCADE)
+    chatID = models.ForeignKey(Chat, on_delete=models.CASCADE)  # TODO: zmienic na chat
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     @staticmethod
     def user_belongs_to(user, chat_id):
-        # TODO: sprawdź czy użytkownik przynależy do danego czatu
-        return True
+        return UserChat.objects.filter(chatID=chat_id, user=user)
 
     @staticmethod
     @database_sync_to_async
     def get_available_chats(user):
-        # TODO
-        return []
+        return [i.chatID.chatID for i in list(UserChat.objects.filter(user=user))]
 
 
 class ChatMessage(models.Model):
-    chatID = models.ForeignKey(Chat, on_delete=models.CASCADE)
+    chat = models.ForeignKey(Chat, unique=False, on_delete=models.CASCADE)
     message = models.CharField(max_length=300)
-    date = models.DateField(auto_now=True)
-
-    # TODO: brakuje kto wysłał
+    date = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     # zapisujemy bez niepotrzebnych spacji
     def save(self, *args, **kwargs):
@@ -37,6 +37,29 @@ class ChatMessage(models.Model):
         super(ChatMessage, self).save(*args, **kwargs)
 
     @staticmethod
-    def get_latest(chat_id, start, end):
-        # TODO: wyciągnij wiadomości z range(start,end), np. range(0,10) oznacza 10 najnowszych wiadomości
-        return []
+    @database_sync_to_async
+    def save_message(username, chat_id, message):
+        user = list(User.objects.filter(username=username))[0]
+        chat = Chat.objects.get(chatID=chat_id)
+        mes = ChatMessage(user=user, chat=chat, message=message)
+        mes.save()
+        return mes.date
+
+    @staticmethod
+    def get_latest_json(chat_id, start, end):
+        chat = Chat.objects.get(chatID=chat_id)
+        mes_list = list(ChatMessage.objects.filter(chat=chat).order_by('date'))
+        end = min(max(end, 0), len(mes_list))
+        start = max(start, 0)
+        mes_list = mes_list[start:end]
+        json_list = []
+        for i in mes_list:
+            temp = {
+                "type": "MESSAGE",
+                "chat_id": i.chat.chatID,
+                "username": i.user.username,
+                "message": i.message,
+                "date": json.dumps(i.date, cls=DjangoJSONEncoder)
+            }
+            json_list.append(temp)
+        return json.dumps(json_list)

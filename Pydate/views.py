@@ -2,6 +2,7 @@ from datetime import date
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.http.response import HttpResponseNotFound
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_http_methods
@@ -16,6 +17,44 @@ from django.contrib.auth.models import User
 def calculate_age(born):
     today = date.today()
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+
+@login_required
+@require_http_methods(["POST"])
+def update_profile(request):
+    user = request.user
+    if user.check_password(request.POST['password']):
+        data = request.POST
+        user_data = UserData.objects.filter(user=user)[0]
+        user.first_name = data['first_name']
+        user.last_name = data['last_name']
+        user.email = data['email']
+        user_data.sex = data['sex']
+        user_data.birth = data['birth']
+        user_data.description = data['description']
+        user_data.searching_for = data['looking_for']
+        user.save()
+        user_data.save()
+        return JsonResponse({'message': 'success'}, status=200)
+    else:
+        return JsonResponse({'message': 'Wrong password!'}, status=400)
+
+
+@login_required
+@require_http_methods(["GET"])
+def profile(request):
+    user = request.user
+    user_data = UserData.objects.filter(user=user)[0]
+    data = {
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'email': user.email,
+        'birth': user_data.birth,
+        'description': user_data.description,
+        'sex': user_data.sex,
+        'looking_for': user_data.searching_for
+    }
+    return render(request, 'html_pages/profile_editor.html', {'data': data})
+
 
 def base(request):
     if request.user.is_authenticated:
@@ -93,12 +132,13 @@ def personal_questionnaire(request, username):
                 if form.is_valid():
                     answer = form.save(commit=False)
                     answer.user = request.user
-                    answer.questionID = PersonalQuestionContent.objects.get(pk=i+1)
+                    answer.questionID = PersonalQuestionContent.objects.get(pk=i + 1)
                     answer.save()
             return redirect('/')
     else:
         formset = formset_form()
     return render(request, 'html_pages/personal_questionnaire.html', {"formset": formset, "questions": questions})
+
 
 @login_required
 def my_matches(request):
@@ -215,3 +255,4 @@ def match_accept(request, id=None):
 
     questions_delete(request.user, comrade)#usuwam odpowiedzi comrade'a na pytania zalogowanego uzytkownika
     return redirect("view_answers")
+
