@@ -28,6 +28,8 @@ def populate():
         profile.sex = "F"
         profile.searching_for = "M"
         profile.description = "esfbhfssbef"
+        profile.latitude = "0"
+        profile.longitude = "0"
         profile.save()
     for a in range(10):
             p1 = PersonalQuestionContent(content="How are you?")
@@ -51,5 +53,8 @@ def populate():
             chat = Match(user1=user1, user2=user2, personal_questions_match="11")
         chat.save()
 
+
+
 if __name__ == "__main__":
-    populate()
+    # populate()
+    pass

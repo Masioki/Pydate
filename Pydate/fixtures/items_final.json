@@ -4,7 +4,7 @@
     "pk": 0,
     "fields": {  
       "first_option": "I love making lists",
-      "second_option": "I relie on my memory",
+      "second_option": "I rely on my memory",
       "type" : "JP",
       "inversion" : "True"
     }
@@ -14,7 +14,7 @@
     "pk": 1,
     "fields": {  
       "first_option": "I am sceptical",
-      "second_option": "I want to belive",
+      "second_option": "I want to believe",
       "type" : "FT",
       "inversion" : "False"
     }
@@ -33,7 +33,7 @@
     "model": "Pydate.PersonalityTestItem",
     "pk": 3,
     "fields": {  
-      "first_option": "I accept things as thery are",
+      "first_option": "I accept things as they are",
       "second_option": "I am unsatisfied with the ways things are",
       "type" : "SN",
       "inversion" : "True"
@@ -48,23 +48,12 @@
       "type" : "FT",
       "inversion" : "True"
     }
-
   },
   {
     "model": "Pydate.PersonalityTestItem",
     "pk": 5,
     "fields": {  
-      "first_option": "I think \"robotic\" is an insult",
-      "second_option": "I strive to chave mechanical mind",
-      "type" : "FT",
-      "inversion" : "True"
-    }
-  },
-  {
-    "model": "Pydate.PersonalityTestItem",
-    "pk": 6,
-    "fields": {  
-      "first_option": "I am eneretic",
+      "first_option": "I am energetic",
       "second_option": "I am mellow",
       "type" : "IE",
       "inversion" : "False"
@@ -72,29 +61,29 @@
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 7,
+    "pk": 6,
     "fields": {  
-      "first_option": "I prefer to take multiple choive test",
-      "second_option": "I perfer essat ansers",
+      "first_option": "I prefer to take multiple choice test",
+      "second_option": "I prefer essay answers",
       "type" : "SN",
       "inversion" : "True"
     }
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 8,
+    "pk": 7,
     "fields": {  
       "first_option": "I am chaotic",
-      "second_option": "I am orgenized",
+      "second_option": "I am organized",
       "type" : "JP",
       "inversion" : "False"
     }
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 9,
+    "pk": 8,
     "fields": {  
-      "first_option": "I am easly hurt",
+      "first_option": "I am easily hurt",
       "second_option": "I am thick-skinned",
       "type" : "FT",
       "inversion" : "True"
@@ -102,19 +91,19 @@
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 10,
+    "pk": 9,
     "fields": {  
       "first_option": "I like to work in groups",
-      "second_option": "I prefer to work  alone",
+      "second_option": "I prefer to work alone",
       "type" : "IE",
       "inversion" : "False"
     }
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 11,
+    "pk": 10,
     "fields": {  
-      "first_option": "I am focusex on the present",
+      "first_option": "I am focused on the present",
       "second_option": "I am focused on the future",
       "type" : "SN",
       "inversion" : "True"
@@ -122,7 +111,7 @@
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 12,
+    "pk": 11,
     "fields": {  
       "first_option": "I like to plan ahead",
       "second_option": "I usually plan at the last minute",
@@ -132,7 +121,7 @@
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 13,
+    "pk": 12,
     "fields": {  
       "first_option": "I want people's respect",
       "second_option": "I want to be loved",
@@ -142,7 +131,7 @@
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 14,
+    "pk": 13,
     "fields": {  
       "first_option": "I get worn out by parties",
       "second_option": "I get fired up by parties",
@@ -152,7 +141,7 @@
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 15,
+    "pk": 14,
     "fields": {  
       "first_option": "I like to fit in",
       "second_option": "I like to stand out",
@@ -162,7 +151,7 @@
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 16,
+    "pk": 15,
     "fields": {  
       "first_option": "I like to keep my options open",
       "second_option": "I like to commit",
@@ -172,7 +161,7 @@
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 17,
+    "pk": 16,
     "fields": {  
       "first_option": "I want to be good at fixing things",
       "second_option": "I want to be good at fixing people",
@@ -182,7 +171,7 @@
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 18,
+    "pk": 17,
     "fields": {  
       "first_option": "I talk a lot",
       "second_option": "I listen more than I talk",
@@ -192,9 +181,9 @@
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 19,
+    "pk": 18,
     "fields": {  
-      "first_option": "When I describe an event, I will tell people what happend",
+      "first_option": "When I describe an event, I will tell people what happened",
       "second_option": "When I decribe an event, I will tell people what it meant",
       "type" : "SN",
       "inversion" : "True"
@@ -202,7 +191,7 @@
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 20,
+    "pk": 19,
     "fields": {  
       "first_option": "I like to get my work done right away",
       "second_option": "I like to procrastinate",
@@ -212,7 +201,7 @@
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 21,
+    "pk": 20,
     "fields": {  
       "first_option": "I follow my heart",
       "second_option": "I follow my head",
@@ -222,7 +211,7 @@
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 22,
+    "pk": 21,
     "fields": {  
       "first_option": "I like staying home",
       "second_option": "I prefer to go out on the town",
@@ -232,7 +221,7 @@
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 23,
+    "pk": 22,
     "fields": {  
       "first_option": "I want the big picture",
       "second_option": "I want to details",
@@ -242,7 +231,7 @@
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 24,
+    "pk": 23,
     "fields": {  
       "first_option": "I like to improvise",
       "second_option": "I like to prepare",
@@ -252,7 +241,7 @@
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 25,
+    "pk": 24,
     "fields": {  
       "first_option": "I base my morality on justice",
       "second_option": "I base my morality on compassion",
@@ -262,27 +251,27 @@
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 26,
+    "pk": 25,
     "fields": {  
       "first_option": "I find it difficult to yell very loudly",
-      "second_option": "Yeling to ohter when they are far away comes naturally for me",
+      "second_option": "Yelling to others when they are far away comes naturally for me",
       "type" : "IE",
       "inversion" : "True"
     }
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 27,
+    "pk": 26,
     "fields": {  
-      "first_option": "I value theoretical knowlage the most",
-      "second_option": "I value empircal knowlage more",
+      "first_option": "I value theoretical knowledge the most",
+      "second_option": "I value empirical knowledge more",
       "type" : "SN",
       "inversion" : "False"
     }
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 28,
+    "pk": 27,
     "fields": {  
       "first_option": "I work hard",
       "second_option": "I play hard",
@@ -292,7 +281,7 @@
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 29,
+    "pk": 28,
     "fields": {  
       "first_option": "I am uncomfortable with emotions",
       "second_option": "I value emotions",
@@ -302,7 +291,7 @@
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 30,
+    "pk": 29,
     "fields": {  
       "first_option": "I am comfortable with performing in front of others",
       "second_option": "I avoid public speaking",
@@ -312,7 +301,7 @@
   },
   {
     "model": "Pydate.PersonalityTestItem",
-    "pk": 31,
+    "pk": 30,
     "fields": {  
       "first_option": "I like to know \"who?\", \"what?\", \"when?\"",
       "second_option": "I like to know \"why?\"",

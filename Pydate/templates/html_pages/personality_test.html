@@ -5,7 +5,7 @@
         {% block header %}
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-            <title>Register</title>
+            <title>Test</title>
             <!-- css sheets -->
             {% load static %}
             <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -19,13 +19,12 @@
                 <h1 id="message_div" class="col-11 col-lg-8 text-center align-self-center">
                     Congratulation! Your registration process is completed. Now we are asking you to take our personality test. 
                 </h1>
-                <div div class="container col-xl-6 col-lg-4 col-md-6 col-sm-6 col-9 justify-content-center align-self-center">
-                    <a href='{% url 'test_vote' first_item_id %}' type="button" id="submit_questionnaire" class="text-decoration-none d-flex w-25 mx-auto">
-                        <div id="answer_button">
+                <div class="container col-xl-6 col-lg-4 col-md-6 col-sm-6 col-9 justify-content-center align-self-center">
+                    <a href='{% url 'test_vote' first_item_id %}' type="button" class="d-flex mx-auto align-self-center" style="text-decoration-line: none">
+                        <div class="answer_button">
                                 Start Test
                         </div>
                      </a>
-                </div>
                 </div>
             </main>
         {% endblock %}

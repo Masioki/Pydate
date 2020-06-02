@@ -4,11 +4,9 @@ from django.conf import settings
 from django.contrib.auth.models import User
 
 
-
 ####################
 # UŻYTKOWNICY
 ####################
-
 class UserData(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     birth = models.DateField(null=True)
@@ -34,10 +32,12 @@ class PersonalQuestionContent(models.Model):
     def __str__(self):
         return str(self.questionID)
 
+
 class PersonalityTestItem(models.Model):
     itemID = models.IntegerField(primary_key=True)
     first_option = models.CharField(max_length=250)
     second_option = models.CharField(max_length=250)
+
     class Question_Type(models.TextChoices):
         TypeIE = 'IE', _('TypeIE')
         TypeSN = 'SN', _('TypeSN')
@@ -49,10 +49,12 @@ class PersonalityTestItem(models.Model):
     )
     inversion = models.BooleanField(default=False)
 
+
 class PersonalityTestAnswer(models.Model):
     itemID = models.ForeignKey(PersonalityTestItem, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     answer = models.IntegerField(null=True)
+
 
 class PersonalQuestionUser(models.Model):
     questionID = models.ForeignKey(PersonalQuestionContent, on_delete=models.CASCADE)
