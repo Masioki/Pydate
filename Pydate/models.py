@@ -13,7 +13,8 @@ class UserData(models.Model):
     personality = models.IntegerField(null=True)
     description = models.CharField(max_length=300, null=True)
     photo = models.ImageField(null=True, upload_to="images/user_profile_pictures/")
-    location = models.IntegerField(null=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=5, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=5, null=True)
     searching_for = models.CharField(max_length=5, null=True)
 
     def __str__(self):

@@ -1,5 +1,8 @@
 from datetime import date
 
+import json
+import urllib
+
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -256,3 +259,22 @@ def match_accept(request, id=None):
     questions_delete(request.user, comrade)#usuwam odpowiedzi comrade'a na pytania zalogowanego uzytkownika
     return redirect("view_answers")
 
+def update_geolocation(request, user):
+    ip = get_client_ip(request)
+    x = urllib.request.urlopen('http://ip-api.com/json/' + ip + '?fields=lat,lon')
+    data = x.read()
+    js = json.loads(data.decode('utf-8'))
+    try:
+        user.latitude = js['lat']
+        user.longitude = js['lon']
+    except KeyError:
+        user.latitude = 0
+        user.longitude = 0
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
