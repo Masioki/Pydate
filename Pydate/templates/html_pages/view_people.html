@@ -11,13 +11,26 @@
             <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
             <link rel="stylesheet" href="{% static "css_pages/base.css" %}"/>
             <link rel="stylesheet" href="{% static "css_pages/personal_questionnaire.css" %}"/>
+            <link rel="stylesheet" href="{% static "css_pages/view_answers.css" %}"/>
         {% endblock %}
     </head>
     <body>
         {% block content %}
             <main class="d-flex row min-vh-100 justify-content-center mw-100">
                 <div class="container col-xl-6 col-lg-4 col-md-6 col-sm-6 col-9 justify-content-center align-self-center">
-                    HI!
+                    {% if display %}
+                        <label class="question">{{ nick}}, {{age}}</label>
+                        <a id="profpic"><img src="{{media_url}}{{ photo}}" alt="profile_pic" width="500" height="350" class="m-0 p-0"/></a>
+                        <label class="question"> {{loc}} km away</label>
+                        <label class="question">{{desc}}</label>
+                        <label class="question"></label>
+
+                        <a href="{% url 'yes_crush'  name%} %}"> <img src="{% static "images/decline.png" %}" width="96" height="70" id="decline" ></a></button>
+                        <a href="{% url 'no_crush' name %}"> <img src="{% static "images/accept.png" %}" width="96" height="70" id="accept" ></a></button>
+                    {% else %}
+                        <label class="question">There is nothing to show</label>
+                    {% endif %}
+                    </form>
                 </div>
             </main>
         {% endblock %}
