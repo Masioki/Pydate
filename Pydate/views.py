@@ -1,7 +1,8 @@
 from datetime import date
 
 import json
-import urllib
+import urllib.request
+from math import radians, cos, sin, asin, sqrt
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
@@ -18,9 +19,11 @@ from Pydate.models import UserData, PersonalQuestionUser, PersonalQuestionConten
 from django.forms import formset_factory
 from django.contrib.auth.models import User
 
+
 def calculate_age(born):
     today = date.today()
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+
 
 @login_required
 @require_http_methods(["POST"])
@@ -172,18 +175,19 @@ def my_matches(request):
     return render(request, 'html_pages/my_matches.html',
                   {"matches_data": matches_data, "display_no_matches_info": display_no_matches_info})
 
+
 @login_required
 def view_answers(request):
-#tu elementu ktore zwroce
+    # tu elementu ktore zwroce
     questions = []
-    descriptions=[]
-    photos=[]
-    users_ids=[]
-    users_index=[]
-    ages=[]
+    descriptions = []
+    photos = []
+    users_ids = []
+    users_index = []
+    ages = []
     question_content = []
-    locations=[]
-#tu juz nie
+    locations = []
+    # tu juz nie
     personal_questions_user = PersonalQuestionUser.objects.filter(user=request.user)
 
     if personal_questions_user:
@@ -192,77 +196,91 @@ def view_answers(request):
             questionset = PersonalQuestionContent.objects.filter(questionID=str(p.id)).values("content").all()
             if answerset:
                 for usr in answerset:
-                    if (str(usr.user) not in users_ids):
+                    if str(usr.user) not in users_ids:
                         questions += [[str(usr.content)]]
-                        users_ids+=[(str(usr.user))]
-                        question_content+=[[q["content"] for q in questionset]]
-                        #lokalizacja TODO: KRZYSZTOF
-                        locations+=['1']#update_geolocation(usr.user,request.user)]
-                        #sets
-                        userset = UserData.objects.filter(user=str(usr.user.id)).values("id","description","photo","birth").all()
+
+                        users_ids += [(str(usr.user))]
+                        question_content += [[q["content"] for q in questionset]]
+                        # lokalizacja TODO: KRZYSZTOF
+                        locations += [distance_between(usr.user, request.user)]
+                        # sets
+                        userset = UserData.objects.filter(user=str(usr.user.id)).values("id", "description", "photo",
+                                                                                        "birth").all()
+
                         userset2 = UserData.objects.filter(user=str(usr.user.id)).values("user_id").all()
-                        #data from sets
-                        descriptions += [' '+q["description"] for q in userset]
+                        # data from sets
+                        descriptions += [' ' + q["description"] for q in userset]
                         photos += [q["photo"] for q in userset]
-                        ages+= [calculate_age(q["birth"]) for q in userset]
-                        users_index+= [(q["user_id"]) for q in userset2]
+                        ages += [calculate_age(q["birth"]) for q in userset]
+                        users_index += [(q["user_id"]) for q in userset2]
                     else:
                         for idu, u in enumerate(users_ids):
-                            if(str(usr.user) == u):
-                                questions[idu]+=[(str(usr.content))]
+                            if str(usr.user) == u:
+                                questions[idu] += [(str(usr.content))]
                                 question_content[idu] += [q["content"] for q in questionset]
 
     formset_form = formset_factory(PersonalQuestionsForm, extra=len(users_ids))
 
     formset = formset_form()
-    return render(request, 'html_pages/view_answers.html', {"formset": formset, "question_content":question_content,"names":users_ids,"user_index":users_index, "descriptions": descriptions,"questions": questions,"age": ages, "img":photos,"local":locations, 'media_url': settings.STATIC_URL})
+    return render(request, 'html_pages/view_answers.html',
+                  {"formset": formset, "question_content": question_content, "names": users_ids,
+                   "user_index": users_index, "descriptions": descriptions, "questions": questions, "age": ages,
+                   "img": photos, "local": locations, 'media_url': settings.STATIC_URL})
+
 
 def questions_delete(us1, us2):
-    #usuwanie pytan
+    # usuwanie pytan
     personal_questions_user = PersonalQuestionUser.objects.filter(user=us1)
     if personal_questions_user:
         for ques in personal_questions_user:
-            PersonalQuestionAnswer.objects.filter( user=us2,questionID=ques.questionID).delete()
+            PersonalQuestionAnswer.objects.filter(user=us2, questionID=ques.questionID).delete()
+
 
 def match_delete(request, id=None):
     comrade = User.objects.get(id=str(id))
-    #usuwanie matchow
+    # usuwanie matchow
     Match.objects.filter(user1=request.user, user2=comrade).delete()
     Match.objects.filter(user1=comrade, user2=request.user).delete()
+
 
     questions_delete(request.user, comrade)#usuwam odpowiedzi comrade'a na pytania zalogowanego uzytkownika
     questions_delete(comrade,request.user )#a tu vice versa
     #TODO:LICZNIK ATRAKCYJNOŚCI USTAWIĆ NA 0
+
     return redirect("view_answers")
+
 
 def match_accept(request, id=None):
     comrade = User.objects.get(id=str(id))
-    match=Match.objects.filter(user1=request.user, user2=comrade)
+    match = Match.objects.filter(user1=request.user, user2=comrade)
     if match:
-        if (len(match) > 1):
-            return HttpResponseNotFound('<h1>Error. W bazie sa 2 takie same matche. Skontaktuj sie z administracja</h1>')
+        if len(match) > 1:
+            return HttpResponseNotFound(
+                '<h1>Error. W bazie sa 2 takie same matche. Skontaktuj sie z administracja</h1>')
         m = match[0]
-        if (m.personal_questions_match == Match.Agreement.AGREE_2_TO_1):
+        if m.personal_questions_match == Match.Agreement.AGREE_2_TO_1:
             m.personal_questions_match = Match.Agreement.AGREE_BOTH
         else:
-            m.personal_questions_match=Match.Agreement.AGREE_1_TO_2
+            m.personal_questions_match = Match.Agreement.AGREE_1_TO_2
         m.save()
     else:
         match = Match.objects.filter(user2=request.user, user1=comrade)
-        if(len(match)>1):
-            return HttpResponseNotFound('<h1>Error. W bazie sa 2 takie same matche. Skontaktuj sie z administracja</h1>')
+        if (len(match) > 1):
+            return HttpResponseNotFound(
+                '<h1>Error. W bazie sa 2 takie same matche. Skontaktuj sie z administracja</h1>')
         if match:
             m = match[0]
-            if(m.personal_questions_match == Match.Agreement.AGREE_1_TO_2):
+            if m.personal_questions_match == Match.Agreement.AGREE_1_TO_2:
                 m.personal_questions_match = Match.Agreement.AGREE_BOTH
             else:
                 m.personal_questions_match = Match.Agreement.AGREE_2_TO_1
             m.save()
         else:
             return HttpResponseNotFound('<h1>Error. W bazie nie ma danego matcha. Skontaktuj sie z administracja</h1>')
-    
-    questions_delete(request.user, comrade)#usuwam odpowiedzi comrade'a na pytania zalogowanego uzytkownika
+
+    questions_delete(request.user, comrade)  # usuwam odpowiedzi comrade'a na pytania zalogowanego uzytkownika
     return redirect("view_answers")
+
 
 def update_geolocation(request, user):
     ip = get_client_ip(request)
@@ -276,6 +294,7 @@ def update_geolocation(request, user):
         user.latitude = 0
         user.longitude = 0
 
+
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
@@ -283,6 +302,7 @@ def get_client_ip(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
 
 """Elementy wykorzystane do strony glownej"""
 
@@ -369,4 +389,15 @@ def yes_crush(request, id=None):
 def no_crush(request, id=None):
     match_delete(request, id)
     return redirect("view_people")
+
+
+
+def distance_between(user1, user2):
+    lat1, lon1, lat2, lon2 = map(radians, [user1.latitude, user1.longitude, user2.latitude, user2.longitude])
+    d_lat = lat1 - lat2
+    d_lon = lon1 - lon2
+    a = sin(d_lat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(d_lon / 2) ** 2  # Haversine formula
+    c = 2 * asin((sqrt(a)))
+    R = 6371
+    return c * R  # w km
 
