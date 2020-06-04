@@ -201,12 +201,12 @@ def view_answers(request):
 
                         users_ids += [(str(usr.user))]
                         question_content += [[q["content"] for q in questionset]]
-                        # lokalizacja TODO: KRZYSZTOF
-                        locations += [distance_between(usr.user, request.user)]
+                        # lokalizacja
+                        locations += [float("{0:.2f}".format(distance_between(usr.user, request.user)))]
+
                         # sets
                         userset = UserData.objects.filter(user=str(usr.user.id)).values("id", "description", "photo",
                                                                                         "birth").all()
-
                         userset2 = UserData.objects.filter(user=str(usr.user.id)).values("user_id").all()
                         # data from sets
                         descriptions += [' ' + q["description"] for q in userset]
@@ -282,7 +282,10 @@ def match_accept(request, id=None):
     return redirect("view_answers")
 
 
-def update_geolocation(request, user):
+def update_geolocation(request, usr1):
+    userstmp = UserData.objects.filter(user=usr1)
+    user=userstmp[0]
+
     ip = get_client_ip(request)
     x = urllib.request.urlopen('http://ip-api.com/json/' + ip + '?fields=lat,lon')
     data = x.read()
@@ -351,7 +354,7 @@ def view_people(request):
             description=u.description
             photo=u.photo
             age=calculate_age(u.birth)
-            location='1'
+            location= float("{0:.2f}".format(distance_between(candidate, request.user)))
 
     return render(request, 'html_pages/view_people.html',
                   {"desc":description, "age": age, "loc":location,"nick": candidate,"name":userid, "photo":photo,"display":display,'media_url': settings.STATIC_URL})
@@ -392,7 +395,12 @@ def no_crush(request, id=None):
 
 
 
-def distance_between(user1, user2):
+def distance_between(usr1, usr2):
+    userstmp = UserData.objects.filter(user=usr1)
+    user1=userstmp[0]
+    userstmp = UserData.objects.filter(user=usr2)
+    user2=userstmp[0]
+
     lat1, lon1, lat2, lon2 = map(radians, [user1.latitude, user1.longitude, user2.latitude, user2.longitude])
     d_lat = lat1 - lat2
     d_lon = lon1 - lon2
@@ -400,4 +408,3 @@ def distance_between(user1, user2):
     c = 2 * asin((sqrt(a)))
     R = 6371
     return c * R  # w km
-
