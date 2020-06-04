@@ -8,10 +8,10 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.http.response import HttpResponseNotFound
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import logout
-
+from django.db.models import Q
 from Pydate import settings
 from Pydate.forms import RegisterForm, PersonalQuestionsForm
 from Pydate.models import UserData, PersonalQuestionUser, PersonalQuestionContent, PersonalQuestionAnswer, Match, \
@@ -198,6 +198,7 @@ def view_answers(request):
                 for usr in answerset:
                     if str(usr.user) not in users_ids:
                         questions += [[str(usr.content)]]
+
                         users_ids += [(str(usr.user))]
                         question_content += [[q["content"] for q in questionset]]
                         # lokalizacja TODO: KRZYSZTOF
@@ -205,6 +206,7 @@ def view_answers(request):
                         # sets
                         userset = UserData.objects.filter(user=str(usr.user.id)).values("id", "description", "photo",
                                                                                         "birth").all()
+
                         userset2 = UserData.objects.filter(user=str(usr.user.id)).values("user_id").all()
                         # data from sets
                         descriptions += [' ' + q["description"] for q in userset]
@@ -240,8 +242,11 @@ def match_delete(request, id=None):
     Match.objects.filter(user1=request.user, user2=comrade).delete()
     Match.objects.filter(user1=comrade, user2=request.user).delete()
 
-    questions_delete(request.user, comrade)  # usuwam odpowiedzi comrade'a na pytania zalogowanego uzytkownika
-    questions_delete(comrade, request.user)  # a tu vice versa
+
+    questions_delete(request.user, comrade)#usuwam odpowiedzi comrade'a na pytania zalogowanego uzytkownika
+    questions_delete(comrade,request.user )#a tu vice versa
+    #TODO:LICZNIK ATRAKCYJNOŚCI USTAWIĆ NA 0
+
     return redirect("view_answers")
 
 
@@ -299,6 +304,94 @@ def get_client_ip(request):
     return ip
 
 
+"""Elementy wykorzystane do strony glownej"""
+
+"""pomocnicze"""
+def select_comrade_for_me(suspect):
+
+    available_users=[]
+    users=User.objects.filter().all()
+    for u in users:
+        match = Match.objects.filter(
+            Q(user1=suspect, user2=u,chatting_match = Match.Agreement.AGREE_1_TO_2) |
+            Q(user1=u, user2=suspect, chatting_match=Match.Agreement.AGREE_2_TO_1)
+            )
+        if(not(match)):
+            available_users.append(u)
+    #TODO TUTAJ WSTAW LISTE OD NAJATRAKCUJNIEJSZYSZ DO NAJMNIEJ ATRAKCYJNYCH.
+    # JESLI BD TA OSOBA W available_users to ja zwroc, jak nie to sprawdz nastepna najlepsza mozliwa osobe
+    return available_users[9]#zamiast available_users[9] zwracamy najbardziej atrakcyjnego
+
+    return suspect
+
+def create_match(us1, us2): #najpierw requested potem towarzysz
+    if(us1<us2):
+        match = Match.objects.create(user1=us1,user2=us2,chatting_match = Match.Agreement.AGREE_1_TO_2)
+    else:
+        match = Match.objects.create(user2=us1, user1=us2,chatting_match = Match.Agreement.AGREE_2_TO_1)
+    match.save()
+
+
+
+"""glawne"""
+
+@login_required
+def view_people(request):
+    age=description=location=photo=''
+
+    candidate=select_comrade_for_me(request.user)
+    userid = candidate.id
+    if(request.user==candidate):
+            display=False
+    else:
+        display = True
+        candidate_info = UserData.objects.filter(user=candidate)
+
+        for u in candidate_info:
+            description=u.description
+            photo=u.photo
+            age=calculate_age(u.birth)
+            location='1'
+
+    return render(request, 'html_pages/view_people.html',
+                  {"desc":description, "age": age, "loc":location,"nick": candidate,"name":userid, "photo":photo,"display":display,'media_url': settings.STATIC_URL})
+
+def yes_crush(request, id=None):
+    comrade = User.objects.get(id=str(id))
+    match = Match.objects.filter(user1=request.user, user2=comrade)
+    if match:
+        if (len(match) > 1):
+            return HttpResponseNotFound(
+                '<h1>Error. W bazie sa 2 takie same matche. Skontaktuj sie z administracja</h1>')
+        m = match[0]
+        if (m.chatting_match == Match.Agreement.AGREE_2_TO_1):
+            m.chatting_match = Match.Agreement.AGREE_BOTH
+        else:
+            m.chatting_match = Match.Agreement.AGREE_1_TO_2
+        m.save()
+    else:
+        match = Match.objects.filter(user2=request.user, user1=comrade)
+        if (len(match) > 1):
+            return HttpResponseNotFound(
+                '<h1>Error. W bazie sa 2 takie same matche. Skontaktuj sie z administracja</h1>')
+        if match:
+            m = match[0]
+            if (m.chatting_match == Match.Agreement.AGREE_1_TO_2):
+                m.chatting_match = Match.Agreement.AGREE_BOTH
+            else:
+                m.chatting_match = Match.Agreement.AGREE_2_TO_1
+            m.save()
+        else:
+            create_match(request.user,comrade)
+
+    return redirect("view_people")
+
+def no_crush(request, id=None):
+    match_delete(request, id)
+    return redirect("view_people")
+
+
+
 def distance_between(user1, user2):
     lat1, lon1, lat2, lon2 = map(radians, [user1.latitude, user1.longitude, user2.latitude, user2.longitude])
     d_lat = lat1 - lat2
@@ -307,3 +400,4 @@ def distance_between(user1, user2):
     c = 2 * asin((sqrt(a)))
     R = 6371
     return c * R  # w km
+
