@@ -81,7 +81,7 @@ class Match(models.Model):
 
 
 class UserLog(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='logs')
     logins = models.IntegerField(default=1)
     likes_sent = models.IntegerField(default=0)
     likes_receive = models.IntegerField(default=0)

@@ -13,7 +13,8 @@ from django.contrib.auth import logout
 
 from Pydate import settings
 from Pydate.forms import RegisterForm, PersonalQuestionsForm
-from Pydate.models import UserData, PersonalQuestionUser, PersonalQuestionContent, PersonalQuestionAnswer,Match
+from Pydate.models import UserData, PersonalQuestionUser, PersonalQuestionContent, PersonalQuestionAnswer, Match, \
+    UserLog
 from django.forms import formset_factory
 from django.contrib.auth.models import User
 
@@ -181,6 +182,7 @@ def view_answers(request):
     users_index=[]
     ages=[]
     question_content = []
+    locations=[]
 #tu juz nie
     personal_questions_user = PersonalQuestionUser.objects.filter(user=request.user)
 
@@ -194,6 +196,8 @@ def view_answers(request):
                         questions += [[str(usr.content)]]
                         users_ids+=[(str(usr.user))]
                         question_content+=[[q["content"] for q in questionset]]
+                        #lokalizacja TODO: KRZYSZTOF
+                        locations+=[update_geolocation(usr.user,request.user)]
                         #sets
                         userset = UserData.objects.filter(user=str(usr.user.id)).values("id","description","photo","birth").all()
                         userset2 = UserData.objects.filter(user=str(usr.user.id)).values("user_id").all()
@@ -211,7 +215,7 @@ def view_answers(request):
     formset_form = formset_factory(PersonalQuestionsForm, extra=len(users_ids))
 
     formset = formset_form()
-    return render(request, 'html_pages/view_answers.html', {"formset": formset, "question_content":question_content,"names":users_ids,"user_index":users_index, "descriptions": descriptions,"questions": questions,"age": ages, "img":photos, 'media_url': settings.STATIC_URL})
+    return render(request, 'html_pages/view_answers.html', {"formset": formset, "question_content":question_content,"names":users_ids,"user_index":users_index, "descriptions": descriptions,"questions": questions,"age": ages, "img":photos,"local":locations, 'media_url': settings.STATIC_URL})
 
 def questions_delete(us1, us2):
     #usuwanie pytan
@@ -255,7 +259,7 @@ def match_accept(request, id=None):
             m.save()
         else:
             return HttpResponseNotFound('<h1>Error. W bazie nie ma danego matcha. Skontaktuj sie z administracja</h1>')
-
+    
     questions_delete(request.user, comrade)#usuwam odpowiedzi comrade'a na pytania zalogowanego uzytkownika
     return redirect("view_answers")
 
