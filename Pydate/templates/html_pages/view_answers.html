@@ -41,7 +41,7 @@
                             <label class="question">{{ odp }}</label>
                         {% endfor %}
 
-                        <a href="{% url 'match_delete' user_index|list_item:forloop.counter0 %} %}"> <img src="{% static "images/decline.png" %}" width="96" height="70" id="decline" ></a></button>
+                        <a href="{% url 'match_delete' user_index|list_item:forloop.counter0 %}"> <img src="{% static "images/decline.png" %}" width="96" height="70" id="decline" ></a></button>
                         <a href="{% url 'match_accept' user_index|list_item:forloop.counter0 %}"> <img src="{% static "images/accept.png" %}" width="96" height="70" id="accept" ></a></button>
                         </div>
                     {% endfor %}

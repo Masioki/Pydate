@@ -37,7 +37,7 @@ urlpatterns = [
     url(r'^view_answers/(?P<id>\d+)/delete_match$', views.match_delete, name='match_delete'),
     url(r'^view_answers/(?P<id>\d+)/accept_match$', views.match_accept, name='match_accept'),
     url(r'^view_people/(?P<id>\d+)/make_crush$', views.yes_crush, name='yes_crush'),
-    url(r'^view_people/(?P<id>\d+)/no_crush$', views.no_crush, name='no_crush'),
+    url(r'^view_people/(?P<id>\d+)/decline_crush$', views.no_crush, name='no_crush'),
 
 
     url(r'^logout/$', views.logout_view, name='logout')

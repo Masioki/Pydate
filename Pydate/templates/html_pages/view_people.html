@@ -25,8 +25,8 @@
                         <label class="question">{{desc}}</label>
                         <label class="question"></label>
 
-                        <a href="{% url 'yes_crush'  name%} %}"> <img src="{% static "images/decline.png" %}" width="96" height="70" id="decline" ></a></button>
-                        <a href="{% url 'no_crush' name %}"> <img src="{% static "images/accept.png" %}" width="96" height="70" id="accept" ></a></button>
+                        <a href="{% url 'no_crush'  name %}"> <img src="{% static "images/decline.png" %}" width="96" height="70" id="decline" ></a></button>
+                        <a href="{% url 'yes_crush' name %}"> <img src="{% static "images/accept.png" %}" width="96" height="70" id="accept" ></a></button>
                     {% else %}
                         <label class="question">There is nothing to show</label>
                     {% endif %}

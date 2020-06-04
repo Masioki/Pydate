@@ -154,7 +154,7 @@ def my_matches(request):
     matches = Match.objects.filter(user1=request.user)
     if matches:
         for match in matches:
-            if match.personal_questions_match == "11":
+            if match.chatting_match == "11":
                 u = UserData.objects.get(user=match.user2)
                 # matches_data.append({"username": u.user.username, "description": u.description, "photo": u.photo})
                 matches_data.append({"username": u.user.username, "description": u.description})
@@ -162,7 +162,7 @@ def my_matches(request):
     matches = Match.objects.filter(user2=request.user)
     if matches:
         for match in matches:
-            if match.personal_questions_match == "11":
+            if match.chatting_match == "11":
                 u = UserData.objects.get(user=match.user1)
                 # matches_data.append({"username": u.user.username, "description": u.description, "photo": u.photo})
                 matches_data.append({"username": u.user.username, "description": u.description})
@@ -235,18 +235,19 @@ def questions_delete(us1, us2):
         for ques in personal_questions_user:
             PersonalQuestionAnswer.objects.filter(user=us2, questionID=ques.questionID).delete()
 
-
-def match_delete(request, id=None):
+def match_decline(user1, id):
     comrade = User.objects.get(id=str(id))
     # usuwanie matchow
-    Match.objects.filter(user1=request.user, user2=comrade).delete()
-    Match.objects.filter(user1=comrade, user2=request.user).delete()
+    Match.objects.filter(user1=user1, user2=comrade).delete()
+    Match.objects.filter(user1=comrade, user2=user1).delete()
 
-
-    questions_delete(request.user, comrade)#usuwam odpowiedzi comrade'a na pytania zalogowanego uzytkownika
-    questions_delete(comrade,request.user )#a tu vice versa
     #TODO:LICZNIK ATRAKCYJNOŚCI USTAWIĆ NA 0
+    questions_delete(user1, comrade)#usuwam odpowiedzi comrade'a na pytania zalogowanego uzytkownika
+    questions_delete(comrade,user1)#a tu vice versa
 
+
+def match_delete(request, id=None):
+    match_decline(request.user,id)
     return redirect("view_answers")
 
 
@@ -282,31 +283,6 @@ def match_accept(request, id=None):
     return redirect("view_answers")
 
 
-def update_geolocation(request, usr1):
-    userstmp = UserData.objects.filter(user=usr1)
-    user=userstmp[0]
-
-    ip = get_client_ip(request)
-    x = urllib.request.urlopen('http://ip-api.com/json/' + ip + '?fields=lat,lon')
-    data = x.read()
-    js = json.loads(data.decode('utf-8'))
-    try:
-        user.latitude = js['lat']
-        user.longitude = js['lon']
-    except KeyError:
-        user.latitude = 0
-        user.longitude = 0
-
-
-def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
-
-
 """Elementy wykorzystane do strony glownej"""
 
 """pomocnicze"""
@@ -322,13 +298,13 @@ def select_comrade_for_me(suspect):
         if(not(match)):
             available_users.append(u)
     #TODO TUTAJ WSTAW LISTE OD NAJATRAKCUJNIEJSZYSZ DO NAJMNIEJ ATRAKCYJNYCH.
-    # JESLI BD TA OSOBA W available_users to ja zwroc, jak nie to sprawdz nastepna najlepsza mozliwa osobe
+    # JESLI bedzie TA OSOBA W available_users to ja zwroc, jak nie to sprawdz nastepna najlepsza mozliwa osobe
     return available_users[9]#zamiast available_users[9] zwracamy najbardziej atrakcyjnego
 
     return suspect
 
 def create_match(us1, us2): #najpierw requested potem towarzysz
-    if(us1<us2):
+    if(us1.username<us2.username):
         match = Match.objects.create(user1=us1,user2=us2,chatting_match = Match.Agreement.AGREE_1_TO_2)
     else:
         match = Match.objects.create(user2=us1, user1=us2,chatting_match = Match.Agreement.AGREE_2_TO_1)
@@ -390,16 +366,38 @@ def yes_crush(request, id=None):
     return redirect("view_people")
 
 def no_crush(request, id=None):
-    match_delete(request, id)
+    match_decline(request.user, id)
     return redirect("view_people")
 
 
+"""Loklaizacja"""
+
+def update_geolocation(request, usr1):
+    user = UserData.objects.get(user=usr1)
+
+    ip = get_client_ip(request)
+    x = urllib.request.urlopen('http://ip-api.com/json/' + ip + '?fields=lat,lon')
+    data = x.read()
+    js = json.loads(data.decode('utf-8'))
+    try:
+        user.latitude = js['lat']
+        user.longitude = js['lon']
+    except KeyError:
+        user.latitude = 0
+        user.longitude = 0
+
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
 
 def distance_between(usr1, usr2):
-    userstmp = UserData.objects.filter(user=usr1)
-    user1=userstmp[0]
-    userstmp = UserData.objects.filter(user=usr2)
-    user2=userstmp[0]
+    user1 = UserData.objects.get(user=usr1)
+    user2 = UserData.objects.get(user=usr2)
 
     lat1, lon1, lat2, lon2 = map(radians, [user1.latitude, user1.longitude, user2.latitude, user2.longitude])
     d_lat = lat1 - lat2
