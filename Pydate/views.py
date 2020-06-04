@@ -201,7 +201,7 @@ def view_answers(request):
                         users_ids += [(str(usr.user))]
                         question_content += [[q["content"] for q in questionset]]
                         # lokalizacja TODO: KRZYSZTOF
-                        locations += [update_geolocation(usr.user, request.user)]
+                        locations += [distance_between(usr.user, request.user)]
                         # sets
                         userset = UserData.objects.filter(user=str(usr.user.id)).values("id", "description", "photo",
                                                                                         "birth").all()
