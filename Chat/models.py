@@ -11,9 +11,12 @@ class Chat(models.Model):
     agreement = models.IntegerField(default=0)
 
 
+# TODO: do użytkownika nie chatu
+
 class UserChat(models.Model):
-    chatID = models.ForeignKey(Chat, on_delete=models.CASCADE)  # TODO: zmienic na chat
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    userChatID = models.AutoField(primary_key=True,unique=True)
+    chatID = models.ForeignKey(Chat, unique=False, on_delete=models.CASCADE)
+    user = models.ForeignKey(User,unique=False, on_delete=models.CASCADE)
 
     @staticmethod
     def user_belongs_to(user, chat_id):
@@ -24,11 +27,23 @@ class UserChat(models.Model):
     def get_available_chats(user):
         return [i.chatID.chatID for i in list(UserChat.objects.filter(user=user))]
 
+    @staticmethod
+    def chats_info(user):
+        result = []
+        for i in list(UserChat.objects.filter(user=user)):
+            temp = {
+                "chat_id": i.chatID.chatID,
+                "username": list(UserChat.objects.filter(chatID=i.chatID.chatID).exclude(user=user))[0].user.username
+            }
+            result.append(temp)
+        return result
+
 
 class ChatMessage(models.Model):
+    messageID = models.AutoField(primary_key=True)
     chat = models.ForeignKey(Chat, unique=False, on_delete=models.CASCADE)
     message = models.CharField(max_length=300)
-    date = models.DateTimeField(auto_now=True)
+    date = models.DateTimeField(auto_now=True, unique=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     # zapisujemy bez niepotrzebnych spacji
@@ -46,14 +61,14 @@ class ChatMessage(models.Model):
         return mes.date
 
     @staticmethod
-    def get_latest_json(chat_id, start, end):
+    def get_latest(chat_id, start, end):
         chat = Chat.objects.get(chatID=chat_id)
-        mes_list = list(ChatMessage.objects.filter(chat=chat).order_by('date'))
+        mes_list = list(ChatMessage.objects.filter(chat=chat).order_by('-date'))
         end = min(max(end, 0), len(mes_list))
         start = max(start, 0)
         mes_list = mes_list[start:end]
         json_list = []
-        for i in mes_list:
+        for i in mes_list[::-1]:
             temp = {
                 "type": "MESSAGE",
                 "chat_id": i.chat.chatID,
@@ -62,4 +77,4 @@ class ChatMessage(models.Model):
                 "date": json.dumps(i.date, cls=DjangoJSONEncoder)
             }
             json_list.append(temp)
-        return json.dumps(json_list)
+        return json_list

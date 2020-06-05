@@ -38,6 +38,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             await self.leave_chat(chat_id)
 
     async def join_chat(self, chat_id):
+        chat_id = int(chat_id)
         # refresh
         if chat_id not in self.available_chats:
             self.available_chats = await UserChat.get_available_chats(self.scope["user"])
@@ -48,9 +49,12 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             )
             self.open_chats.append(chat_id)
         else:
+            print(self.available_chats)
+            print(chat_id)
             raise ClientError("Cannot join chat")
 
     async def leave_chat(self, chat_id):
+        chat_id = int(chat_id)
         self.open_chats.remove(chat_id)
         await self.channel_layer.group_discard(
             str(chat_id),
@@ -58,6 +62,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         )
 
     async def send_chat(self, chat_id, message):
+        chat_id = int(chat_id)
         if chat_id not in self.open_chats:
             raise ClientError("Access denied")
         username = self.scope["user"].username
