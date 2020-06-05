@@ -70,8 +70,11 @@ class Match(models.Model):
         AGREE_BOTH = '11'
     user1 = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="user1")
     user2 = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="user2")
+    #Jak w answers dam serce to zmieniam wartosc personal_questions_match
     personal_questions_match = models.CharField(max_length=2, choices=Agreement.choices, default=Agreement.AGREE_NONE)
+    #Jak na glownej dam serce to zmieniam wartosc chatting_match
     chatting_match = models.CharField(max_length=2, choices=Agreement.choices, default=Agreement.AGREE_NONE)
+    #Jak chatting_match jest rowny AGREE_NONE to te osoby nie maja prawa juz NIGDY siebie spotkac
 
     class Meta:
         verbose_name_plural = "Matches"

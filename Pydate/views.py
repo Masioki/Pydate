@@ -237,11 +237,27 @@ def questions_delete(us1, us2):
 
 def match_decline(user1, id):
     comrade = User.objects.get(id=str(id))
-    # usuwanie matchow
-    Match.objects.filter(user1=user1, user2=comrade).delete()
-    Match.objects.filter(user1=comrade, user2=user1).delete()
+    # zmiana matchow na AGREE_NONE
+    match = Match.objects.filter(user1=user1, user2=comrade)
+    if(match):
+        match[0].chatting_match = Match.Agreement.AGREE_NONE
+        return
+    else:
+        match = Match.objects.filter(user2=user1, user1=comrade)
+        if(match):
+            match[0].chatting_match = Match.Agreement.AGREE_NONE
+            return
 
-    #TODO:LICZNIK ATRAKCYJNOŚCI USTAWIĆ NA 0
+    # Jesli nie bylo matcha to go robie i ustawaim na AGREE_NONE
+    if(match):
+        match.save()
+    else:
+        if (user1.username < comrade.username):
+            match = Match.objects.create(user1=user1, user2=comrade, chatting_match=Match.Agreement.AGREE_1_TO_2)
+        else:
+            match = Match.objects.create(user2=user1, user1=comrade, chatting_match=Match.Agreement.AGREE_2_TO_1)
+        match.save()
+
     questions_delete(user1, comrade)#usuwam odpowiedzi comrade'a na pytania zalogowanego uzytkownika
     questions_delete(comrade,user1)#a tu vice versa
 
@@ -292,9 +308,15 @@ def select_comrade_for_me(suspect):
     users=User.objects.filter().all()
     for u in users:
         match = Match.objects.filter(
-            Q(user1=suspect, user2=u,chatting_match = Match.Agreement.AGREE_1_TO_2) |
-            Q(user1=u, user2=suspect, chatting_match=Match.Agreement.AGREE_2_TO_1)
+            Q(
+                Q(user1=suspect, user2=u),
+                ~Q(chatting_match=Match.Agreement.AGREE_2_TO_1)
+            ) |
+            Q(
+                Q(user1=u, user2=suspect),
+                ~Q(chatting_match=Match.Agreement.AGREE_1_TO_2)
             )
+        )
         if(not(match)):
             available_users.append(u)
     #TODO TUTAJ WSTAW LISTE OD NAJATRAKCUJNIEJSZYSZ DO NAJMNIEJ ATRAKCYJNYCH.
