@@ -24,7 +24,7 @@ from Pydate import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.base),
+    path('', views.view_people,),
     path('register/', views.register),
     path('login/', auth_views.LoginView.as_view(), name="login"),
     path('chat/', include('Chat.urls')),
