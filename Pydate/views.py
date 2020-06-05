@@ -78,14 +78,15 @@ def register(request):
         if form.is_valid():
             user = form.save()
             user.refresh_from_db()
-            profile = UserData(user=user)
-            profile.birth = form.cleaned_data.get('birth_date')
-            profile.sex = form.cleaned_data.get('sex')
-            profile.searching_for = form.cleaned_data.get('searching_for')
-            profile.save()
+            prof = UserData(user=user)
+            prof.birth = form.cleaned_data.get('birth_date')
+            prof.sex = form.cleaned_data.get('sex')
+            prof.searching_for = form.cleaned_data.get('searching_for')
+            prof.save()
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=user.username, password=raw_password)
             login(request, user)
+            update_geolocation(request, user)
             return redirect('/')
     else:
         form = RegisterForm()
@@ -99,6 +100,7 @@ def login_view(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
+            update_geolocation(request, user)
         else:
             return redirect('html_pages/login.html')
     return render(request, 'html_pages/login')
@@ -235,35 +237,36 @@ def questions_delete(us1, us2):
         for ques in personal_questions_user:
             PersonalQuestionAnswer.objects.filter(user=us2, questionID=ques.questionID).delete()
 
+
 def match_decline(user1, id):
     comrade = User.objects.get(id=str(id))
     # zmiana matchow na AGREE_NONE
     match = Match.objects.filter(user1=user1, user2=comrade)
-    if(match):
+    if match:
         match[0].chatting_match = Match.Agreement.AGREE_NONE
         return
     else:
         match = Match.objects.filter(user2=user1, user1=comrade)
-        if(match):
+        if match:
             match[0].chatting_match = Match.Agreement.AGREE_NONE
             return
 
     # Jesli nie bylo matcha to go robie i ustawaim na AGREE_NONE
-    if(match):
+    if match:
         match.save()
     else:
-        if (user1.username < comrade.username):
+        if user1.username < comrade.username:
             match = Match.objects.create(user1=user1, user2=comrade, chatting_match=Match.Agreement.AGREE_1_TO_2)
         else:
             match = Match.objects.create(user2=user1, user1=comrade, chatting_match=Match.Agreement.AGREE_2_TO_1)
         match.save()
 
-    questions_delete(user1, comrade)#usuwam odpowiedzi comrade'a na pytania zalogowanego uzytkownika
-    questions_delete(comrade,user1)#a tu vice versa
+    questions_delete(user1, comrade)  # usuwam odpowiedzi comrade'a na pytania zalogowanego uzytkownika
+    questions_delete(comrade, user1)  # a tu vice versa
 
 
 def match_delete(request, id=None):
-    match_decline(request.user,id)
+    match_decline(request.user, id)
     return redirect("view_answers")
 
 
@@ -282,7 +285,7 @@ def match_accept(request, id=None):
         m.save()
     else:
         match = Match.objects.filter(user2=request.user, user1=comrade)
-        if (len(match) > 1):
+        if len(match) > 1:
             return HttpResponseNotFound(
                 '<h1>Error. W bazie sa 2 takie same matche. Skontaktuj sie z administracja</h1>')
         if match:
@@ -302,10 +305,11 @@ def match_accept(request, id=None):
 """Elementy wykorzystane do strony glownej"""
 
 """pomocnicze"""
-def select_comrade_for_me(suspect):
 
-    available_users=[]
-    users=User.objects.filter().all()
+
+def select_comrade_for_me(suspect):
+    available_users = []
+    users = User.objects.filter().all()
     for u in users:
         match = Match.objects.filter(
             Q(
@@ -317,82 +321,87 @@ def select_comrade_for_me(suspect):
                 ~Q(chatting_match=Match.Agreement.AGREE_1_TO_2)
             )
         )
-        if(not(match)):
+        if not match:
             available_users.append(u)
-    #TODO TUTAJ WSTAW LISTE OD NAJATRAKCUJNIEJSZYSZ DO NAJMNIEJ ATRAKCYJNYCH.
+    # TODO TUTAJ WSTAW LISTE OD NAJATRAKCUJNIEJSZYSZ DO NAJMNIEJ ATRAKCYJNYCH.
     # JESLI bedzie TA OSOBA W available_users to ja zwroc, jak nie to sprawdz nastepna najlepsza mozliwa osobe
-    return available_users[9]#zamiast available_users[9] zwracamy najbardziej atrakcyjnego
+    # return available_users[9]  # zamiast available_users[9] zwracamy najbardziej atrakcyjnego
 
-    return suspect
+    return suspect  
 
-def create_match(us1, us2): #najpierw requested potem towarzysz
-    if(us1.username<us2.username):
-        match = Match.objects.create(user1=us1,user2=us2,chatting_match = Match.Agreement.AGREE_1_TO_2)
+
+def create_match(us1, us2):  # najpierw requested potem towarzysz
+    if us1.username < us2.username:
+        match = Match.objects.create(user1=us1, user2=us2, chatting_match=Match.Agreement.AGREE_1_TO_2)
     else:
-        match = Match.objects.create(user2=us1, user1=us2,chatting_match = Match.Agreement.AGREE_2_TO_1)
+        match = Match.objects.create(user2=us1, user1=us2, chatting_match=Match.Agreement.AGREE_2_TO_1)
     match.save()
-
 
 
 """glawne"""
 
+
 @login_required
 def view_people(request):
-    age=description=location=photo=''
+    age = description = location = photo = ''
 
-    candidate=select_comrade_for_me(request.user)
+    candidate = select_comrade_for_me(request.user)
     userid = candidate.id
-    if(request.user==candidate):
-            display=False
+    if request.user == candidate:
+        display = False
     else:
         display = True
         candidate_info = UserData.objects.filter(user=candidate)
 
         for u in candidate_info:
-            description=u.description
-            photo=u.photo
-            age=calculate_age(u.birth)
-            location= float("{0:.2f}".format(distance_between(candidate, request.user)))
+            description = u.description
+            photo = u.photo
+            age = calculate_age(u.birth)
+            location = float("{0:.2f}".format(distance_between(candidate, request.user)))
 
     return render(request, 'html_pages/view_people.html',
-                  {"desc":description, "age": age, "loc":location,"nick": candidate,"name":userid, "photo":photo,"display":display,'media_url': settings.STATIC_URL})
+                  {"desc": description, "age": age, "loc": location, "nick": candidate, "name": userid, "photo": photo,
+                   "display": display, 'media_url': settings.STATIC_URL})
+
 
 def yes_crush(request, id=None):
     comrade = User.objects.get(id=str(id))
     match = Match.objects.filter(user1=request.user, user2=comrade)
     if match:
-        if (len(match) > 1):
+        if len(match) > 1:
             return HttpResponseNotFound(
                 '<h1>Error. W bazie sa 2 takie same matche. Skontaktuj sie z administracja</h1>')
         m = match[0]
-        if (m.chatting_match == Match.Agreement.AGREE_2_TO_1):
+        if m.chatting_match == Match.Agreement.AGREE_2_TO_1:
             m.chatting_match = Match.Agreement.AGREE_BOTH
         else:
             m.chatting_match = Match.Agreement.AGREE_1_TO_2
         m.save()
     else:
         match = Match.objects.filter(user2=request.user, user1=comrade)
-        if (len(match) > 1):
+        if len(match) > 1:
             return HttpResponseNotFound(
                 '<h1>Error. W bazie sa 2 takie same matche. Skontaktuj sie z administracja</h1>')
         if match:
             m = match[0]
-            if (m.chatting_match == Match.Agreement.AGREE_1_TO_2):
+            if m.chatting_match == Match.Agreement.AGREE_1_TO_2:
                 m.chatting_match = Match.Agreement.AGREE_BOTH
             else:
                 m.chatting_match = Match.Agreement.AGREE_2_TO_1
             m.save()
         else:
-            create_match(request.user,comrade)
+            create_match(request.user, comrade)
 
     return redirect("view_people")
+
 
 def no_crush(request, id=None):
     match_decline(request.user, id)
     return redirect("view_people")
 
 
-"""Loklaizacja"""
+"""Lokalizacja"""
+
 
 def update_geolocation(request, usr1):
     user = UserData.objects.get(user=usr1)
@@ -417,10 +426,10 @@ def get_client_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
+
 def distance_between(usr1, usr2):
     user1 = UserData.objects.get(user=usr1)
     user2 = UserData.objects.get(user=usr2)
-
     lat1, lon1, lat2, lon2 = map(radians, [user1.latitude, user1.longitude, user2.latitude, user2.longitude])
     d_lat = lat1 - lat2
     d_lon = lon1 - lon2
