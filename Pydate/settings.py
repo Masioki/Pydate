@@ -137,7 +137,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 
-STATIC_URL = os.path.join(BASE_DIR, '/static/')
+STATIC_URL = '/static/'
 
 
 TEMPLATE_DIRS = (
@@ -145,8 +145,8 @@ TEMPLATE_DIRS = (
 )
 
 STATICFILES_DIRS = (
-    'Chat/templates/static',
-    os.path.join(BASE_DIR, '/static')
+    os.path.join(BASE_DIR, 'Chat/templates/static'),
+    os.path.join(BASE_DIR, 'Pydate/static')
 )
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "Pydate/static/").replace('\\', '/')
