@@ -25,9 +25,8 @@
                     {% for form in formset %}
                         <div class="mw-100">
                             <label class="question">{{ names|list_item:forloop.counter0 }}, {{ age|list_item:forloop.counter0 }} </label>
+                             <label class="question">{{ local|list_item:forloop.counter0 }} km away from you</label>
 
-
-                            <!--TODO : Feather DO ZROBIENIA: JAK SIE NAJEDZIE NA FOTKE TO SIE OTWORZY PROFIL wystarczy wpisac  w href link do profilu-->
                             <a id="profpic" href="/"><img src="{{media_url}}{{ img|list_item:forloop.counter0 }}" alt="profile_pic" width="200" height="150" class="m-0 p-0"/></a>
                             <p>
                                 <label class="question">{{ descriptions|list_item:forloop.counter0 }} </label>
@@ -42,7 +41,7 @@
                             <label class="question">{{ odp }}</label>
                         {% endfor %}
 
-                        <a href="{% url 'match_delete' user_index|list_item:forloop.counter0 %} %}"> <img src="{% static "images/decline.png" %}" width="96" height="70" id="decline" ></a></button>
+                        <a href="{% url 'match_delete' user_index|list_item:forloop.counter0 %}"> <img src="{% static "images/decline.png" %}" width="96" height="70" id="decline" ></a></button>
                         <a href="{% url 'match_accept' user_index|list_item:forloop.counter0 %}"> <img src="{% static "images/accept.png" %}" width="96" height="70" id="accept" ></a></button>
                         </div>
                     {% endfor %}

@@ -26,7 +26,7 @@ APPEND_SLASH = True
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 ASGI_APPLICATION = "Pydate.routing.application"
 CHANNEL_LAYERS = {
@@ -44,8 +44,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',
-    'Chat',
-    'Pydate.apps.PydateConfig',
+    'Pydate',
+    'Chat'
+    #'Pydate.apps.PydateConfig',
 ]
 
 MIDDLEWARE = [
@@ -122,7 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en-gb'
 
 TIME_ZONE = 'Europe/Warsaw'
 
@@ -135,15 +136,17 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_URL = os.path.join(BASE_DIR, '/static/')
+
+STATIC_URL = '/static/'
+
 
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
 )
 
 STATICFILES_DIRS = (
-    'Chat/templates/static',
-    os.path.join(BASE_DIR, '/static')
+    os.path.join(BASE_DIR, 'Chat/templates/static'),
+    os.path.join(BASE_DIR, 'Pydate/static')
 )
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "Pydate/static/").replace('\\', '/')

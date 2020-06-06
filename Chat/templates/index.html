@@ -1,22 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="utf-8"/>
-    <title>Chat Room</title>
+    <title>Chat</title>
     {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'chatStyle.css' %}">
     <link type="text/javascript" href="{% static 'chatScript.js' %}">
-
-
 </head>
 <body>
-<label for="chat-log">Wiadomości</label><textarea id="chat-log" cols="100" rows="20"></textarea><br>
-<label for="chat-message-input">Pisz tutaj</label><input id="chat-message-input" type="text" size="100"><br>
-<input id="chat-message-submit" type="button" value="Send" onclick="sendMessage()">
-{{ chat_id|json_script:"chat_id" }}
 
-<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
-        crossorigin="anonymous"></script>
+<div class="chat">
+    <div id="popup-chat-list" class="popup-chat-list"></div>
+    <p id="chat-list-button" onmouseover="displayChat()">
+        Chats
+    </p>
+
+    <div id="chat-list-window" onmouseover="displayChat()" onmouseleave="hideChat()">
+        <div class="chat-history">
+            <div class="search">
+                <input id="search-input" type="text" placeholder="search" oninput="findPersonOnList()">
+            </div>
+            <div class="history">
+                <ul>
+                    {% for mes in chats %}
+                        <li class="person" onclick="openChat('{{ mes.chat_id }}','{{ mes.username }}')">
+                            {{ mes.username }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div> <!-- end chat-window -->
+</div>
+{{ username|json_script:"username" }}
 <script src="{% static "chatScript.js" %}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </body>
 </html>

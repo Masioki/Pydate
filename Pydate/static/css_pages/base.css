@@ -1,6 +1,7 @@
 body, html{
-    background-color: #C89EA3;
-    color: #FFFDD4;
+    background: url('/static/images/background/couple-near-white-chevrolet-coupe-1131575.jpg') no-repeat;
+    background-size: cover;
+    color: white;
     font-family: SansSerif;
     height: 100%;
     font-size: 10px;

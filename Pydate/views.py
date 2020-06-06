@@ -1,19 +1,28 @@
 from datetime import date
 
+import json
+import urllib.request
+from math import radians, cos, sin, asin, sqrt
+from funkcje import choose_best_by_personality
+from django.contrib.auth.signals import user_logged_in
+from django.dispatch import receiver
 from django.contrib.auth import authenticate, login
 from django.shortcuts import get_object_or_404, render, redirect
 from .utils.personality_test import get_personality_type
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.http.response import HttpResponseNotFound
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import logout
-
+from django.db.models import Q
 from Pydate import settings
 from Pydate.forms import RegisterForm, PersonalQuestionsForm
 from Pydate.models import PersonalityTestItem, PersonalityTestAnswer, UserData, PersonalQuestionUser, \
     PersonalQuestionContent, PersonalQuestionAnswer, Match
+from Pydate.models import UserData, PersonalQuestionUser, PersonalQuestionContent, PersonalQuestionAnswer, Match, \
+    UserLog
 from django.forms import formset_factory
 from django.contrib.auth.models import User
 
@@ -21,6 +30,44 @@ from django.contrib.auth.models import User
 def calculate_age(born):
     today = date.today()
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+
+
+@login_required
+@require_http_methods(["POST"])
+def update_profile(request):
+    user = request.user
+    if user.check_password(request.POST['password']):
+        data = request.POST
+        user_data = UserData.objects.filter(user=user)[0]
+        user.first_name = data['first_name']
+        user.last_name = data['last_name']
+        user.email = data['email']
+        user_data.sex = data['sex']
+        user_data.birth = data['birth']
+        user_data.description = data['description']
+        user_data.searching_for = data['looking_for']
+        user.save()
+        user_data.save()
+        return JsonResponse({'message': 'success'}, status=200)
+    else:
+        return JsonResponse({'message': 'Wrong password!'}, status=400)
+
+
+@login_required
+@require_http_methods(["GET"])
+def profile(request):
+    user = request.user
+    user_data = UserData.objects.filter(user=user)[0]
+    data = {
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'email': user.email,
+        'birth': user_data.birth,
+        'description': user_data.description,
+        'sex': user_data.sex,
+        'looking_for': user_data.searching_for
+    }
+    return render(request, 'html_pages/profile_editor.html', {'data': data})
 
 
 def base(request):
@@ -38,11 +85,13 @@ def register(request):
         if form.is_valid():
             user = form.save()
             user.refresh_from_db()
-            profile = UserData(user=user)
-            profile.birth = form.cleaned_data.get('birth_date')
-            profile.sex = form.cleaned_data.get('sex')
-            profile.searching_for = form.cleaned_data.get('searching_for')
-            profile.save()
+            prof = UserData(user=user)
+            prof.birth = form.cleaned_data.get('birth_date')
+            prof.sex = form.cleaned_data.get('sex')
+            prof.searching_for = form.cleaned_data.get('searching_for')
+            prof.save()
+            log = UserLog(user=user)
+            log.save()
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=user.username, password=raw_password)
             login(request, user)
@@ -54,17 +103,18 @@ def register(request):
     return render(request, 'html_pages/register.html', {'form': form})
 
 
-def login_view(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            login(request, user)
-        else:
-            return redirect('html_pages/login.html')
-    return render(request, 'html_pages/login')
 
+# def login_view(request):
+#     if request.method == 'POST':
+#         username = request.POST['username']
+#         password = request.POST['password']
+#         user = authenticate(username=username, password=password)
+#         if user is not None:
+#             login(request, user)
+#
+#         else:
+#             return redirect('html_pages/login.html')
+#     return render(request, 'html_pages/login')
 
 def personality_test(request):
     first_item_id = PersonalityTestItem.objects.order_by('itemID')[0].itemID
@@ -99,6 +149,9 @@ def logout_view(request):
     logout(request)
     return render(request, 'html_pages/base.html', {})
 
+def info_view(request):
+    return render(request, 'html_pages/view_info.html', {})
+
 
 @login_required
 def personal_questionnaire(request, username):
@@ -109,7 +162,6 @@ def personal_questionnaire(request, username):
         if not match:
             return redirect("/")
         # question_user = request.user  # to replace with the upper line
-    question_user = request.user  # to replace with the upper line
     questions = []
     questions_ids = []
     personal_questions_user = PersonalQuestionUser.objects.filter(user=question_user)
@@ -145,7 +197,7 @@ def my_matches(request):
     matches = Match.objects.filter(user1=request.user)
     if matches:
         for match in matches:
-            if match.personal_questions_match == "11":
+            if match.chatting_match == "11":
                 u = UserData.objects.get(user=match.user2)
                 # matches_data.append({"username": u.user.username, "description": u.description, "photo": u.photo})
                 matches_data.append({"username": u.user.username, "description": u.description})
@@ -153,7 +205,7 @@ def my_matches(request):
     matches = Match.objects.filter(user2=request.user)
     if matches:
         for match in matches:
-            if match.personal_questions_match == "11":
+            if match.chatting_match == "11":
                 u = UserData.objects.get(user=match.user1)
                 # matches_data.append({"username": u.user.username, "description": u.description, "photo": u.photo})
                 matches_data.append({"username": u.user.username, "description": u.description})
@@ -177,6 +229,7 @@ def view_answers(request):
     users_index = []
     ages = []
     question_content = []
+    locations = []
     # tu juz nie
     personal_questions_user = PersonalQuestionUser.objects.filter(user=request.user)
 
@@ -188,8 +241,12 @@ def view_answers(request):
                 for usr in answerset:
                     if str(usr.user) not in users_ids:
                         questions += [[str(usr.content)]]
+
                         users_ids += [(str(usr.user))]
                         question_content += [[q["content"] for q in questionset]]
+                        # lokalizacja
+                        locations += [float("{0:.2f}".format(distance_between(usr.user, request.user)))]
+
                         # sets
                         userset = UserData.objects.filter(user=str(usr.user.id)).values("id", "description", "photo",
                                                                                         "birth").all()
@@ -201,7 +258,7 @@ def view_answers(request):
                         users_index += [(q["user_id"]) for q in userset2]
                     else:
                         for idu, u in enumerate(users_ids):
-                            if (str(usr.user) == u):
+                            if str(usr.user) == u:
                                 questions[idu] += [(str(usr.content))]
                                 question_content[idu] += [q["content"] for q in questionset]
 
@@ -211,7 +268,7 @@ def view_answers(request):
     return render(request, 'html_pages/view_answers.html',
                   {"formset": formset, "question_content": question_content, "names": users_ids,
                    "user_index": users_index, "descriptions": descriptions, "questions": questions, "age": ages,
-                   "img": photos, 'media_url': settings.STATIC_URL})
+                   "img": photos, "local": locations, 'media_url': settings.STATIC_URL})
 
 
 def questions_delete(us1, us2):
@@ -222,26 +279,47 @@ def questions_delete(us1, us2):
             PersonalQuestionAnswer.objects.filter(user=us2, questionID=ques.questionID).delete()
 
 
-def match_delete(request, user_id=None):
-    comrade = User.objects.get(id=str(user_id))
-    # usuwanie matchow
-    Match.objects.filter(user1=request.user, user2=comrade).delete()
-    Match.objects.filter(user1=comrade, user2=request.user).delete()
+def match_decline(user1, id):
+    comrade = User.objects.get(id=str(id))
+    # zmiana matchow na AGREE_NONE
+    match = Match.objects.filter(user1=user1, user2=comrade)
+    if match:
+        match[0].chatting_match = Match.Agreement.AGREE_NONE
+        return
+    else:
+        match = Match.objects.filter(user2=user1, user1=comrade)
+        if match:
+            match[0].chatting_match = Match.Agreement.AGREE_NONE
+            return
 
-    questions_delete(request.user, comrade)  # usuwam odpowiedzi comrade'a na pytania zalogowanego uzytkownika
-    questions_delete(comrade, request.user)  # a tu vice versa
+    # Jesli nie bylo matcha to go robie i ustawaim na AGREE_NONE
+    if match:
+        match.save()
+    else:
+        if user1.username < comrade.username:
+            match = Match.objects.create(user1=user1, user2=comrade, chatting_match=Match.Agreement.AGREE_1_TO_2)
+        else:
+            match = Match.objects.create(user2=user1, user1=comrade, chatting_match=Match.Agreement.AGREE_2_TO_1)
+        match.save()
+
+    questions_delete(user1, comrade)  # usuwam odpowiedzi comrade'a na pytania zalogowanego uzytkownika
+    questions_delete(comrade, user1)  # a tu vice versa
+
+
+def match_delete(request, id=None):
+    match_decline(request.user, id)
     return redirect("view_answers")
 
 
-def match_accept(request, user_id=None):
-    comrade = User.objects.get(id=str(user_id))
+def match_accept(request, id=None):
+    comrade = User.objects.get(id=str(id))
     match = Match.objects.filter(user1=request.user, user2=comrade)
     if match:
         if len(match) > 1:
             return HttpResponseNotFound(
                 '<h1>Error. W bazie sa 2 takie same matche. Skontaktuj sie z administracja</h1>')
         m = match[0]
-        if (m.personal_questions_match == Match.Agreement.AGREE_2_TO_1):
+        if m.personal_questions_match == Match.Agreement.AGREE_2_TO_1:
             m.personal_questions_match = Match.Agreement.AGREE_BOTH
         else:
             m.personal_questions_match = Match.Agreement.AGREE_1_TO_2
@@ -253,7 +331,7 @@ def match_accept(request, user_id=None):
                 '<h1>Error. W bazie sa 2 takie same matche. Skontaktuj sie z administracja</h1>')
         if match:
             m = match[0]
-            if (m.personal_questions_match == Match.Agreement.AGREE_1_TO_2):
+            if m.personal_questions_match == Match.Agreement.AGREE_1_TO_2:
                 m.personal_questions_match = Match.Agreement.AGREE_BOTH
             else:
                 m.personal_questions_match = Match.Agreement.AGREE_2_TO_1
@@ -263,3 +341,161 @@ def match_accept(request, user_id=None):
 
     questions_delete(request.user, comrade)  # usuwam odpowiedzi comrade'a na pytania zalogowanego uzytkownika
     return redirect("view_answers")
+
+
+"""Elementy wykorzystane do strony glownej"""
+
+"""pomocnicze"""
+
+
+def select_comrade_for_me(suspect):
+    available_users = []
+    suspect_data = UserData.objects.get(user=suspect)
+    users_data = UserData.objects.filter(sex=suspect_data.searching_for,searching_for=suspect_data.sex).all()
+    for u in users_data:
+        match = Match.objects.filter(
+            Q(
+                Q(user1=suspect, user2=u.user),
+                ~Q(chatting_match=Match.Agreement.AGREE_2_TO_1)
+            ) |
+            Q(
+                Q(user1=u.user, user2=suspect),
+                ~Q(chatting_match=Match.Agreement.AGREE_1_TO_2)
+            )
+        )
+        if not match:
+            available_users.append(u.user)
+    # TODO TUTAJ WSTAW LISTE OD NAJATRAKCUJNIEJSZYSZ DO NAJMNIEJ ATRAKCYJNYCH.
+    # JESLI bedzie TA OSOBA W available_users to ja zwroc, jak nie to sprawdz nastepna najlepsza mozliwa osobe
+    if len(available_users) == 0:
+        return suspect
+    else:
+        return choose_best_by_personality(suspect.profile.personality, available_users)
+
+
+def create_match(us1, us2):  # najpierw requested potem towarzysz
+    if us1.username < us2.username:
+        match = Match.objects.create(user1=us1, user2=us2, chatting_match=Match.Agreement.AGREE_1_TO_2)
+    else:
+        match = Match.objects.create(user2=us1, user1=us2, chatting_match=Match.Agreement.AGREE_2_TO_1)
+    match.save()
+
+
+"""glawne"""
+
+
+@login_required
+def view_people(request):
+    age = description = location = photo = ''
+
+    candidate = select_comrade_for_me(request.user)
+    userid = candidate.id
+    if request.user == candidate:
+        display = False
+    else:
+        display = True
+        candidate_info = UserData.objects.filter(user=candidate)
+
+        for u in candidate_info:
+            description = u.description
+            photo = u.photo
+            age = calculate_age(u.birth)
+            location = float("{0:.2f}".format(distance_between(candidate, request.user)))
+
+    return render(request, 'html_pages/view_people.html',
+                  {"desc": description, "age": age, "loc": location, "nick": candidate, "name": userid, "photo": photo,
+                   "display": display, 'media_url': settings.STATIC_URL})
+
+
+def yes_crush(request, id=None):
+    comrade = User.objects.get(id=str(id))
+    "statystyka"
+    log_com=UserLog.objects.get(user=comrade)
+    log_my=UserLog.objects.get(user=request.user)
+    log_com.likes_receive+=1
+    log_my.likes_sent+=1
+    log_com.save()
+    log_my.save()
+    "koniec staystyki"
+
+    match = Match.objects.filter(user1=request.user, user2=comrade)
+    if match:
+        if len(match) > 1:
+            return HttpResponseNotFound(
+                '<h1>Error. W bazie sa 2 takie same matche. Skontaktuj sie z administracja</h1>')
+        m = match[0]
+        if m.chatting_match == Match.Agreement.AGREE_2_TO_1:
+            m.chatting_match = Match.Agreement.AGREE_BOTH
+        else:
+            m.chatting_match = Match.Agreement.AGREE_1_TO_2
+        m.save()
+    else:
+        match = Match.objects.filter(user2=request.user, user1=comrade)
+        if len(match) > 1:
+            return HttpResponseNotFound(
+                '<h1>Error. W bazie sa 2 takie same matche. Skontaktuj sie z administracja</h1>')
+        if match:
+            m = match[0]
+            if m.chatting_match == Match.Agreement.AGREE_1_TO_2:
+                m.chatting_match = Match.Agreement.AGREE_BOTH
+            else:
+                m.chatting_match = Match.Agreement.AGREE_2_TO_1
+            m.save()
+        else:
+            create_match(request.user, comrade)
+
+    return redirect("view_people")
+
+
+def no_crush(request, id=None):
+    match_decline(request.user, id)
+    return redirect("view_people")
+
+
+"""Lokalizacja"""
+
+
+@receiver(user_logged_in)
+def update_geolocation(sender, user, request, *args, **kwargs):
+    try:
+        usr = UserData.objects.get(user=user)
+    except UserData.DoesNotExist:
+        print("\nError, wyczysc baze userow i zarejestruj ich od nowa\n")
+        return
+    ip = get_client_ip(request)
+    x = urllib.request.urlopen('http://ip-api.com/json/' + ip + '?fields=lat,lon')
+    data = x.read()
+    js = json.loads(data.decode('utf-8'))
+    try:
+        usr.latitude = js['lat']
+        usr.longitude = js['lon']
+        usr.save()
+    except KeyError:
+        usr.latitude = 0
+        usr.longitude = 0
+        usr.save()
+
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+
+def distance_between(usr1, usr2):
+    user1 = UserData.objects.get(user=usr1)
+    user2 = UserData.objects.get(user=usr2)
+    lat1, lon1, lat2, lon2 = map(radians, [user1.latitude, user1.longitude, user2.latitude, user2.longitude])
+    d_lat = lat1 - lat2
+    d_lon = lon1 - lon2
+    a = sin(d_lat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(d_lon / 2) ** 2  # Haversine formula
+    c = 2 * asin((sqrt(a)))
+    R = 6371
+    return c * R  # w km
+
+"koniec lokalizacji"
+
+

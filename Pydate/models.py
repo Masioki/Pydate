@@ -1,20 +1,21 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.conf import settings
 from django.contrib.auth.models import User
 
 
 ####################
 # UŻYTKOWNICY
 ####################
+
 class UserData(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     birth = models.DateField(null=True)
     sex = models.CharField(max_length=2, null=True)
     personality = models.CharField(max_length=4, null=True)
-    description = models.CharField(max_length=300, null=True)
+    description = models.CharField(max_length=300, null=True, default="brak opisu")
     photo = models.ImageField(null=True, upload_to="images/user_profile_pictures/")
-    location = models.IntegerField(null=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=5, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=5, null=True)
     searching_for = models.CharField(max_length=5, null=True)
 
     def __str__(self):
@@ -24,6 +25,7 @@ class UserData(models.Model):
 ####################
 # PYTANIA UŻYTKOWNIKÓW
 ####################
+
 
 class PersonalQuestionContent(models.Model):
     questionID = models.AutoField(auto_created=True, serialize=False, primary_key=True)
@@ -92,8 +94,11 @@ class Match(models.Model):
         AGREE_BOTH = '11'
     user1 = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="user1")
     user2 = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="user2")
+    #Jak w answers dam serce to zmieniam wartosc personal_questions_match
     personal_questions_match = models.CharField(max_length=2, choices=Agreement.choices, default=Agreement.AGREE_NONE)
+    #Jak na glownej dam serce to zmieniam wartosc chatting_match
     chatting_match = models.CharField(max_length=2, choices=Agreement.choices, default=Agreement.AGREE_NONE)
+    #Jak chatting_match jest rowny AGREE_NONE to te osoby nie maja prawa juz NIGDY siebie spotkac
 
     class Meta:
         verbose_name_plural = "Matches"
@@ -103,12 +108,12 @@ class Match(models.Model):
 
 
 class UserLog(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='logs')
     logins = models.IntegerField(default=1)
     likes_sent = models.IntegerField(default=0)
     likes_receive = models.IntegerField(default=0)
-    mess_sent = models.IntegerField(default=0)
-    mess_receive = models.IntegerField(default=0)
+    mess_sent = models.IntegerField(default=0)#zakomentuj
+    mess_receive = models.IntegerField(default=0)#zakomentuj
 
     def __str__(self):
         return self.user.username
