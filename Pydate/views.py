@@ -4,6 +4,8 @@ import json
 import urllib.request
 from math import radians, cos, sin, asin, sqrt
 
+from django.contrib.auth.signals import user_logged_in
+from django.dispatch import receiver
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -88,31 +90,24 @@ def register(request):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=user.username, password=raw_password)
             login(request, user)
-            update_geolocation(request, user)
-            """elementy statystyczne-userlog"""
-
-
             return redirect('/')
     else:
         form = RegisterForm()
     return render(request, 'html_pages/register.html', {'form': form})
 
-"""
-def login_view(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(username=username, password=password)
-        log = UserLog.objects.get(user=user)
-        log.logins += 1
-        log.save()
-        if user is not None:
-            login(request, user)
-            update_geolocation(request, user)
-        else:
-            return redirect('html_pages/login.html')
-    return render(request, 'html_pages/login')
-"""
+
+
+# def login_view(request):
+#     if request.method == 'POST':
+#         username = request.POST['username']
+#         password = request.POST['password']
+#         user = authenticate(username=username, password=password)
+#         if user is not None:
+#             login(request, user)
+#
+#         else:
+#             return redirect('html_pages/login.html')
+#     return render(request, 'html_pages/login')
 
 def logout_view(request):
     logout(request)
@@ -424,19 +419,25 @@ def no_crush(request, id=None):
 """Lokalizacja"""
 
 
-def update_geolocation(request, usr1):
-    user = UserData.objects.get(user=usr1)
-
+@receiver(user_logged_in)
+def update_geolocation(sender, user, request, *args, **kwargs):
+    try:
+        usr = UserData.objects.get(user=user)
+    except UserData.DoesNotExist:
+        print("\nError, wyczysc baze userow i zarejestruj ich od nowa\n")
+        return
     ip = get_client_ip(request)
     x = urllib.request.urlopen('http://ip-api.com/json/' + ip + '?fields=lat,lon')
     data = x.read()
     js = json.loads(data.decode('utf-8'))
     try:
-        user.latitude = js['lat']
-        user.longitude = js['lon']
+        usr.latitude = js['lat']
+        usr.longitude = js['lon']
+        usr.save()
     except KeyError:
-        user.latitude = 0
-        user.longitude = 0
+        usr.latitude = 0
+        usr.longitude = 0
+        usr.save()
 
 
 def get_client_ip(request):
