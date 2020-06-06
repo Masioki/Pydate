@@ -118,6 +118,9 @@ def logout_view(request):
     logout(request)
     return render(request, 'html_pages/base.html', {})
 
+def info_view(request):
+    return render(request, 'html_pages/view_info.html', {})
+
 
 @login_required
 def personal_questionnaire(request, username):
@@ -455,3 +458,7 @@ def distance_between(usr1, usr2):
     c = 2 * asin((sqrt(a)))
     R = 6371
     return c * R  # w km
+
+"koniec lokalizacji"
+
+

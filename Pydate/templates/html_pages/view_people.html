@@ -19,14 +19,38 @@
             <main class="d-flex row min-vh-100 justify-content-center mw-100">
                 <div class="container col-xl-6 col-lg-4 col-md-6 col-sm-6 col-9 justify-content-center align-self-center">
                     {% if display %}
+                        <script>
+                        function allowDrop(ev) {
+                            ev.preventDefault();
+                        }
+
+                        function drag(ev) {
+                            ev.dataTransfer.setData("Url","{% url 'yes_crush'  name %}");
+                        }
+
+                        function drop_crush(ev) {
+                            ev.preventDefault();
+                            window.location="{% url 'yes_crush'  name %}";
+                        }
+
+                        function drop_no_crush(ev) {
+                            ev.preventDefault();
+                            window.location="{% url 'no_crush'  name %}";
+                        }
+                    </script>
+
+
+                        <img src="{% static "images/decline.png" %}" ondrop="drop_no_crush(event)" draggable="false" ondragover="allowDrop(event)" width="96" height="70"  id="decline" title="Drah there if you want to decline" >
+                        <img  src="{% static "images/accept.png" %}" ondrop="drop_crush(event)" draggable="false" ondragover="allowDrop(event)" width="96" height="70" id="accept" title="Drah there if you want to accept" >
                         <label class="question">{{ nick}}, {{age}}</label>
-                        <p style="text-align:center;"><img src="{{media_url}}{{ photo}}" alt="profile_pic" width="500" height="350" class="m-0 p-0"/></p>
+                        <p id="profpic2" style="text-align:center;"><img src="{{media_url}}{{ photo}}" alt="profile_pic" title="Drag the image to the bin or to the heart" draggable="true" ondragstart="drag(event)" width="500" height="350" class="m-0 p-0"/></p>
                         <label class="question"> {{loc}} km away</label>
                         <label class="question">{{desc}}</label>
-                        <label class="question"></label>
+                        <label class="question" > </label>
+                        <label class="question" > </label>
+                        <label class="question" style="color: gray">Drag the image to the bin or to the heart</label>
 
-                        <a href="{% url 'no_crush'  name %}"> <img src="{% static "images/decline.png" %}" width="96" height="70" id="decline" ></a></button>
-                        <a href="{% url 'yes_crush' name %}"> <img src="{% static "images/accept.png" %}" width="96" height="70" id="accept" ></a></button>
+
                     {% else %}
                         <label class="question">There is nothing to show</label>
                     {% endif %}
