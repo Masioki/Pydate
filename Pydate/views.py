@@ -120,7 +120,6 @@ def personal_questionnaire(request, username):
         if not match:
             return redirect("/")
         # question_user = request.user  # to replace with the upper line
-    question_user = request.user  # to replace with the upper line
     questions = []
     questions_ids = []
     personal_questions_user = PersonalQuestionUser.objects.filter(user=question_user)
@@ -326,7 +325,8 @@ def select_comrade_for_me(suspect):
             available_users.append(u.user)
     # TODO TUTAJ WSTAW LISTE OD NAJATRAKCUJNIEJSZYSZ DO NAJMNIEJ ATRAKCYJNYCH.
     # JESLI bedzie TA OSOBA W available_users to ja zwroc, jak nie to sprawdz nastepna najlepsza mozliwa osobe
-    return available_users[0]  # zamiast available_users[9] zwracamy najbardziej atrakcyjnego
+    if(available_users):
+        return available_users[0]  # zamiast available_users[9] zwracamy najbardziej atrakcyjnego
 
     return suspect  
 
