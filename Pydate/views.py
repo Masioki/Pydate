@@ -3,7 +3,7 @@ from datetime import date
 import json
 import urllib.request
 from math import radians, cos, sin, asin, sqrt
-
+from funkcje import choose_best_by_personality
 from django.contrib.auth.signals import user_logged_in
 from django.dispatch import receiver
 from django.contrib.auth import authenticate, login
@@ -331,10 +331,10 @@ def select_comrade_for_me(suspect):
             available_users.append(u.user)
     # TODO TUTAJ WSTAW LISTE OD NAJATRAKCUJNIEJSZYSZ DO NAJMNIEJ ATRAKCYJNYCH.
     # JESLI bedzie TA OSOBA W available_users to ja zwroc, jak nie to sprawdz nastepna najlepsza mozliwa osobe
-    if(available_users):
-        return available_users[0]  # zamiast available_users[9] zwracamy najbardziej atrakcyjnego
-
-    return suspect  
+    if len(available_users) == 0:
+        return suspect
+    else:
+        return choose_best_by_personality(suspect.profile.personality, available_users)
 
 
 def create_match(us1, us2):  # najpierw requested potem towarzysz
