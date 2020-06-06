@@ -325,7 +325,7 @@ def select_comrade_for_me(suspect):
             available_users.append(u)
     # TODO TUTAJ WSTAW LISTE OD NAJATRAKCUJNIEJSZYSZ DO NAJMNIEJ ATRAKCYJNYCH.
     # JESLI bedzie TA OSOBA W available_users to ja zwroc, jak nie to sprawdz nastepna najlepsza mozliwa osobe
-    # return available_users[9]  # zamiast available_users[9] zwracamy najbardziej atrakcyjnego
+    return available_users[9]  # zamiast available_users[9] zwracamy najbardziej atrakcyjnego
 
     return suspect  
 
