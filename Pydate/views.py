@@ -83,28 +83,36 @@ def register(request):
             prof.sex = form.cleaned_data.get('sex')
             prof.searching_for = form.cleaned_data.get('searching_for')
             prof.save()
+            log = UserLog(user=user)
+            log.save()
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=user.username, password=raw_password)
             login(request, user)
             update_geolocation(request, user)
+            """elementy statystyczne-userlog"""
+
+
             return redirect('/')
     else:
         form = RegisterForm()
     return render(request, 'html_pages/register.html', {'form': form})
 
-
+"""
 def login_view(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(username=username, password=password)
+        log = UserLog.objects.get(user=user)
+        log.logins += 1
+        log.save()
         if user is not None:
             login(request, user)
             update_geolocation(request, user)
         else:
             return redirect('html_pages/login.html')
     return render(request, 'html_pages/login')
-
+"""
 
 def logout_view(request):
     logout(request)
@@ -367,6 +375,15 @@ def view_people(request):
 
 def yes_crush(request, id=None):
     comrade = User.objects.get(id=str(id))
+    "statystyka"
+    log_com=UserLog.objects.get(user=comrade)
+    log_my=UserLog.objects.get(user=request.user)
+    log_com.likes_receive+=1
+    log_my.likes_sent+=1
+    log_com.save()
+    log_my.save()
+    "koniec staystyki"
+
     match = Match.objects.filter(user1=request.user, user2=comrade)
     if match:
         if len(match) > 1:

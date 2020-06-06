@@ -88,8 +88,8 @@ class UserLog(models.Model):
     logins = models.IntegerField(default=1)
     likes_sent = models.IntegerField(default=0)
     likes_receive = models.IntegerField(default=0)
-    mess_sent = models.IntegerField(default=0)
-    mess_receive = models.IntegerField(default=0)
+    mess_sent = models.IntegerField(default=0)#zakomentuj
+    mess_receive = models.IntegerField(default=0)#zakomentuj
 
     def __str__(self):
         return self.user.username
