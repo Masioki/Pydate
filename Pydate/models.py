@@ -11,7 +11,7 @@ class UserData(models.Model):
     birth = models.DateField(null=True)
     sex = models.CharField(max_length=2, null=True)
     personality = models.IntegerField(null=True)
-    description = models.CharField(max_length=300, null=True)
+    description = models.CharField(max_length=300, null=True,default="brak opisu")
     photo = models.ImageField(null=True, upload_to="images/user_profile_pictures/")
     latitude = models.DecimalField(max_digits=9, decimal_places=5, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=5, null=True)

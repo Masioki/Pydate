@@ -309,23 +309,24 @@ def match_accept(request, id=None):
 
 def select_comrade_for_me(suspect):
     available_users = []
-    users = User.objects.filter().all()
-    for u in users:
+    suspect_data = UserData.objects.get(user=suspect)
+    users_data = UserData.objects.filter(sex=suspect_data.searching_for,searching_for=suspect_data.sex).all()
+    for u in users_data:
         match = Match.objects.filter(
             Q(
-                Q(user1=suspect, user2=u),
+                Q(user1=suspect, user2=u.user),
                 ~Q(chatting_match=Match.Agreement.AGREE_2_TO_1)
             ) |
             Q(
-                Q(user1=u, user2=suspect),
+                Q(user1=u.user, user2=suspect),
                 ~Q(chatting_match=Match.Agreement.AGREE_1_TO_2)
             )
         )
         if not match:
-            available_users.append(u)
+            available_users.append(u.user)
     # TODO TUTAJ WSTAW LISTE OD NAJATRAKCUJNIEJSZYSZ DO NAJMNIEJ ATRAKCYJNYCH.
     # JESLI bedzie TA OSOBA W available_users to ja zwroc, jak nie to sprawdz nastepna najlepsza mozliwa osobe
-    return available_users[9]  # zamiast available_users[9] zwracamy najbardziej atrakcyjnego
+    return available_users[0]  # zamiast available_users[9] zwracamy najbardziej atrakcyjnego
 
     return suspect  
 
