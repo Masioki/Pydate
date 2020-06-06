@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 
 
@@ -10,8 +11,8 @@ class UserData(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     birth = models.DateField(null=True)
     sex = models.CharField(max_length=2, null=True)
-    personality = models.IntegerField(null=True)
-    description = models.CharField(max_length=300, null=True,default="brak opisu")
+    personality = models.CharField(max_length=4, null=True)
+    description = models.CharField(max_length=300, null=True, default="brak opisu")
     photo = models.ImageField(null=True, upload_to="images/user_profile_pictures/")
     latitude = models.DecimalField(max_digits=9, decimal_places=5, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=5, null=True)
@@ -32,6 +33,29 @@ class PersonalQuestionContent(models.Model):
 
     def __str__(self):
         return str(self.questionID)
+
+
+class PersonalityTestItem(models.Model):
+    itemID = models.IntegerField(primary_key=True)
+    first_option = models.CharField(max_length=250)
+    second_option = models.CharField(max_length=250)
+
+    class Question_Type(models.TextChoices):
+        TypeIE = 'IE', _('TypeIE')
+        TypeSN = 'SN', _('TypeSN')
+        TypeFT = 'FT', _('TypeFT')
+        TypeJP = 'JP', _('TypeJP')
+    type = models.CharField(
+        max_length=2,
+        choices=Question_Type.choices,
+    )
+    inversion = models.BooleanField(default=False)
+
+
+class PersonalityTestAnswer(models.Model):
+    itemID = models.ForeignKey(PersonalityTestItem, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    answer = models.IntegerField(null=True)
 
 
 class PersonalQuestionUser(models.Model):

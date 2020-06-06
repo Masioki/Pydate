@@ -7,6 +7,9 @@ from funkcje import choose_best_by_personality
 from django.contrib.auth.signals import user_logged_in
 from django.dispatch import receiver
 from django.contrib.auth import authenticate, login
+from django.shortcuts import get_object_or_404, render, redirect
+from .utils.personality_test import get_personality_type
+from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.http.response import HttpResponseNotFound
@@ -16,6 +19,8 @@ from django.contrib.auth import logout
 from django.db.models import Q
 from Pydate import settings
 from Pydate.forms import RegisterForm, PersonalQuestionsForm
+from Pydate.models import PersonalityTestItem, PersonalityTestAnswer, UserData, PersonalQuestionUser, \
+    PersonalQuestionContent, PersonalQuestionAnswer, Match
 from Pydate.models import UserData, PersonalQuestionUser, PersonalQuestionContent, PersonalQuestionAnswer, Match, \
     UserLog
 from django.forms import formset_factory
@@ -90,7 +95,9 @@ def register(request):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=user.username, password=raw_password)
             login(request, user)
-            return redirect('/')
+            first_item_id = PersonalityTestItem.objects.order_by('itemID')[0].itemID
+            context = {'first_item_id': first_item_id}
+            return render(request, 'html_pages/personality_test.html', context)
     else:
         form = RegisterForm()
     return render(request, 'html_pages/register.html', {'form': form})
@@ -108,6 +115,35 @@ def register(request):
 #         else:
 #             return redirect('html_pages/login.html')
 #     return render(request, 'html_pages/login')
+
+def personality_test(request):
+    first_item_id = PersonalityTestItem.objects.order_by('itemID')[0].itemID
+    context = {'first_item_id': first_item_id}
+    return render(request, 'html_pages/personality_test.html', context)
+
+
+def test_vote(request, test_item_id):
+    test_item = get_object_or_404(PersonalityTestItem, pk=test_item_id)
+    if request.method == "POST":
+        ans, creation = PersonalityTestAnswer.objects.get_or_create(itemID=test_item, user=request.user)
+        try:
+            ans.answer = request.POST['choice']
+            ans.save()
+        except (KeyError, MultiValueDictKeyError):
+            return render(request, 'html_pages/test_choice.html',
+                          {'test_item': test_item, 'error_message': "You didn't select a choice!"})
+
+        if PersonalityTestItem.objects.filter(pk=test_item_id + 1).exists():
+            next_test_item = PersonalityTestItem.objects.get(pk=test_item_id + 1)
+            return render(request, 'html_pages/test_choice.html', {'test_item': next_test_item})
+        else:
+            user = UserData.objects.get(user_id=request.user.id)
+            user.personality = get_personality_type(user.user.id)
+            user.save()
+            return render(request, 'html_pages/test_summary.html')
+    else:
+        return render(request, 'html_pages/test_choice.html', {'test_item': test_item})
+
 
 def logout_view(request):
     logout(request)

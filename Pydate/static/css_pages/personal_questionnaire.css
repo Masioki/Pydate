@@ -34,7 +34,7 @@
     border: #eee solid 2px;
 }
 
-#submit_questionnaire{
+.submit_questionnaire{
     background-color: #FA7388;
     border: #fff solid 1px;
     padding: 5px 10px;

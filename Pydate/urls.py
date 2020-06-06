@@ -27,6 +27,8 @@ urlpatterns = [
     path('', views.base,),
     path('register/', views.register),
     path('login/', auth_views.LoginView.as_view(), name="login"),
+    path('personality_test/', views.personality_test),
+    path('personality_test/<int:test_item_id>/', views.test_vote, name='test_vote'),
     path('chat/', include('Chat.urls')),
     path('profile/', views.profile),
     path('help/',views.info_view, name='info'),

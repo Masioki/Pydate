@@ -7,14 +7,14 @@ from django.db import models
 
 
 class Chat(models.Model):
-    chatID = models.AutoField(primary_key=True)
+    chatID = models.AutoField(primary_key=True, default=0)
     agreement = models.IntegerField(default=0)
 
 
 # TODO: do użytkownika nie chatu
 
 class UserChat(models.Model):
-    userChatID = models.AutoField(primary_key=True,unique=True)
+    userChatID = models.AutoField(primary_key=True, unique=True, default=0)
     chatID = models.ForeignKey(Chat, unique=False, on_delete=models.CASCADE)
     user = models.ForeignKey(User,unique=False, on_delete=models.CASCADE)
 
@@ -40,7 +40,7 @@ class UserChat(models.Model):
 
 
 class ChatMessage(models.Model):
-    messageID = models.AutoField(primary_key=True)
+    messageID = models.AutoField(primary_key=True, default=0)
     chat = models.ForeignKey(Chat, unique=False, on_delete=models.CASCADE)
     message = models.CharField(max_length=300)
     date = models.DateTimeField(auto_now=True, unique=False)
