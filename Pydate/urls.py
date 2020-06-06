@@ -29,6 +29,7 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(), name="login"),
     path('chat/', include('Chat.urls')),
     path('profile/', views.profile),
+    path('help/',views.info_view, name='info'),
     path('profile/edit/', views.update_profile),
     path('<str:username>/personal_questionnaire/', views.personal_questionnaire, name="personal_questionnaire"),
     path('my_matches/', views.my_matches, name="my_matches"),
