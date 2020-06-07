@@ -41,7 +41,6 @@ class PersonalQuestionsForm(ModelForm):
     def clean_answer_to_question(self):
         answer = self.cleaned_data['answer_to_question']
         if not answer or answer == "":
-            print("HALO TU")
             raise ValidationError("Please, answer all of the questions")
         return answer
 

@@ -208,7 +208,7 @@ def personal_questionnaire(request, username):
             return redirect('/')
     else:
         formset = formset_form()
-    return render(request, 'html_pages/personal_questionnaire.html', {"formset": formset, "questions": questions})
+    return render(request, 'html_pages/personal_questionnaire.html', {"username": username, "formset": formset, "questions": questions})
 
 
 @login_required
