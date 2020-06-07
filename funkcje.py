@@ -47,7 +47,7 @@ def choose_best_by_personality(my_personality, users_list):
         elif re.match(".NF.", my_personality) and re.match(".S..", u.profile.personality) or \
                 re.match(".NF.", u.profile.personality) and re.match(".S..", my_personality):
             list_to_sort.append({'user': u, 'points': 1})
-    list_to_sort.sort(key=lambda x: x[1], reverse=True)
+    list_to_sort.sort(key=lambda x: x['points'], reverse=True)
     return list_to_sort[0]['user']
 
 
