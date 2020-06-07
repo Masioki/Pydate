@@ -17,35 +17,35 @@ def choose_best_by_personality(my_personality, users_list):
         return None
     list_to_sort = []
     for u in users_list:
-        if re.match("IN.J", my_personality) and re.match("EN.P", u.personality) or \
-                re.match("IN.J", u.personality) and re.match("EN.P", my_personality) or \
-                re.match("IS.J", my_personality) and re.match("ES.P", u.personality) or \
-                re.match("IS.J", u.personality) and re.match("ES.P", my_personality) or \
-                re.match("ES.J", my_personality) and re.match("IS.P", u.personality) or \
-                re.match("ES.J", u.personality) and re.match("IS.P", my_personality) or \
-                re.match("EN.J", my_personality) and "INFP" == u.personality or \
-                re.match("EN.J", u.personality) and "INFP" == my_personality or \
-                re.match("E.TJ", my_personality) and "INTP" == u.personality or \
-                re.match("E.TJ", u.personality) and "INTP" == my_personality or \
-                "ISFP" == my_personality and "ENFJ" == u.personality or \
-                "ISFP" == u.personality and "ENFJ" == my_personality:  # blue
+        if re.match("IN.J", my_personality) and re.match("EN.P", u.profile.personality) or \
+                re.match("IN.J", u.profile.personality) and re.match("EN.P", my_personality) or \
+                re.match("IS.J", my_personality) and re.match("ES.P", u.profile.personality) or \
+                re.match("IS.J", u.profile.personality) and re.match("ES.P", my_personality) or \
+                re.match("ES.J", my_personality) and re.match("IS.P", u.profile.personality) or \
+                re.match("ES.J", u.profile.personality) and re.match("IS.P", my_personality) or \
+                re.match("EN.J", my_personality) and "INFP" == u.profile.personality or \
+                re.match("EN.J", u.profile.personality) and "INFP" == my_personality or \
+                re.match("E.TJ", my_personality) and "INTP" == u.profile.personality or \
+                re.match("E.TJ", u.profile.personality) and "INTP" == my_personality or \
+                "ISFP" == my_personality and "ENFJ" == u.profile.personality or \
+                "ISFP" == u.profile.personality and "ENFJ" == my_personality:  # blue
             list_to_sort.append({'user': u, 'points': 5})
-        elif re.match(".S.P", my_personality) and re.match(".NT.", u.personality) or \
-                re.match(".S.P", u.personality) and re.match(".NT.", my_personality) or \
-                re.match(".S.J", my_personality) and re.match(".S.P", u.personality) or \
-                re.match(".S.J", u.personality) and re.match(".S.P", my_personality) or \
-                re.match(".S..", my_personality) and "ENTJ" == u.personality or \
-                re.match(".S..", u.personality) and "ENTJ" == my_personality:  # light green
+        elif re.match(".S.P", my_personality) and re.match(".NT.", u.profile.personality) or \
+                re.match(".S.P", u.profile.personality) and re.match(".NT.", my_personality) or \
+                re.match(".S.J", my_personality) and re.match(".S.P", u.profile.personality) or \
+                re.match(".S.J", u.profile.personality) and re.match(".S.P", my_personality) or \
+                re.match(".S..", my_personality) and "ENTJ" == u.profile.personality or \
+                re.match(".S..", u.profile.personality) and "ENTJ" == my_personality:  # light green
             list_to_sort.append({'user': u, 'points': 3})
-        elif re.match(".S.P", my_personality) and re.match(".S.P", u.personality) or \
-                re.match(".S.J", my_personality) and re.match(".NT.", u.personality) or \
-                re.match(".S.J", u.personality) and re.match(".NT.", my_personality):  # yellow
+        elif re.match(".S.P", my_personality) and re.match(".S.P", u.profile.personality) or \
+                re.match(".S.J", my_personality) and re.match(".NT.", u.profile.personality) or \
+                re.match(".S.J", u.profile.personality) and re.match(".NT.", my_personality):  # yellow
             list_to_sort.append({'user': u, 'points': 2})
-        elif re.match(".N..", my_personality) and re.match(".N..", u.personality) or \
-                re.match(".S.J", my_personality) and re.match(".S.J", u.personality):  # dark green
+        elif re.match(".N..", my_personality) and re.match(".N..", u.profile.personality) or \
+                re.match(".S.J", my_personality) and re.match(".S.J", u.profile.personality):  # dark green
             list_to_sort.append({'user': u, 'points': 4})
-        elif re.match(".NF.", my_personality) and re.match(".S..", u.personality) or \
-                re.match(".NF.", u.personality) and re.match(".S..", my_personality):
+        elif re.match(".NF.", my_personality) and re.match(".S..", u.profile.personality) or \
+                re.match(".NF.", u.profile.personality) and re.match(".S..", my_personality):
             list_to_sort.append({'user': u, 'points': 1})
     list_to_sort.sort(key=lambda x: x[1], reverse=True)
     return list_to_sort[0]['user']
