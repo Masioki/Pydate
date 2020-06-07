@@ -494,9 +494,14 @@ def no_crush(request, id=None):
 
 @receiver(user_logged_in)
 def iterate_logins(request, *args, **kwargs):
-    log = UserLog.objects.get(user=request.user)
-    log.logins += 1
-    log.save()
+    try:
+        log = UserLog.objects.get(user=request.user)
+        log.logins += 1
+        log.save()
+    except:
+        log = UserLog(user=request.user)
+        log.save()
+
 
 """Lokalizacja"""
 
