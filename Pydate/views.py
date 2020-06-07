@@ -502,7 +502,6 @@ def iterate_logins(request, *args, **kwargs):
         log = UserLog(user=request.user)
         log.save()
 
-
 """Lokalizacja"""
 
 @receiver(user_logged_in)
