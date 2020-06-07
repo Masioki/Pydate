@@ -219,7 +219,7 @@ def my_matches(request):
     matches = Match.objects.filter(user1=request.user)
     if matches:
         for match in matches:
-            if match.chatting_match == "11":
+            if (match.chatting_match == "11" and not(match.personal_questions_match =="11" or match.personal_questions_match =="10")):
                 u = UserData.objects.get(user=match.user2)
                 if (u.photo):
                     matches_data.append({"username": u.user.username, "description": u.description, "photo": u.photo})
@@ -231,7 +231,7 @@ def my_matches(request):
     matches = Match.objects.filter(user2=request.user)
     if matches:
         for match in matches:
-            if match.chatting_match == "11":
+            if (match.chatting_match == "11" and not(match.personal_questions_match =="11" or match.personal_questions_match =="01")):
                 u = UserData.objects.get(user=match.user1)
                 if(u.photo):
                     matches_data.append({"username": u.user.username, "description": u.description, "photo":u.photo})
