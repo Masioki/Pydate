@@ -20,7 +20,7 @@ from django.views.decorators.http import require_http_methods
 
 from Chat.models import UserChat
 from Pydate import settings
-from Pydate.forms import RegisterForm, PersonalQuestionsForm, PersonalQuestionsCreateForm
+from Pydate.forms import RegisterForm, PersonalQuestionsForm, PersonalQuestionsCreateForm,RemainForm
 from Pydate.models import PersonalityTestItem, PersonalityTestAnswer
 from Pydate.models import UserData, PersonalQuestionUser, PersonalQuestionContent, PersonalQuestionAnswer, Match, \
     UserLog
@@ -380,6 +380,7 @@ def match_accept(request, id=None):
 
 
 def select_comrade_for_me(suspect):
+    sendemail()
     available_users = []
     try:
         suspect_data = UserData.objects.get(user=suspect)
@@ -573,3 +574,56 @@ def add_personal_questions(request):
         else:
             formset = formset_form()
         return render(request, 'html_pages/add_personal_questions.html', {'formset': formset})
+
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+
+
+@require_http_methods(["GET", "POST"])
+def remind_pass(request):
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = RemainForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            message = form.cleaned_data['message']
+            try:
+                user = User.objects.get(username=str(message))
+                sendemail(str(user.email), str(user.password))
+                return redirect('/')
+            except:
+                return redirect('/')
+
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = RemainForm()
+
+    return render(request, 'registration/remain_pass.html', {'formset': form})
+
+def sendemail(receiver_address,mail_content):
+    #mail_content = "Hello,This is a simple mail. There is only text, no attachments are there The mail is sent using Python SMTP library.Thank You"
+    #The mail addresses and password
+    sender_address = 'pydate2020projekt@gmail.com'
+    sender_pass = 'pydate123'
+    #receiver_address = 'michal230915@gmail.com'
+    #Setup the MIME
+    message = MIMEMultipart()
+    message['From'] = sender_address
+    message['To'] = receiver_address
+    message['Subject'] = 'A test mail sent by Python. It has an attachment.'   #The subject line
+    #The body and the attachments for the mail
+    message.attach(MIMEText(mail_content, 'plain'))
+    #Create SMTP session for sending the mail
+    session = smtplib.SMTP('smtp.gmail.com', 587) #use gmail with port
+    session.starttls() #enable security
+    session.login(sender_address, sender_pass) #login with mail_id and password
+    text = message.as_string()
+    session.sendmail(sender_address, receiver_address, text)
+    session.quit()
+
+

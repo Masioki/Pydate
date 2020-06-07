@@ -60,3 +60,6 @@ class PersonalQuestionsCreateForm(ModelForm):
         if not q or q == "":
             raise ValidationError("Please, complete all of the questions")
         return q
+
+class RemainForm(forms.Form):
+    message = forms.CharField(required=True,label='Your name', max_length=250)
