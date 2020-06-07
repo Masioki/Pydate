@@ -363,7 +363,10 @@ def match_accept(request, id=None):
 
 def select_comrade_for_me(suspect):
     available_users = []
-    suspect_data = UserData.objects.get(user=suspect)
+    try:
+        suspect_data = UserData.objects.get(user=suspect)
+    except:
+        return suspect
     users_data = UserData.objects.filter(sex=suspect_data.searching_for, searching_for=suspect_data.sex).all()
     for u in users_data:
         match = Match.objects.filter(
