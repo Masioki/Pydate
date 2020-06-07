@@ -188,7 +188,7 @@ def personal_questionnaire(request, username):
     personal_questions_user = PersonalQuestionUser.objects.filter(user=question_user)
     if personal_questions_user:
         for p in personal_questions_user:
-            answer = PersonalQuestionAnswer.objects.filter(user=request.user)
+            answer = PersonalQuestionAnswer.objects.filter(user=request.user, questionID=p.questionID)
             if answer:
                 return redirect('/')
             queryset = PersonalQuestionContent.objects.filter(questionID=str(p.id)).values("content").all()
