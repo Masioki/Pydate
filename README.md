@@ -21,6 +21,21 @@ Pynder - Dating web app
 
 Aplikacja randkowa, pozwalajaca na utworzenie konta, przegladanie interesujacych osob oraz zaznaczenie checi wiekszego kontaktu lub wykazania braku zainteresowania. W aplikacji zostal dodany takze czat ktory moga odbyc urzytkownicy po odpowiedzeniu na osobiste pytania.
 
+<br />Ankieta początkowa<br />
+<img src="https://raw.githubusercontent.com/Masioki/Pydate/master/readme_files/ankieta.png" height=350px/> 
+<br />Logowanie<br />
+<img src="https://raw.githubusercontent.com/Masioki/Pydate/master/readme_files/logowanie.png" height=350px/> 
+<br />Edycja profilu<br />
+<img src="https://raw.githubusercontent.com/Masioki/Pydate/master/readme_files/edycja.png" height=350px/> 
+<br />Pomoc<br />
+<img src="https://raw.githubusercontent.com/Masioki/Pydate/master/readme_files/pomoc.png" height=350px/> 
+<br />Przeglądanie dopasowań<br />
+<img src="https://raw.githubusercontent.com/Masioki/Pydate/master/readme_files/matches.png" height=350px/> 
+<br />Chat<br />
+<img src="https://raw.githubusercontent.com/Masioki/Pydate/master/readme_files/czat.png" height=350px/> 
+
+
+## INstalacja
 
 # Migration
 
@@ -31,5 +46,4 @@ Aplikacja randkowa, pozwalajaca na utworzenie konta, przegladanie interesujacych
 # SuperUser Conf
 
 ``./database_creation.sh``
-
 
