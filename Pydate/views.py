@@ -220,15 +220,18 @@ def my_matches(request):
         for match in matches:
             if match.chatting_match == "11":
                 u = UserData.objects.get(user=match.user2)
-                # matches_data.append({"username": u.user.username, "description": u.description, "photo": u.photo})
-                matches_data.append({"username": u.user.username, "description": u.description})
+                if (u.photo):
+                    matches_data.append({"username": u.user.username, "description": u.description, "photo": u.photo})
+                else:
+                    matches_data.append({"username": u.user.username, "description": u.description,
+                                         "photo": "images/user_profile_pictures/default.jpg/"})
+
     # search matches for user2=request.user
     matches = Match.objects.filter(user2=request.user)
     if matches:
         for match in matches:
             if match.chatting_match == "11":
                 u = UserData.objects.get(user=match.user1)
-                # matches_data.append({"username": u.user.username, "description": u.description, "photo": u.photo})
                 if(u.photo):
                     matches_data.append({"username": u.user.username, "description": u.description, "photo":u.photo})
                 else:
