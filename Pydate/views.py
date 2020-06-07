@@ -490,9 +490,15 @@ def no_crush(request, id=None):
     match_decline(request.user, id)
     return redirect("view_people")
 
+"""Statystyka"""
+
+@receiver(user_logged_in)
+def iterate_logins(request, *args, **kwargs):
+    log = UserLog.objects.get(user=request.user)
+    log.logins += 1
+    log.save()
 
 """Lokalizacja"""
-
 
 @receiver(user_logged_in)
 def update_geolocation(sender, user, request, *args, **kwargs):
