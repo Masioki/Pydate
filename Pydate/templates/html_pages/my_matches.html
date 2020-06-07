@@ -30,7 +30,7 @@
                 {% for match in matches_data %}
                     <div class="mw-100">
                         <!--<img src="{{ match.photo.url }}">-->
-                        <img id="profile_picture" src="abc.jpg" class="d-inline-block">
+                        <img id="profile_picture" src="{{ media_url }}{{ match.photo }}" class="d-inline-block">
                         <p id="description" class="d-inline-block">
                             DESCRIPTION: {{ match.description }}
                         </p>

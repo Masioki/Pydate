@@ -222,7 +222,7 @@ def my_matches(request):
             if match.chatting_match == "11":
                 u = UserData.objects.get(user=match.user1)
                 # matches_data.append({"username": u.user.username, "description": u.description, "photo": u.photo})
-                matches_data.append({"username": u.user.username, "description": u.description})
+                matches_data.append({"username": u.user.username, "description": u.description, "photo":u.photo})
     if len(matches_data) == 0:
         display_no_matches_info = True
     else:
@@ -230,7 +230,7 @@ def my_matches(request):
         display_no_matches_info = False
 
     return render(request, 'html_pages/my_matches.html',
-                  {"matches_data": matches_data, "display_no_matches_info": display_no_matches_info})
+                  {"matches_data": matches_data, "display_no_matches_info": display_no_matches_info, 'media_url': settings.STATIC_URL})
 
 
 @login_required
