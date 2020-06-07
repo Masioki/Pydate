@@ -279,10 +279,12 @@ def view_answers(request):
                                 question_content[idu] += [q["content"] for q in questionset]
 
     formset_form = formset_factory(PersonalQuestionsForm, extra=len(users_ids))
-
+    display=1
+    if(len(users_ids)==0):
+        display=0
     formset = formset_form()
     return render(request, 'html_pages/view_answers.html',
-                  {"formset": formset, "question_content": question_content, "names": users_ids,
+                  {"display":display,"formset": formset, "question_content": question_content, "names": users_ids,
                    "user_index": users_index, "descriptions": descriptions, "questions": questions, "age": ages,
                    "img": photos, "local": locations, 'media_url': settings.STATIC_URL})
 
