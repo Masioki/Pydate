@@ -32,6 +32,13 @@ def calculate_age(born):
     today = date.today()
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
 
+def Have_I_question(user):
+    q = PersonalQuestionUser.objects.filter(user=user)
+    if(q):
+        return 1
+    else:
+        return 0
+
 
 @login_required
 @require_http_methods(["POST"])
@@ -246,40 +253,43 @@ def view_answers(request):
     locations = []
     # tu juz nie
     personal_questions_user = PersonalQuestionUser.objects.filter(user=request.user)
+    mydata = UserData.objects.get(user=request.user)
+    if(not mydata.personality):
+        display = False
+    else:
+        display = True
+        if personal_questions_user:
+            for p in personal_questions_user:
+                answerset = PersonalQuestionAnswer.objects.filter(questionID=str(p.id))
+                questionset = PersonalQuestionContent.objects.filter(questionID=str(p.id)).values("content").all()
+                if answerset:
+                    for usr in answerset:
+                        if str(usr.user) not in users_ids:
+                            questions += [[str(usr.content)]]
 
-    if personal_questions_user:
-        for p in personal_questions_user:
-            answerset = PersonalQuestionAnswer.objects.filter(questionID=str(p.id))
-            questionset = PersonalQuestionContent.objects.filter(questionID=str(p.id)).values("content").all()
-            if answerset:
-                for usr in answerset:
-                    if str(usr.user) not in users_ids:
-                        questions += [[str(usr.content)]]
+                            users_ids += [(str(usr.user))]
+                            question_content += [[q["content"] for q in questionset]]
+                            # lokalizacja
+                            locations += [float("{0:.2f}".format(distance_between(usr.user, request.user)))]
 
-                        users_ids += [(str(usr.user))]
-                        question_content += [[q["content"] for q in questionset]]
-                        # lokalizacja
-                        locations += [float("{0:.2f}".format(distance_between(usr.user, request.user)))]
-
-                        # sets
-                        userset = UserData.objects.filter(user=str(usr.user.id)).values("id", "description", "photo",
-                                                                                        "birth").all()
-                        userset2 = UserData.objects.filter(user=str(usr.user.id)).values("user_id").all()
-                        # data from sets
-                        descriptions += [' ' + q["description"] for q in userset]
-                        photos += [q["photo"] for q in userset]
-                        ages += [calculate_age(q["birth"]) for q in userset]
-                        users_index += [(q["user_id"]) for q in userset2]
-                    else:
-                        for idu, u in enumerate(users_ids):
-                            if str(usr.user) == u:
-                                questions[idu] += [(str(usr.content))]
-                                question_content[idu] += [q["content"] for q in questionset]
+                            # sets
+                            userset = UserData.objects.filter(user=str(usr.user.id)).values("id", "description", "photo",
+                                                                                            "birth").all()
+                            userset2 = UserData.objects.filter(user=str(usr.user.id)).values("user_id").all()
+                            # data from sets
+                            descriptions += [' ' + q["description"] for q in userset]
+                            photos += [q["photo"] for q in userset]
+                            ages += [calculate_age(q["birth"]) for q in userset]
+                            users_index += [(q["user_id"]) for q in userset2]
+                        else:
+                            for idu, u in enumerate(users_ids):
+                                if str(usr.user) == u:
+                                    questions[idu] += [(str(usr.content))]
+                                    question_content[idu] += [q["content"] for q in questionset]
 
     formset_form = formset_factory(PersonalQuestionsForm, extra=len(users_ids))
-    display=1
     if(len(users_ids)==0):
-        display=0
+        display=False
     formset = formset_form()
     return render(request, 'html_pages/view_answers.html',
                   {"display":display,"formset": formset, "question_content": question_content, "names": users_ids,
@@ -383,7 +393,8 @@ def select_comrade_for_me(suspect):
             )
         )
         if not match:
-            available_users.append(u.user)
+            if(u.user.personality and Have_I_question(u.user)):# jesli u ma osobowosc oraz conajmniej 1 pytanie
+                available_users.append(u.user)
     if len(available_users) == 0:
         return suspect
     else:
@@ -403,24 +414,29 @@ def create_match(us1, us2):  # najpierw requested potem towarzysz
 
 @login_required
 def view_people(request):
-    age = description = location = photo = ''
+    age = description = location = candidate = userid = photo = ''
     user = request.user
     chats = UserChat.chats_info(user)
-    candidate = select_comrade_for_me(request.user)
-    userid = candidate.id
-    if request.user == candidate:
+    mydata= UserData.objects.get(user=request.user)
+    personality_error = False
+    if(not mydata.personality or not Have_I_question(request.user)):# jesli nie ma osobowosci lub conajmniej 1 pytania
         display = False
     else:
-        display = True
-        candidate_info = UserData.objects.filter(user=candidate)
+        candidate = select_comrade_for_me(request.user)
+        userid = candidate.id
+        if request.user == candidate:
+            display = False
+        else:
+            display = True
+            candidate_info = UserData.objects.filter(user=candidate)
 
-        for u in candidate_info:
-            description = u.description
-            photo = u.photo
-            age = calculate_age(u.birth)
-            location = float("{0:.2f}".format(distance_between(candidate, request.user)))
+            for u in candidate_info:
+                description = u.description
+                photo = u.photo
+                age = calculate_age(u.birth)
+                location = float("{0:.2f}".format(distance_between(candidate, request.user)))
     return render(request, 'html_pages/view_people.html',
-                  {'chats': chats, 'username': user.username, "desc": description, "age": age, "loc": location,
+                  {"personerror":personality_error, 'chats': chats, 'username': user.username, "desc": description, "age": age, "loc": location,
                    "nick": candidate, "name": userid, "photo": photo,
                    "display": display, 'media_url': settings.STATIC_URL})
 
