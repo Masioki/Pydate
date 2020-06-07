@@ -229,11 +229,13 @@ def my_matches(request):
             if match.chatting_match == "11":
                 u = UserData.objects.get(user=match.user1)
                 # matches_data.append({"username": u.user.username, "description": u.description, "photo": u.photo})
-                matches_data.append({"username": u.user.username, "description": u.description, "photo":u.photo})
+                if(u.photo):
+                    matches_data.append({"username": u.user.username, "description": u.description, "photo":u.photo})
+                else:
+                    matches_data.append({"username": u.user.username, "description": u.description, "photo": "images/user_profile_pictures/default.jpg/"})
     if len(matches_data) == 0:
         display_no_matches_info = True
     else:
-        info = ""
         display_no_matches_info = False
 
     return render(request, 'html_pages/my_matches.html',
@@ -432,7 +434,10 @@ def view_people(request):
 
             for u in candidate_info:
                 description = u.description
-                photo = u.photo
+                if(u.photo):
+                    photo = u.photo
+                else:
+                    photo="/images/user_profile_pictures/default.jpg/"
                 age = calculate_age(u.birth)
                 location = float("{0:.2f}".format(distance_between(candidate, request.user)))
     return render(request, 'html_pages/view_people.html',
