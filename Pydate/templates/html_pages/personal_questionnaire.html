@@ -23,7 +23,7 @@
 {% block content %}
     <main class="d-flex row min-vh-100 justify-content-center mw-100">
         <div class="container col-xl-6 col-lg-4 col-md-6 col-sm-6 col-9 justify-content-center align-self-center">
-            <form action="/personal_questionnaire/" method="post">
+            <form action="{% url "personal_questionnaire" username %}" method="post">
                 {% csrf_token %}
                 {{ formset.management_form }}
                 {% for form in formset %}
