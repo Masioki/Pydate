@@ -30,16 +30,16 @@ class RegisterForm(UserCreationForm):
 
 
 class PersonalQuestionsForm(ModelForm):
-    answer_to_question = forms.CharField(required=True,
+    content = forms.CharField(required=True,
                                          widget=forms.TextInput(attrs={"class": "answer", "required": "true"}),
                                          max_length=200)
 
     class Meta:
         model = PersonalQuestionAnswer
-        fields = ("answer_to_question",)
+        fields = ("content",)
 
-    def clean_answer_to_question(self):
-        answer = self.cleaned_data['answer_to_question']
+    def clean_content(self):
+        answer = self.cleaned_data['content']
         if not answer or answer == "":
             raise ValidationError("Please, answer all of the questions")
         return answer

@@ -203,7 +203,8 @@ def personal_questionnaire(request, username):
                 if form.is_valid():
                     answer = form.save(commit=False)
                     answer.user = request.user
-                    answer.questionID = PersonalQuestionContent.objects.get(pk=i + 1)
+                    answer.questionID = personal_questions_user[i].questionID
+                    answer.content = form.cleaned_data.get("content")
                     answer.save()
             return redirect('/')
     else:
