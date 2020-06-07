@@ -77,9 +77,12 @@ def profile(request):
         'birth': user_data.birth,
         'description': user_data.description,
         'sex': user_data.sex,
-        'looking_for': user_data.searching_for,
-        'img': user_data.photo
+        'looking_for': user_data.searching_for
     }
+    try:
+        data['url'] = user_data.photo.url
+    except ValueError:
+        data['url'] = False
     return render(request, 'html_pages/profile_editor.html', {'data': data})
 
 
