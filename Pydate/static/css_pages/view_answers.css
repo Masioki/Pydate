@@ -1,4 +1,4 @@
-.container{
+.container {
     background-color: #ABC0CC;
     padding: 30px;
     margin-top: 40px;
@@ -6,15 +6,15 @@
     border-radius: 5px;
 }
 
-.question{
+.question {
     text-align: center;
     width: 100%;
     min-height: 30px;
     font-size: 20px;
 }
 
-#answer{
-    float:left;
+#answer {
+    float: left;
     width: 100%;
     min-height: 36px;
     margin: 10px auto;
@@ -24,24 +24,24 @@
     padding: 5px;
 }
 
-.answer:active{
-    transform: scale(1.01,1.01);
+.answer:active {
+    transform: scale(1.01, 1.01);
     transition: transform 20ms ease-in-out;
 }
 
-.answer:focus{
+.answer:focus {
     transition: all 100ms ease-in-out;
     background-color: #f1b0b7;
     border: #eee solid 2px;
 }
 
-#accept{
+#accept {
     #background-color: #1c7430;
     #border: #fff solid 1px;
     padding: 5px 10px;
     display: block;
-    margin:5%;
-    float:right;
+    margin: 5%;
+    float: right;
     color: #fff;
     margin-left: auto;
     margin-right: auto;
@@ -49,18 +49,18 @@
     margin-top: 20px;
 }
 
-#accept:hover{
-    opacity : 0.70;
+#accept:hover {
+    opacity: 0.70;
     transform: scale(1.05, 1.05);
-    filter : alpha(opacity=70);
+    filter: alpha(opacity=70);
 }
 
-#decline{
+#decline {
     #background-color: #c82333;
     #border: #fff solid 1px;
-    margin:5%;
+    margin: 5%;
     padding: 5px 10px;
-    float:left;
+    float: left;
     display: block;
     color: #fff;
     margin-left: auto;
@@ -69,13 +69,13 @@
     margin-top: 20px;
 }
 
-#decline:hover{
-    opacity : 0.70;
+#decline:hover {
+    opacity: 0.70;
     transform: scale(1.02, 1.02);
-    filter : alpha(opacity=70);
+    filter: alpha(opacity=70);
 }
 
-#profpic{
+#profpic {
     color: #FFFDD4;
     display: block;
     margin-left: auto;
@@ -91,12 +91,13 @@
     border: #C89EA3 solid 1px;
     transition: all 300ms ease-in-out;
 }
-#profpic:hover{
+
+#profpic:hover {
     opacity: 100%;
     transform: scale(1.04, 1.04);
 }
 
-#profpic2:hover{
+#profpic2:hover {
     opacity: 100%;
     transform: scale(1.04, 1.04);
 }

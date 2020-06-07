@@ -1,46 +1,65 @@
-from channels.db import database_sync_to_async
-from django.contrib.auth.models import User
 import json
 
+from channels.db import database_sync_to_async
+from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+from Pydate.models import Match
+
+
+@receiver(post_save, sender=Match)
+def after_match(sender, instance, **kwargs):
+    print("Halo")
+    if instance.chatting_match == '11':
+        user1 = instance.user1
+        user2 = instance.user2
+        chats = UserChat.objects.filter(user=user1)
+        ids = [c.chat for c in chats]
+        possible = UserChat.objects.filter(chatID__in=ids, user=user2)
+        if len(possible) == 0:
+            chat = Chat()
+            chat.save()
+            UserChat(chatID=chat, user=user1).save()
+            UserChat(chatID=chat, user=user2).save()
 
 
 class Chat(models.Model):
-    chatID = models.AutoField(primary_key=True, default=0)
-    agreement = models.IntegerField(default=0)
+    chatID = models.AutoField(primary_key=True)
+    # date = models.DateField(auto_now=True)
+    agreement = models.IntegerField(default=1)
 
-
-# TODO: do użytkownika nie chatu
 
 class UserChat(models.Model):
-    userChatID = models.AutoField(primary_key=True, unique=True, default=0)
-    chatID = models.ForeignKey(Chat, unique=False, on_delete=models.CASCADE)
-    user = models.ForeignKey(User,unique=False, on_delete=models.CASCADE)
+    userChatID = models.AutoField(primary_key=True, unique=True)
+    chat = models.ForeignKey(Chat, unique=False, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, unique=False, on_delete=models.CASCADE)
 
     @staticmethod
     def user_belongs_to(user, chat_id):
-        return UserChat.objects.filter(chatID=chat_id, user=user)
+        return UserChat.objects.filter(chat=chat_id, user=user)
 
     @staticmethod
     @database_sync_to_async
     def get_available_chats(user):
-        return [i.chatID.chatID for i in list(UserChat.objects.filter(user=user))]
+        return [i.chat.chatID for i in list(UserChat.objects.filter(user=user))]
 
     @staticmethod
     def chats_info(user):
         result = []
         for i in list(UserChat.objects.filter(user=user)):
             temp = {
-                "chat_id": i.chatID.chatID,
-                "username": list(UserChat.objects.filter(chatID=i.chatID.chatID).exclude(user=user))[0].user.username
+                "chat_id": i.chat.chatID,
+                "username": list(UserChat.objects.filter(chat=i.chat).exclude(user=user))[0].user.username
             }
             result.append(temp)
         return result
 
 
 class ChatMessage(models.Model):
-    messageID = models.AutoField(primary_key=True, default=0)
+    messageID = models.AutoField(primary_key=True)
     chat = models.ForeignKey(Chat, unique=False, on_delete=models.CASCADE)
     message = models.CharField(max_length=300)
     date = models.DateTimeField(auto_now=True, unique=False)

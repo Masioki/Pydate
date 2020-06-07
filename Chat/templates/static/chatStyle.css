@@ -1,15 +1,15 @@
 #chat-list-button {
     border-radius: 25px;
     background: pink;
-    padding: 20px;
+    padding: 40px 40px 70px;
     width: 180px;
-    height: 20px;
+    height: 2px;
     text-align: center;
     font-family: SansSerif, sans-serif;
     font-size: 20px;
     color: white;
     position: fixed;
-    bottom: 0;
+    bottom: 50px;
     right: 0;
 }
 
@@ -65,12 +65,14 @@
 .chat {
     font-family: SansSerif, sans-serif;
     display: block;
+    position: fixed;
+    bottom: 50px;
 }
 
 .popup-chat-list {
     display: inline-block;
     position: fixed;
-    bottom: 20px;
+    bottom: 50px;
     right: 250px;
     font-family: SansSerif, sans-serif;
     padding: 5px;
@@ -81,12 +83,15 @@
     width: 230px;
     border-radius: 10px;
     border: 3px solid pink;
+    background: white;
 }
 
 .chat-popup-header {
     display: block;
     background: pink;
     height: 20px;
+    font-family: sans-serif;
+
 }
 
 .chat-popup-header-close {
@@ -103,20 +108,26 @@
     display: inline-block;
     padding-left: 4px;
     padding-right: 4px;
+    font-size: 15px;
 }
 
 .chat-popup-body {
     display: block;
+    background: white;
     border-top: 0;
     min-height: 150px;
     border-radius: 10px;
     border-bottom: 3px solid pink;
     overflow-scrolling: auto;
+    overflow: scroll;
+    overflow-x: hidden;
+    max-height: 190px;
 }
 
 .chat-popup-body ul {
-    display: block;
+    display: table-row;
     padding: 5px;
+    max-height: 100px;
     height: 120px;
     scroll-behavior: smooth;
     wrap-option: soft-wrap;
@@ -127,17 +138,17 @@
     display: table-cell;
     padding-top: 5px;
     padding-bottom: 5px;
+    wrap-option: soft-wrap;
+    overflow-wrap: break-word;
 }
 
 .messages {
-    display: block;
 }
 
 .message-right {
     border-radius: 10px;
     background: lightblue;
     float: right;
-    display: block;
     padding-right: 10px;
     padding-left: 10px;
     width: border-box;
@@ -149,7 +160,6 @@
     border-radius: 10px;
     background: pink;
     float: left;
-    display: block;
     padding-left: 10px;
     padding-right: 10px;
     width: border-box;
@@ -160,17 +170,21 @@
 .chat-popup-input {
     display: inline-block;
     border-radius: 5px;
+    background: white;
+
     border: 2px solid white;
 }
 
 .chat-popup-input > textarea {
     border-radius: 5px;
+    display: inline-block;
     outline: none;
     border: none;
-    height: 20px;
+    height: 30px;
     wrap-option: soft-wrap;
     overflow-wrap: break-spaces;
     columns: 40;
+    width: 173px;
     resize: none;
     scroll-behavior: smooth;
     overflow: hidden;
@@ -179,6 +193,7 @@
 .chat-popup-input > button {
     outline: none;
     border: none;
+    display: inline-block;
     border-radius: 20px;
     background: lightpink;
     padding: 10px;

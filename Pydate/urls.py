@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.conf.urls import url
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -24,15 +25,16 @@ from Pydate import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.base,),
+    path('', views.base, ),
     path('register/', views.register),
     path('login/', auth_views.LoginView.as_view(), name="login"),
     path('personality_test/', views.personality_test),
     path('personality_test/<int:test_item_id>/', views.test_vote, name='test_vote'),
     path('chat/', include('Chat.urls')),
     path('profile/', views.profile),
-    path('help/',views.info_view, name='info'),
+    path('help/', views.info_view, name='info'),
     path('profile/edit/', views.update_profile),
+    path('profile/editimg/', views.update_profile_picture),
     path('<str:username>/personal_questionnaire/', views.personal_questionnaire, name="personal_questionnaire"),
     path('my_matches/', views.my_matches, name="my_matches"),
     path('view_answers/', views.view_answers, name="view_answers"),
@@ -41,10 +43,13 @@ urlpatterns = [
     url(r'^view_answers/(?P<id>\d+)/accept_match$', views.match_accept, name='match_accept'),
     url(r'^view_people/(?P<id>\d+)/make_crush$', views.yes_crush, name='yes_crush'),
     url(r'^view_people/(?P<id>\d+)/decline_crush$', views.no_crush, name='no_crush'),
-
-
     url(r'^logout/$', views.logout_view, name='logout')
 ]
-from django.conf import settings
+urlpatterns += staticfiles_urlpatterns()
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + staticfiles_urlpatterns()
+# static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + staticfiles_urlpatterns()
+
+# if settings.DEBUG:
+#     urlpatterns += static(settings.MEDIA_URL,
+#                           document_root=settings.MEDIA_ROOT)

@@ -1,14 +1,14 @@
-main{
+main {
     font-size: 23px;
 }
 
-.container{
+.container {
     background-color: #BCD1DD;
     padding: 30px;
 }
 
 
-#invitation_div{
+#invitation_div {
     background-color: #BCD1DD;
     color: #fff;
     max-height: 150px;
@@ -19,7 +19,8 @@ main{
     margin: 10px;
     padding: 30px 0;
 }
-#submit_login{
+
+#submit_login {
     margin-top: 30px;
     background-color: #FA7388;
     border: #fff solid 1px;

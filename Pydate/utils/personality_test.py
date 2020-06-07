@@ -1,5 +1,7 @@
-from ..models import PersonalityTestItem, PersonalityTestAnswer
 from django.contrib.auth.models import User
+
+from ..models import PersonalityTestItem, PersonalityTestAnswer
+
 
 def get_personality_type(user_id):
     user = User.objects.get(pk=user_id)
@@ -13,6 +15,7 @@ def get_personality_type(user_id):
 
     return resault_type
 
+
 def get_personality_trait(trait_type, aswners):
     items = PersonalityTestItem.objects.all().filter(type=trait_type)
     score = 0
@@ -25,8 +28,8 @@ def get_personality_trait(trait_type, aswners):
         else:
             score += aswners[item.itemID]
 
-    teshold_score = (len(items) * 6)//2 - substraction_count*6
-    
+    teshold_score = (len(items) * 6) // 2 - substraction_count * 6
+
     if score > teshold_score:
         return trait_type[1]
     else:

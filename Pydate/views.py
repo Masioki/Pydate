@@ -1,35 +1,47 @@
-from datetime import date
-
 import json
 import urllib.request
+from datetime import date
 from math import radians, cos, sin, asin, sqrt
-from funkcje import choose_best_by_personality
-from django.contrib.auth.signals import user_logged_in
-from django.dispatch import receiver
+
 from django.contrib.auth import authenticate, login
-from django.shortcuts import get_object_or_404, render, redirect
-from .utils.personality_test import get_personality_type
-from django.utils.datastructures import MultiValueDictKeyError
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.contrib.auth.signals import user_logged_in
+from django.db.models import Q
+from django.dispatch import receiver
+from django.forms import formset_factory
 from django.http import JsonResponse
 from django.http.response import HttpResponseNotFound
+from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
+from django.utils.datastructures import MultiValueDictKeyError
 from django.views.decorators.http import require_http_methods
-from django.contrib.auth import logout
-from django.db.models import Q
+
+from Chat.models import UserChat
 from Pydate import settings
 from Pydate.forms import RegisterForm, PersonalQuestionsForm
-from Pydate.models import PersonalityTestItem, PersonalityTestAnswer, UserData, PersonalQuestionUser, \
-    PersonalQuestionContent, PersonalQuestionAnswer, Match
+from Pydate.models import PersonalityTestItem, PersonalityTestAnswer
 from Pydate.models import UserData, PersonalQuestionUser, PersonalQuestionContent, PersonalQuestionAnswer, Match, \
     UserLog
-from django.forms import formset_factory
-from django.contrib.auth.models import User
+from funkcje import choose_best_by_personality
+from .utils.personality_test import get_personality_type
 
 
 def calculate_age(born):
     today = date.today()
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+
+
+@login_required
+@require_http_methods(["POST"])
+def update_profile_picture(request):
+    file = request.FILES.get('image')
+    user = request.user
+    user = UserData.objects.get(user=user)
+    user.photo = file
+    user.save()
+    return JsonResponse({'message': 'success'}, status=200)
 
 
 @login_required
@@ -65,7 +77,8 @@ def profile(request):
         'birth': user_data.birth,
         'description': user_data.description,
         'sex': user_data.sex,
-        'looking_for': user_data.searching_for
+        'looking_for': user_data.searching_for,
+        'img': user_data.photo
     }
     return render(request, 'html_pages/profile_editor.html', {'data': data})
 
@@ -101,7 +114,6 @@ def register(request):
     else:
         form = RegisterForm()
     return render(request, 'html_pages/register.html', {'form': form})
-
 
 
 # def login_view(request):
@@ -148,6 +160,7 @@ def test_vote(request, test_item_id):
 def logout_view(request):
     logout(request)
     return render(request, 'html_pages/base.html', {})
+
 
 def info_view(request):
     return render(request, 'html_pages/view_info.html', {})
@@ -351,7 +364,7 @@ def match_accept(request, id=None):
 def select_comrade_for_me(suspect):
     available_users = []
     suspect_data = UserData.objects.get(user=suspect)
-    users_data = UserData.objects.filter(sex=suspect_data.searching_for,searching_for=suspect_data.sex).all()
+    users_data = UserData.objects.filter(sex=suspect_data.searching_for, searching_for=suspect_data.sex).all()
     for u in users_data:
         match = Match.objects.filter(
             Q(
@@ -387,7 +400,8 @@ def create_match(us1, us2):  # najpierw requested potem towarzysz
 @login_required
 def view_people(request):
     age = description = location = photo = ''
-
+    user = request.user
+    chats = UserChat.chats_info(user)
     candidate = select_comrade_for_me(request.user)
     userid = candidate.id
     if request.user == candidate:
@@ -401,19 +415,19 @@ def view_people(request):
             photo = u.photo
             age = calculate_age(u.birth)
             location = float("{0:.2f}".format(distance_between(candidate, request.user)))
-
     return render(request, 'html_pages/view_people.html',
-                  {"desc": description, "age": age, "loc": location, "nick": candidate, "name": userid, "photo": photo,
+                  {'chats': chats, 'username': user.username, "desc": description, "age": age, "loc": location,
+                   "nick": candidate, "name": userid, "photo": photo,
                    "display": display, 'media_url': settings.STATIC_URL})
 
 
 def yes_crush(request, id=None):
     comrade = User.objects.get(id=str(id))
     "statystyka"
-    log_com=UserLog.objects.get(user=comrade)
-    log_my=UserLog.objects.get(user=request.user)
-    log_com.likes_receive+=1
-    log_my.likes_sent+=1
+    log_com = UserLog.objects.get(user=comrade)
+    log_my = UserLog.objects.get(user=request.user)
+    log_com.likes_receive += 1
+    log_my.likes_sent += 1
     log_com.save()
     log_my.save()
     "koniec staystyki"
@@ -496,6 +510,5 @@ def distance_between(usr1, usr2):
     R = 6371
     return c * R  # w km
 
+
 "koniec lokalizacji"
-
-

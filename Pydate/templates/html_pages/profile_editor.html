@@ -14,11 +14,25 @@
 <div class="container bootstrap snippets">
     <div class="row">
         <div class="col-xl-12 d-flex  justify-content-center">
+
             <div class="form-horizontal" style="width: 500px">
                 <div class="panel panel-default">
                     <div class="panel-body text-center">
-                        <img src="https://bootdey.com/img/Content/avatar/avatar6.png" class="img-circle profile-avatar"
-                             alt="User avatar">
+                        {% if data.img.url %}
+                            <img style="padding: 10px" src="{{ data.img.url }}" alt="User avatar">
+                        {% else %}
+                            <img src="https://bootdey.com/img/Content/avatar/avatar6.png"
+                                 class="img-circle profile-avatar"
+                                 alt="User avatar">
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-body text-center">
+                        <input id="image" value="Choose some hot pic" type="file" accept="image/jpeg, image/png">
+                        <button onclick="updateImage()" class="btn btn-primary"
+                                style="background: lightblue;border: none">Set this hot pic as profile
+                        </button>
                     </div>
                 </div>
                 <div class="panel panel-default">
@@ -85,7 +99,7 @@
                     <div class="panel-body">
                         <div class="form-group">
                             <label class="col-sm-4 control-label">E-mail address</label>
-                            <div class="col-sm-12 " >
+                            <div class="col-sm-12 ">
                                 <input id="email" type="email" class="form-control" value="{{ data.email }}">
                             </div>
                         </div>
@@ -117,7 +131,7 @@
     </div>
 </div>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
     function update() {
         let pass = $("#password").val();
@@ -143,6 +157,26 @@
                 },
                 error: function () {
                     showMessage("Password error!");
+                }
+            });
+        }
+    }
+
+    function updateImage() {
+        var form = new FormData()
+        var img = $("#image")[0].files[0];
+        if (img !== undefined) {
+            form.append('image', img);
+            $.post({
+                url: '/profile/editimg/',
+                contentType: false,
+                processData: false,
+                headers: {
+                    "X-CSRFToken": '{{ csrf_token }}'
+                },
+                data: form,
+                success: function () {
+                    showMessage("Your picture has been updated!")
                 }
             });
         }

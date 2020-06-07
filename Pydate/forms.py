@@ -1,15 +1,17 @@
 import datetime
+
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.forms import UserCreationForm
-from Pydate.models import User
+
 from Pydate.models import PersonalQuestionAnswer
-from django import forms
+from Pydate.models import User
 
 
 class RegisterForm(UserCreationForm):
-    initial_date = datetime.date.today() - datetime.timedelta(days=365*18)
+    initial_date = datetime.date.today() - datetime.timedelta(days=365 * 18)
     birth_date = forms.DateField(initial=initial_date)
     username = forms.CharField(max_length=20)
     email = forms.EmailField(max_length=200)
@@ -22,7 +24,7 @@ class RegisterForm(UserCreationForm):
 
     def clean_birth_date(self):
         data = self.cleaned_data['birth_date']
-        if data > datetime.date.today() - datetime.timedelta(days=365*18):
+        if data > datetime.date.today() - datetime.timedelta(days=365 * 18):
             raise ValidationError(_('You have to be an adult to create a profile!'))
         return data
 
@@ -42,4 +44,3 @@ class PersonalQuestionsForm(ModelForm):
             print("HALO TU")
             raise ValidationError("Please, answer all of the questions")
         return answer
-

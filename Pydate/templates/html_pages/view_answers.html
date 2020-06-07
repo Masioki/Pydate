@@ -2,36 +2,39 @@
 {% extends 'html_pages/base.html' %}
 {% load list_item %}
 <html lang="en" xmlns:photos>
-    <head>
-        {% block header %}
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-            <title>Personal questionnaire</title>
-            <!-- css sheets -->
-            {% load static %}
-            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-            <link rel="stylesheet" href="{% static "css_pages/base.css" %}"/>
-            <link rel="stylesheet" href="{% static "css_pages/view_answers.css" %}"/>
-            <style>
+<head>
+    {% block header %}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Personal questionnaire</title>
+        <!-- css sheets -->
+        {% load static %}
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+              integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+              crossorigin="anonymous">
+        <link rel="stylesheet" href="{% static "css_pages/base.css" %}"/>
+        <link rel="stylesheet" href="{% static "css_pages/view_answers.css" %}"/>
+        <style>
 
-            </style>
-        {% endblock %}
-    </head>
-    <body>
-        {% block content %}
-            <main class="d-flex row min-vh-100 justify-content-center mw-100">
-                <div class="container col-xl-6 col-lg-4 col-md-6 col-sm-6 col-9 justify-content-center align-self-center">
-                    <form action="/view_answers/">
-                    {% for form in formset %}
-                        <div class="mw-100">
-                            <label class="question">{{ names|list_item:forloop.counter0 }}, {{ age|list_item:forloop.counter0 }} </label>
-                             <label class="question">{{ local|list_item:forloop.counter0 }} km away from you</label>
+        </style>
+    {% endblock %}
+</head>
+<body>
+{% block content %}
+    <main class="d-flex row min-vh-100 justify-content-center mw-100">
+        <div class="container col-xl-6 col-lg-4 col-md-6 col-sm-6 col-9 justify-content-center align-self-center">
+            <form action="/view_answers/">
+                {% for form in formset %}
+                    <div class="mw-100">
+                        <label class="question">{{ names|list_item:forloop.counter0 }}, {{ age|list_item:forloop.counter0 }} </label>
+                        <label class="question">{{ local|list_item:forloop.counter0 }} km away from you</label>
 
-                            <a id="profpic" href="/"><img src="{{media_url}}{{ img|list_item:forloop.counter0 }}" alt="profile_pic" width="200" height="150" class="m-0 p-0"/></a>
-                            <p>
-                                <label class="question">{{ descriptions|list_item:forloop.counter0 }} </label>
-                            </p>
-                            <label class="question"><span style="color: navy">Questions</span></label>
+                        <a id="profpic" href="/"><img src="{{ media_url }}{{ img|list_item:forloop.counter0 }}"
+                                                      alt="profile_pic" width="200" height="150" class="m-0 p-0"/></a>
+                        <p>
+                            <label class="question">{{ descriptions|list_item:forloop.counter0 }} </label>
+                        </p>
+                        <label class="question"><span style="color: navy">Questions</span></label>
                         {% for pyt in question_content|list_item:forloop.counter0 %}
                             <label class="question">{{ pyt }}</label>
                         {% endfor %}
@@ -41,15 +44,18 @@
                             <label class="question">{{ odp }}</label>
                         {% endfor %}
 
-                        <a href="{% url 'match_delete' user_index|list_item:forloop.counter0 %}"> <img src="{% static "images/decline.png" %}" width="96" height="70" id="decline" ></a></button>
-                        <a href="{% url 'match_accept' user_index|list_item:forloop.counter0 %}"> <img src="{% static "images/accept.png" %}" width="96" height="70" id="accept" ></a></button>
-                        </div>
-                    {% endfor %}
+                        <a href="{% url 'match_delete' user_index|list_item:forloop.counter0 %}"> <img
+                                src="{% static "images/decline.png" %}" width="96" height="70"
+                                id="decline"></a></button>
+                        <a href="{% url 'match_accept' user_index|list_item:forloop.counter0 %}"> <img
+                                src="{% static "images/accept.png" %}" width="96" height="70" id="accept"></a></button>
+                    </div>
+                {% endfor %}
 
-                    </form>
-                </div>
-            </main>
-        {% endblock %}
+            </form>
+        </div>
+    </main>
+{% endblock %}
 
-    </body>
+</body>
 </html>

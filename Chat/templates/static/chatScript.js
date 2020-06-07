@@ -54,7 +54,7 @@ function openChat(chatID, user) {
             addMessage(JSON.parse(mes.data), chatID)
         }
         openChats[chatID] = chatSocket;
-
+        showNewChatPopup(chatID, user);
         $.get({
             url: '/chat/messages/' + chatID,
             success: function (data) {
@@ -76,8 +76,8 @@ function showNewChatPopup(chatID, user) {
         '                <div class="chat-popup-header-name">' + user + '</div>' +
         '                <div class="chat-popup-header-close">x</div>' +
         '            </div>' +
-        '            <div class="chat-popup-body">' +
-        '                <ul class="messages">' +
+        '            <div class="chat-popup-body ">' +
+        '                <ul class="messages justify-content">' +
         '                </ul>' +
         '            </div>' +
         '            <div class="chat-popup-input">' +
@@ -106,14 +106,15 @@ function showNewChatPopup(chatID, user) {
 function addMessage(message, chatID) {
     let control = null;
     if (message.username === username) {
-        control = '<li class="message-right">' +
+        control = '<li class="message-right float-right">' +
             message.message +
             '     </li>'
     } else {
-        control = '<li class="message-left">' +
+        control = '<li class="message-left float-left">' +
             message.message +
             '     </li>'
     }
+
     $("#" + chatID + " ul").append($(control));
 }
 

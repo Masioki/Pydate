@@ -1,34 +1,38 @@
 <!DOCTYPE html>
 {% extends 'html_pages/base.html' %}
 <html lang="en">
-    <head>
-        {% block header %}
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-            <title>Personal questionnaire</title>
-            <!-- css sheets -->
-            {% load static %}
-            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-            <link rel="stylesheet" href="{% static "css_pages/base.css" %}"/>
-            <link rel="stylesheet" href="{% static "css_pages/personal_questionnaire.css" %}"/>
-            <link rel="stylesheet" href="{% static "css_pages/view_answers.css" %}"/>
-        {% endblock %}
-    </head>
-    <body>
-           {% block content %}
-        <main class="d-flex row min-vh-100 justify-content-center mw-100">
-            <h1 id="pydateintro" class="col-11 col-lg-8 text-center align-self-center">
-                How does it works?
-            </h1>
-            <div class="container col-xl-6 col-lg-4 col-md-6 col-sm-6 col-9 justify-content-center">
-                <div id="app_description" class="text-justify">
-                    <p id="app_description_text">Create an account and view other people's profiles. If you like it, drag its photo towards the heart or towards the trash can. After matching, you must answer the questions. If the other person accepts your answers and you accept their answers, they will be able to chat.
-                    </p>
-                    <p id="app_description_text">&hearts; good luck & have fun!&hearts;</p>
-                </div>
-            </div>
-        </main>
+<head>
+    {% block header %}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Personal questionnaire</title>
+        <!-- css sheets -->
+        {% load static %}
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+              integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+              crossorigin="anonymous">
+        <link rel="stylesheet" href="{% static "css_pages/base.css" %}"/>
+        <link rel="stylesheet" href="{% static "css_pages/personal_questionnaire.css" %}"/>
+        <link rel="stylesheet" href="{% static "css_pages/view_answers.css" %}"/>
     {% endblock %}
+</head>
+<body>
+{% block content %}
+    <main class="d-flex row min-vh-100 justify-content-center mw-100">
+        <h1 id="pydateintro" class="col-11 col-lg-8 text-center align-self-center">
+            How does it works?
+        </h1>
+        <div class="container col-xl-6 col-lg-4 col-md-6 col-sm-6 col-9 justify-content-center">
+            <div id="app_description" class="text-justify">
+                <p id="app_description_text">Create an account and view other people's profiles. If you like it, drag
+                    its photo towards the heart or towards the trash can. After matching, you must answer the questions.
+                    If the other person accepts your answers and you accept their answers, they will be able to chat.
+                </p>
+                <p id="app_description_text">&hearts; good luck & have fun!&hearts;</p>
+            </div>
+        </div>
+    </main>
+{% endblock %}
 
-    </body>
+</body>
 </html>

@@ -1,9 +1,11 @@
-import sqlite3
+import os
 import random
 import re
-import django
-import os
+import sqlite3
 from datetime import date
+
+import django
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Pydate.settings')
 django.setup()
 
@@ -15,7 +17,7 @@ def choose_best_by_personality(my_personality, users_list):
         return None
     list_to_sort = []
     for u in users_list:
-        if re.match("IN.J", my_personality) and re.match("EN.P", u.personality) or\
+        if re.match("IN.J", my_personality) and re.match("EN.P", u.personality) or \
                 re.match("IN.J", u.personality) and re.match("EN.P", my_personality) or \
                 re.match("IS.J", my_personality) and re.match("ES.P", u.personality) or \
                 re.match("IS.J", u.personality) and re.match("ES.P", my_personality) or \
@@ -29,13 +31,13 @@ def choose_best_by_personality(my_personality, users_list):
                 "ISFP" == u.personality and "ENFJ" == my_personality:  # blue
             list_to_sort.append({'user': u, 'points': 5})
         elif re.match(".S.P", my_personality) and re.match(".NT.", u.personality) or \
-                re.match(".S.P", u.personality) and re.match(".NT.", my_personality) or\
+                re.match(".S.P", u.personality) and re.match(".NT.", my_personality) or \
                 re.match(".S.J", my_personality) and re.match(".S.P", u.personality) or \
                 re.match(".S.J", u.personality) and re.match(".S.P", my_personality) or \
                 re.match(".S..", my_personality) and "ENTJ" == u.personality or \
                 re.match(".S..", u.personality) and "ENTJ" == my_personality:  # light green
             list_to_sort.append({'user': u, 'points': 3})
-        elif re.match(".S.P", my_personality) and re.match(".S.P", u.personality) or\
+        elif re.match(".S.P", my_personality) and re.match(".S.P", u.personality) or \
                 re.match(".S.J", my_personality) and re.match(".NT.", u.personality) or \
                 re.match(".S.J", u.personality) and re.match(".NT.", my_personality):  # yellow
             list_to_sort.append({'user': u, 'points': 2})
@@ -55,6 +57,8 @@ def dodaj_pytanie():
     c.execute("INSERT INTO starter_question ('content') VALUES ('pytam')")
     conn.commit()
     conn.close()
+
+
 # dodaj_pytanie()
 
 
@@ -71,11 +75,11 @@ def populate():
         profile.longitude = "0"
         profile.save()
     for a in range(10):
-            p1 = PersonalQuestionContent(content="How are you?")
-            p1.save()
-            user = User.objects.all()[0]
-            p2 = PersonalQuestionUser(user=user, questionID=p1)
-            p2.save()
+        p1 = PersonalQuestionContent(content="How are you?")
+        p1.save()
+        user = User.objects.all()[0]
+        p2 = PersonalQuestionUser(user=user, questionID=p1)
+        p2.save()
     for a in range(3):
         numbers = [i for i in range(8)]
         user1_rn = numbers[random.randint(0, len(numbers) - 1)]
@@ -91,7 +95,6 @@ def populate():
         else:
             chat = Match(user1=user1, user2=user2, personal_questions_match="11")
         chat.save()
-
 
 
 if __name__ == "__main__":

@@ -1,7 +1,8 @@
-main{
+main {
     font-size: 23px;
 }
-#message_div{
+
+#message_div {
     background-color: #BCD1DD;
     color: #fff;
     max-height: 150px;
@@ -13,7 +14,7 @@ main{
     padding: 30px 0;
 }
 
-.answer_button{
+.answer_button {
     background-color: #FA7388;
     border: #fff solid 1px;
     padding: 5px 10px;
@@ -25,29 +26,31 @@ main{
     margin-top: 20px;
     text-decoration-line: none;
 }
-.container{
+
+.container {
     background-color: #BCD1DD;
     padding: 30px;
     margin-bottom: 60px;
     border-radius: 5px;
 
 }
-label{
+
+label {
     display: list-item;
     list-style: none;
 }
 
-input{
+input {
     border: #eee solid 2px;
     border-radius: 5px;
 }
 
-input:active{
-    transform: scale(1.01,1.01);
+input:active {
+    transform: scale(1.01, 1.01);
     transition: transform 100ms ease-in-out;
 }
 
-input:focus{
+input:focus {
     transition: background-color 100ms ease-in-out;
     background-color: #f1b0b7;
 }

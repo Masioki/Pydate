@@ -1,5 +1,5 @@
 
-.container{
+.container {
     font-size: 20px;
     background-color: #BCD1DD;
     padding: 30px;
@@ -8,33 +8,33 @@
     border-radius: 5px;
 }
 
-#profile_picture{
+#profile_picture {
     width: 200px;
     height: 200px;
 }
 
-#no_matches{
+#no_matches {
     font-size: 25px;
     padding: 20px;
     text-align: center;
 }
 
-#no_matches > a{
+#no_matches > a {
     text-decoration-line: none;
     color: #fff;
     font-weight: bold;
 }
 
-#username{
+#username {
     font-size: 30px;
     padding: 20px;
 }
 
-#description{
+#description {
     padding: 20px;
 }
 
-#answer_button{
+#answer_button {
     text-decoration-line: none;
     background-color: #FA7388;
     border: #fff solid 1px;
@@ -47,7 +47,7 @@
     cursor: default;
 }
 
-#answer_button:hover{
+#answer_button:hover {
     transform: scale(1.01, 1.01);
     cursor: pointer;
 }

@@ -1,6 +1,7 @@
+from PIL import Image
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.models import User
 
 
 ####################
@@ -20,6 +21,29 @@ class UserData(models.Model):
 
     def __str__(self):
         return self.user.username
+
+    def save(self, *args, **kwargs):
+        super().save()
+        img = Image.open(self.photo.path)
+        width, height = img.size
+        if width > 300 and height > 300:
+            img.thumbnail((width, height))
+        if height < width:
+            left = (width - height) / 2
+            right = (width + height) / 2
+            top = 0
+            bottom = height
+            img = img.crop((left, top, right, bottom))
+        elif width < height:
+            left = 0
+            right = width
+            top = 0
+            bottom = width
+            img = img.crop((left, top, right, bottom))
+
+        if width > 300 and height > 300:
+            img.thumbnail((300, 300))
+        img.save(self.photo.path)
 
 
 ####################
@@ -45,6 +69,7 @@ class PersonalityTestItem(models.Model):
         TypeSN = 'SN', _('TypeSN')
         TypeFT = 'FT', _('TypeFT')
         TypeJP = 'JP', _('TypeJP')
+
     type = models.CharField(
         max_length=2,
         choices=Question_Type.choices,
@@ -92,13 +117,15 @@ class Match(models.Model):
         AGREE_1_TO_2 = '01'
         AGREE_2_TO_1 = '10'
         AGREE_BOTH = '11'
+
     user1 = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="user1")
     user2 = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="user2")
-    #Jak w answers dam serce to zmieniam wartosc personal_questions_match
+    # Jak w answers dam serce to zmieniam wartosc personal_questions_match
     personal_questions_match = models.CharField(max_length=2, choices=Agreement.choices, default=Agreement.AGREE_NONE)
-    #Jak na glownej dam serce to zmieniam wartosc chatting_match
+    # Jak na glownej dam serce to zmieniam wartosc chatting_match
     chatting_match = models.CharField(max_length=2, choices=Agreement.choices, default=Agreement.AGREE_NONE)
-    #Jak chatting_match jest rowny AGREE_NONE to te osoby nie maja prawa juz NIGDY siebie spotkac
+
+    # Jak chatting_match jest rowny AGREE_NONE to te osoby nie maja prawa juz NIGDY siebie spotkac
 
     class Meta:
         verbose_name_plural = "Matches"
@@ -112,8 +139,8 @@ class UserLog(models.Model):
     logins = models.IntegerField(default=1)
     likes_sent = models.IntegerField(default=0)
     likes_receive = models.IntegerField(default=0)
-    mess_sent = models.IntegerField(default=0)#zakomentuj
-    mess_receive = models.IntegerField(default=0)#zakomentuj
+    mess_sent = models.IntegerField(default=0)  # zakomentuj
+    mess_receive = models.IntegerField(default=0)  # zakomentuj
 
     def __str__(self):
         return self.user.username

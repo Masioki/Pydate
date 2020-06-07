@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
-from .models import UserData, PersonalityTestItem, PersonalityTestAnswer, PersonalQuestionContent, PersonalQuestionAnswer, PersonalQuestionUser, UserLog, Match
+from .models import UserData, PersonalityTestItem, PersonalityTestAnswer, PersonalQuestionContent, \
+    PersonalQuestionAnswer, PersonalQuestionUser, UserLog, Match
 
 
 class ProfileInline(admin.StackedInline):
@@ -13,7 +14,7 @@ class ProfileInline(admin.StackedInline):
 
 
 class CustomUserAdmin(UserAdmin):
-    inlines = (ProfileInline, )
+    inlines = (ProfileInline,)
 
     def get_inline_instances(self, request, obj=None):
         if not obj:

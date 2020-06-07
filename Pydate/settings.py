@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'channels',
     'Pydate',
     'Chat'
-    #'Pydate.apps.PydateConfig',
+    # 'Pydate.apps.PydateConfig',
 ]
 
 MIDDLEWARE = [
@@ -138,7 +138,6 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
-
 
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),

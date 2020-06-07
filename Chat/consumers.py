@@ -1,5 +1,6 @@
-from channels.generic.websocket import AsyncJsonWebsocketConsumer
 import json
+
+from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.core.serializers.json import DjangoJSONEncoder
 from twisted.protocols.memcache import ClientError
 
