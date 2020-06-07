@@ -1,7 +1,9 @@
 body {
     margin-top: 20px;
-    background: pink;
+    background: url('/static/images/background/man-in-gray-coat-carrying-woman-wearing-pink-coat-in-beach-698885.jpg') no-repeat;
+    background-size: cover;
     align-content: center;
+    color: white;
 }
 
 /**
@@ -9,7 +11,10 @@ body {
  */
 /*** General styles ***/
 .panel {
-    box-shadow: none;
+    box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    color: white;
+    background-color: grey;
+    opacity: 0.9;
 }
 
 .panel-heading {
@@ -18,15 +23,17 @@ body {
 
 .panel-title {
     font-size: 17px;
+     color: white;
 }
 
 .panel-title > small {
     font-size: .75em;
-    color: #999999;
+    color: white;
 }
 
 .panel-body *:first-child {
     margin-top: 0;
+
 }
 
 .panel-footer {

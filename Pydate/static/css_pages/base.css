@@ -1,7 +1,8 @@
 body, html {
     background: url('/static/images/background/couple-near-white-chevrolet-coupe-1131575.jpg') no-repeat;
     background-size: cover;
-    color: white;
+    color: dimgrey;
+    opacity: 0.95;
     font-family: SansSerif;
     height: 100%;
     font-size: 10px;
@@ -80,7 +81,7 @@ body, html {
 
 #pydateintro {
     background-color: #BCD1DD;
-    color: #fff;
+    color: dimgrey;
     max-height: 150px;
     border-radius: 15px;
     border: #fff solid 1px;
@@ -93,7 +94,7 @@ body, html {
 /*div z opisem aplikacji*/
 #app_description {
     background-color: #BCD1DD;
-    color: #FFF;
+    color: #dimgrey;
     font-size: 18px;
     padding: 30px;
     margin-top: 10px;
@@ -137,6 +138,7 @@ body, html {
 /*stopka*/
 #footer {
     text-align: center;
-    background-color: #8DA2B8;
+    background-color: grey;
+    color: white;
     font-size: 20px;
 }
