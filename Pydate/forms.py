@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
 
-from Pydate.models import PersonalQuestionAnswer
+from Pydate.models import PersonalQuestionAnswer, PersonalQuestionContent
 from Pydate.models import User
 
 
@@ -44,3 +44,19 @@ class PersonalQuestionsForm(ModelForm):
             print("HALO TU")
             raise ValidationError("Please, answer all of the questions")
         return answer
+
+
+class PersonalQuestionsCreateForm(ModelForm):
+    content = forms.CharField(required=True,
+                              widget=forms.TextInput(attrs={"class": "answer", "required": "true"}),
+                              max_length=250)
+
+    class Meta:
+        model = PersonalQuestionContent
+        fields = ("content",)
+
+    def clean_content(self):
+        q = self.cleaned_data['content']
+        if not q or q == "":
+            raise ValidationError("Please, complete all of the questions")
+        return q

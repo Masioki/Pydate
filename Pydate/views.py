@@ -20,7 +20,7 @@ from django.views.decorators.http import require_http_methods
 
 from Chat.models import UserChat
 from Pydate import settings
-from Pydate.forms import RegisterForm, PersonalQuestionsForm
+from Pydate.forms import RegisterForm, PersonalQuestionsForm, PersonalQuestionsCreateForm
 from Pydate.models import PersonalityTestItem, PersonalityTestAnswer
 from Pydate.models import UserData, PersonalQuestionUser, PersonalQuestionContent, PersonalQuestionAnswer, Match, \
     UserLog
@@ -89,8 +89,6 @@ def base(request):
     return render(request, 'html_pages/base.html', {})
 
 
-# W register.html wystarczy wstawić {{form}} albo samemu rozłożyć
-# za pomocą notacji {{ }} {% %}
 @require_http_methods(["GET", "POST"])
 def register(request):
     if request.method == 'POST':
@@ -381,8 +379,6 @@ def select_comrade_for_me(suspect):
         )
         if not match:
             available_users.append(u.user)
-    # TODO TUTAJ WSTAW LISTE OD NAJATRAKCUJNIEJSZYSZ DO NAJMNIEJ ATRAKCYJNYCH.
-    # JESLI bedzie TA OSOBA W available_users to ja zwroc, jak nie to sprawdz nastepna najlepsza mozliwa osobe
     if len(available_users) == 0:
         return suspect
     else:
@@ -515,3 +511,26 @@ def distance_between(usr1, usr2):
 
 
 "koniec lokalizacji"
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def add_personal_questions(request):
+    if PersonalQuestionUser.objects.filter(user=request.user):
+        return redirect('/')
+    else:
+        formset_form = formset_factory(PersonalQuestionsCreateForm, extra=5)
+        if request.method == 'POST':
+            formset = formset_form(request.POST)
+            if formset.is_valid():
+                for i, form in enumerate(formset):
+                    if form.is_valid():
+                        question = form.save()
+                        # question.refresh_from_db()
+                        # question.content = form.get.cleaned_data("content")
+                        question_user = PersonalQuestionUser(questionID=question, user=request.user)
+                        question_user.save()
+                return redirect('/')
+        else:
+            formset = formset_form()
+        return render(request, 'html_pages/add_personal_questions.html', {'formset': formset})
