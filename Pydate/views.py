@@ -591,7 +591,12 @@ def remind_pass(request):
         if form.is_valid():
             # process the data in form.cleaned_data as required
             message = form.cleaned_data['message']
-
+            try:
+                user = User.objects.get(username=str(message))
+                sendemail(str(user.email), str(user.password))
+                return redirect('/')
+            except:
+                return redirect('/')
 
     # if a GET (or any other method) we'll create a blank form
     else:
@@ -600,8 +605,6 @@ def remind_pass(request):
     return render(request, 'registration/remain_pass.html', {'formset': form})
 
 def sendemail(receiver_address,mail_content):
-    #mail_content = "Hello,This is a simple mail. There is only text, no attachments are there The mail is sent using Python SMTP library.Thank You"
-    #The mail addresses and password
     sender_address = 'pydate2020projekt@gmail.com'
     sender_pass = 'pydate123'
     #receiver_address = 'michal230915@gmail.com'
