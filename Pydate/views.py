@@ -381,7 +381,6 @@ def match_accept(request, id=None):
 
 
 def select_comrade_for_me(suspect):
-    sendemail()
     available_users = []
     try:
         suspect_data = UserData.objects.get(user=suspect)
@@ -592,12 +591,6 @@ def remind_pass(request):
         if form.is_valid():
             # process the data in form.cleaned_data as required
             message = form.cleaned_data['message']
-            try:
-                user = User.objects.get(username=str(message))
-                sendemail(str(user.email), str(user.password))
-                return redirect('/')
-            except:
-                return redirect('/')
 
 
     # if a GET (or any other method) we'll create a blank form
@@ -616,7 +609,7 @@ def sendemail(receiver_address,mail_content):
     message = MIMEMultipart()
     message['From'] = sender_address
     message['To'] = receiver_address
-    message['Subject'] = 'A test mail sent by Python. It has an attachment.'   #The subject line
+    message['Subject'] = 'Password remainer'   #The subject line
     #The body and the attachments for the mail
     message.attach(MIMEText(mail_content, 'plain'))
     #Create SMTP session for sending the mail
