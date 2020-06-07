@@ -33,7 +33,7 @@ def calculate_age(born):
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
 
 def Have_I_question(user):
-    q = PersonalQuestionUser.objects.filter(user=user)
+    q = PersonalQuestionUser.objects.filter(user=user.user)
     if(q):
         return 1
     else:
@@ -393,7 +393,7 @@ def select_comrade_for_me(suspect):
             )
         )
         if not match:
-            if(u.user.personality and Have_I_question(u.user)):# jesli u ma osobowosc oraz conajmniej 1 pytanie
+            if(u.personality and Have_I_question(u)):# jesli u ma osobowosc oraz conajmniej 1 pytanie
                 available_users.append(u.user)
     if len(available_users) == 0:
         return suspect
@@ -419,7 +419,7 @@ def view_people(request):
     chats = UserChat.chats_info(user)
     mydata= UserData.objects.get(user=request.user)
     personality_error = False
-    if(not mydata.personality or not Have_I_question(request.user)):# jesli nie ma osobowosci lub conajmniej 1 pytania
+    if(not mydata.personality or not Have_I_question(mydata)):# jesli nie ma osobowosci lub conajmniej 1 pytania
         display = False
     else:
         candidate = select_comrade_for_me(request.user)
