@@ -31,8 +31,8 @@ class RegisterForm(UserCreationForm):
 
 class PersonalQuestionsForm(ModelForm):
     content = forms.CharField(required=True,
-                                         widget=forms.TextInput(attrs={"class": "answer", "required": "true"}),
-                                         max_length=200)
+                              widget=forms.TextInput(attrs={"class": "answer", "required": "true"}),
+                              max_length=200)
 
     class Meta:
         model = PersonalQuestionAnswer
@@ -60,5 +60,6 @@ class PersonalQuestionsCreateForm(ModelForm):
             raise ValidationError("Please, complete all of the questions")
         return q
 
+
 class RemainForm(forms.Form):
-    message = forms.CharField(required=True,label='Your name', max_length=250)
+    message = forms.CharField(required=True, label='Your name', max_length=250)

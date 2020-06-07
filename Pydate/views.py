@@ -20,7 +20,7 @@ from django.views.decorators.http import require_http_methods
 
 from Chat.models import UserChat
 from Pydate import settings
-from Pydate.forms import RegisterForm, PersonalQuestionsForm, PersonalQuestionsCreateForm,RemainForm
+from Pydate.forms import RegisterForm, PersonalQuestionsForm, PersonalQuestionsCreateForm, RemainForm
 from Pydate.models import PersonalityTestItem, PersonalityTestAnswer
 from Pydate.models import UserData, PersonalQuestionUser, PersonalQuestionContent, PersonalQuestionAnswer, Match, \
     UserLog
@@ -32,9 +32,10 @@ def calculate_age(born):
     today = date.today()
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
 
+
 def Have_I_question(user):
     q = PersonalQuestionUser.objects.filter(user=user.user)
-    if(q):
+    if (q):
         return 1
     else:
         return 0
@@ -209,7 +210,8 @@ def personal_questionnaire(request, username):
             return redirect('/')
     else:
         formset = formset_form()
-    return render(request, 'html_pages/personal_questionnaire.html', {"username": username, "formset": formset, "questions": questions})
+    return render(request, 'html_pages/personal_questionnaire.html',
+                  {"username": username, "formset": formset, "questions": questions})
 
 
 @login_required
@@ -219,7 +221,8 @@ def my_matches(request):
     matches = Match.objects.filter(user1=request.user)
     if matches:
         for match in matches:
-            if (match.chatting_match == "11" and not(match.personal_questions_match =="11" or match.personal_questions_match =="10")):
+            if (match.chatting_match == "11" and not (
+                    match.personal_questions_match == "11" or match.personal_questions_match == "10")):
                 u = UserData.objects.get(user=match.user2)
                 if (u.photo):
                     matches_data.append({"username": u.user.username, "description": u.description, "photo": u.photo})
@@ -231,19 +234,22 @@ def my_matches(request):
     matches = Match.objects.filter(user2=request.user)
     if matches:
         for match in matches:
-            if (match.chatting_match == "11" and not(match.personal_questions_match =="11" or match.personal_questions_match =="01")):
+            if (match.chatting_match == "11" and not (
+                    match.personal_questions_match == "11" or match.personal_questions_match == "01")):
                 u = UserData.objects.get(user=match.user1)
-                if(u.photo):
-                    matches_data.append({"username": u.user.username, "description": u.description, "photo":u.photo})
+                if (u.photo):
+                    matches_data.append({"username": u.user.username, "description": u.description, "photo": u.photo})
                 else:
-                    matches_data.append({"username": u.user.username, "description": u.description, "photo": "images/user_profile_pictures/default.jpg/"})
+                    matches_data.append({"username": u.user.username, "description": u.description,
+                                         "photo": "images/user_profile_pictures/default.jpg/"})
     if len(matches_data) == 0:
         display_no_matches_info = True
     else:
         display_no_matches_info = False
 
     return render(request, 'html_pages/my_matches.html',
-                  {"matches_data": matches_data, "display_no_matches_info": display_no_matches_info, 'media_url': settings.STATIC_URL})
+                  {"matches_data": matches_data, "display_no_matches_info": display_no_matches_info,
+                   'media_url': settings.STATIC_URL})
 
 
 @login_required
@@ -260,7 +266,7 @@ def view_answers(request):
     # tu juz nie
     personal_questions_user = PersonalQuestionUser.objects.filter(user=request.user)
     mydata = UserData.objects.get(user=request.user)
-    if(not mydata.personality):
+    if (not mydata.personality):
         display = False
     else:
         display = True
@@ -279,7 +285,8 @@ def view_answers(request):
                             locations += [float("{0:.2f}".format(distance_between(usr.user, request.user)))]
 
                             # sets
-                            userset = UserData.objects.filter(user=str(usr.user.id)).values("id", "description", "photo",
+                            userset = UserData.objects.filter(user=str(usr.user.id)).values("id", "description",
+                                                                                            "photo",
                                                                                             "birth").all()
                             userset2 = UserData.objects.filter(user=str(usr.user.id)).values("user_id").all()
                             # data from sets
@@ -294,11 +301,11 @@ def view_answers(request):
                                     question_content[idu] += [q["content"] for q in questionset]
 
     formset_form = formset_factory(PersonalQuestionsForm, extra=len(users_ids))
-    if(len(users_ids)==0):
-        display=False
+    if (len(users_ids) == 0):
+        display = False
     formset = formset_form()
     return render(request, 'html_pages/view_answers.html',
-                  {"display":display,"formset": formset, "question_content": question_content, "names": users_ids,
+                  {"display": display, "formset": formset, "question_content": question_content, "names": users_ids,
                    "user_index": users_index, "descriptions": descriptions, "questions": questions, "age": ages,
                    "img": photos, "local": locations, 'media_url': settings.STATIC_URL})
 
@@ -399,7 +406,7 @@ def select_comrade_for_me(suspect):
             )
         )
         if not match:
-            if(u.personality and Have_I_question(u)):# jesli u ma osobowosc oraz conajmniej 1 pytanie
+            if (u.personality and Have_I_question(u)):  # jesli u ma osobowosc oraz conajmniej 1 pytanie
                 available_users.append(u.user)
     if len(available_users) == 0:
         return suspect
@@ -423,9 +430,9 @@ def view_people(request):
     age = description = location = candidate = userid = photo = ''
     user = request.user
     chats = UserChat.chats_info(user)
-    mydata= UserData.objects.get(user=request.user)
+    mydata = UserData.objects.get(user=request.user)
     personality_error = False
-    if(not mydata.personality or not Have_I_question(mydata)):# jesli nie ma osobowosci lub conajmniej 1 pytania
+    if (not mydata.personality or not Have_I_question(mydata)):  # jesli nie ma osobowosci lub conajmniej 1 pytania
         display = False
     else:
         candidate = select_comrade_for_me(request.user)
@@ -438,14 +445,15 @@ def view_people(request):
 
             for u in candidate_info:
                 description = u.description
-                if(u.photo):
+                if (u.photo):
                     photo = u.photo
                 else:
-                    photo="/images/user_profile_pictures/default.jpg/"
+                    photo = "/images/user_profile_pictures/default.jpg/"
                 age = calculate_age(u.birth)
                 location = float("{0:.2f}".format(distance_between(candidate, request.user)))
     return render(request, 'html_pages/view_people.html',
-                  {"personerror":personality_error, 'chats': chats, 'username': user.username, "desc": description, "age": age, "loc": location,
+                  {"personerror": personality_error, 'chats': chats, 'username': user.username, "desc": description,
+                   "age": age, "loc": location,
                    "nick": candidate, "name": userid, "photo": photo,
                    "display": display, 'media_url': settings.STATIC_URL})
 
@@ -494,7 +502,9 @@ def no_crush(request, id=None):
     match_decline(request.user, id)
     return redirect("view_people")
 
+
 """Statystyka"""
+
 
 @receiver(user_logged_in)
 def iterate_logins(request, *args, **kwargs):
@@ -506,7 +516,9 @@ def iterate_logins(request, *args, **kwargs):
         log = UserLog(user=request.user)
         log.save()
 
+
 """Lokalizacja"""
+
 
 @receiver(user_logged_in)
 def update_geolocation(sender, user, request, *args, **kwargs):
@@ -575,10 +587,10 @@ def add_personal_questions(request):
             formset = formset_form()
         return render(request, 'html_pages/add_personal_questions.html', {'formset': formset})
 
+
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-
 
 
 @require_http_methods(["GET", "POST"])
@@ -604,23 +616,22 @@ def remind_pass(request):
 
     return render(request, 'registration/remain_pass.html', {'formset': form})
 
-def sendemail(receiver_address,mail_content):
+
+def sendemail(receiver_address, mail_content):
     sender_address = 'pydate2020projekt@gmail.com'
     sender_pass = 'pydate123'
-    #receiver_address = 'michal230915@gmail.com'
-    #Setup the MIME
+    # receiver_address = 'michal230915@gmail.com'
+    # Setup the MIME
     message = MIMEMultipart()
     message['From'] = sender_address
     message['To'] = receiver_address
-    message['Subject'] = 'Password remainer'   #The subject line
-    #The body and the attachments for the mail
+    message['Subject'] = 'Password remainer'  # The subject line
+    # The body and the attachments for the mail
     message.attach(MIMEText(mail_content, 'plain'))
-    #Create SMTP session for sending the mail
-    session = smtplib.SMTP('smtp.gmail.com', 587) #use gmail with port
-    session.starttls() #enable security
-    session.login(sender_address, sender_pass) #login with mail_id and password
+    # Create SMTP session for sending the mail
+    session = smtplib.SMTP('smtp.gmail.com', 587)  # use gmail with port
+    session.starttls()  # enable security
+    session.login(sender_address, sender_pass)  # login with mail_id and password
     text = message.as_string()
     session.sendmail(sender_address, receiver_address, text)
     session.quit()
-
-

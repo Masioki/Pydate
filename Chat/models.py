@@ -12,14 +12,13 @@ from Pydate.models import Match
 
 @receiver(post_save, sender=Match)
 def after_match(sender, instance, **kwargs):
-    print("Halo")
     if instance.personal_questions_match == '11':
         user1 = instance.user1
         user2 = instance.user2
         chats = UserChat.objects.filter(user=user1)
-        #ids = [c.chat for c in chats]
-        #possible = UserChat.objects.filter(chatID__in=ids, user=user2)komentuje to bo ta sytuacja jest niemozliwa
-        #if len(possible) == 0:
+        # ids = [c.chat for c in chats]
+        # possible = UserChat.objects.filter(chatID__in=ids, user=user2)komentuje to bo ta sytuacja jest niemozliwa
+        # if len(possible) == 0:
         chat = Chat()
         chat.save()
         UserChat(chat=chat, user=user1).save()

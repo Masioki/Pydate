@@ -11,7 +11,7 @@ body {
  */
 /*** General styles ***/
 .panel {
-    box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
     color: white;
     background-color: grey;
     opacity: 0.9;
@@ -23,7 +23,7 @@ body {
 
 .panel-title {
     font-size: 17px;
-     color: white;
+    color: white;
 }
 
 .panel-title > small {

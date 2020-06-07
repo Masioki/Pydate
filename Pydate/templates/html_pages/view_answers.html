@@ -32,7 +32,8 @@
                             <label class="question">{{ local|list_item:forloop.counter0 }} km away from you</label>
 
                             <a id="profpic" href="/"><img src="{{ media_url }}{{ img|list_item:forloop.counter0 }}"
-                                                          alt="profile_pic" width="200" height="150" class="m-0 p-0"/></a>
+                                                          alt="profile_pic" width="200" height="150"
+                                                          class="m-0 p-0"/></a>
                             <p>
                                 <label class="question">{{ descriptions|list_item:forloop.counter0 }} </label>
                             </p>
@@ -50,12 +51,14 @@
                                     src="{% static "images/decline.png" %}" width="96" height="70"
                                     id="decline"></a></button>
                             <a href="{% url 'match_accept' user_index|list_item:forloop.counter0 %}"> <img
-                                    src="{% static "images/accept.png" %}" width="96" height="70" id="accept"></a></button>
+                                    src="{% static "images/accept.png" %}" width="96" height="70"
+                                    id="accept"></a></button>
                         </div>
                     {% endfor %}
                 {% else %}
                     <h id="no_matches">
-                        No one answers your questions yet, go to the <a href="/">home page</a> to look for a new people. Good luck! &hearts;
+                        No one answers your questions yet, go to the <a href="/">home page</a> to look for a new people.
+                        Good luck! &hearts;
                     </h>
                 {% endif %}
 
