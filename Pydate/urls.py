@@ -41,10 +41,10 @@ urlpatterns = [
     path('view_answers/', views.view_answers, name="view_answers"),
     path('view_people/', views.view_people, name="view_people"),
     path('remind_pass/', views.remind_pass, name="remind_pass"),
-    url(r'^view_answers/(?P<id>\d+)/delete_match$', views.match_delete, name='match_delete'),
-    url(r'^view_answers/(?P<id>\d+)/accept_match$', views.match_accept, name='match_accept'),
-    url(r'^view_people/(?P<id>\d+)/make_crush$', views.yes_crush, name='yes_crush'),
-    url(r'^view_people/(?P<id>\d+)/decline_crush$', views.no_crush, name='no_crush'),
+    url(r'^view_answers/(?P<user_id>\d+)/delete_match$', views.match_delete, name='match_delete'),
+    url(r'^view_answers/(?P<user_id>\d+)/accept_match$', views.match_accept, name='match_accept'),
+    url(r'^view_people/(?P<user_id>\d+)/make_crush$', views.yes_crush, name='yes_crush'),
+    url(r'^view_people/(?P<user_id>\d+)/decline_crush$', views.no_crush, name='no_crush'),
     url(r'^logout/$', views.logout_view, name='logout')
 ]
 urlpatterns += staticfiles_urlpatterns()
