@@ -320,6 +320,8 @@ def questions_delete(us1, us2):
 
 def match_decline(user1, id):
     comrade = User.objects.get(id=str(id))
+    questions_delete(user1, comrade)  # usuwam odpowiedzi comrade'a na pytania zalogowanego uzytkownika
+    questions_delete(comrade, user1)  # a tu vice versa
     # zmiana matchow na AGREE_NONE
     match = Match.objects.filter(user1=user1, user2=comrade)
     if match:
@@ -340,9 +342,6 @@ def match_decline(user1, id):
         else:
             match = Match.objects.create(user2=user1, user1=comrade, chatting_match=Match.Agreement.AGREE_2_TO_1)
         match.save()
-
-    questions_delete(user1, comrade)  # usuwam odpowiedzi comrade'a na pytania zalogowanego uzytkownika
-    questions_delete(comrade, user1)  # a tu vice versa
 
 
 def match_delete(request, id=None):
