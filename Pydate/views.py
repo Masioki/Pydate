@@ -1,10 +1,6 @@
 import json
-import smtplib
+
 import urllib.request
-from datetime import date
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from math import radians, cos, sin, asin, sqrt
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
@@ -27,22 +23,9 @@ from Pydate.forms import RegisterForm, PersonalQuestionsForm, PersonalQuestionsC
 from Pydate.models import PersonalityTestItem, PersonalityTestAnswer
 from Pydate.models import UserData, PersonalQuestionUser, PersonalQuestionContent, PersonalQuestionAnswer, Match, \
     UserLog
-from functions import choose_best_by_personality
+from functions import choose_best_by_personality, send_email, calculate_age, distance_between, get_client_ip, \
+    have_i_question
 from .utils.personality_test import get_personality_type
-
-
-def calculate_age(born):
-    today = date.today()
-    return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
-
-
-def have_i_question(user):
-    q = PersonalQuestionUser.objects.filter(user=user.user)
-    if q:
-        return 1
-    else:
-        return 0
-
 
 @login_required
 @require_http_methods(["POST"])
@@ -543,25 +526,6 @@ def update_geolocation(sender, user, request, *args, **kwargs):
         usr.save()
 
 
-def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
-
-
-def distance_between(usr1, usr2):
-    user1 = UserData.objects.get(user=usr1)
-    user2 = UserData.objects.get(user=usr2)
-    lat1, lon1, lat2, lon2 = map(radians, [user1.latitude, user1.longitude, user2.latitude, user2.longitude])
-    d_lat = lat1 - lat2
-    d_lon = lon1 - lon2
-    a = sin(d_lat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(d_lon / 2) ** 2  # Haversine formula
-    c = 2 * asin((sqrt(a)))
-    R = 6371
-    return c * R  # w km
 
 
 "koniec lokalizacji"
@@ -614,21 +578,3 @@ def remind_pass(request):
     return render(request, 'registration/remain_pass.html', {'formset': form})
 
 
-def send_email(receiver_address, mail_content):
-    sender_address = 'pydate2020projekt@gmail.com'
-    sender_pass = 'pydate123'
-    # receiver_address = 'michal230915@gmail.com'
-    # Setup the MIME
-    message = MIMEMultipart()
-    message['From'] = sender_address
-    message['To'] = receiver_address
-    message['Subject'] = 'Password remainer'  # The subject line
-    # The body and the attachments for the mail
-    message.attach(MIMEText(mail_content, 'plain'))
-    # Create SMTP session for sending the mail
-    session = smtplib.SMTP('smtp.gmail.com', 587)  # use gmail with port
-    session.starttls()  # enable security
-    session.login(sender_address, sender_pass)  # login with mail_id and password
-    text = message.as_string()
-    session.sendmail(sender_address, receiver_address, text)
-    session.quit()
