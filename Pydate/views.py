@@ -1,5 +1,4 @@
 import json
-
 import urllib.request
 
 from django.contrib.auth import authenticate, login
@@ -26,6 +25,7 @@ from Pydate.models import UserData, PersonalQuestionUser, PersonalQuestionConten
 from functions import choose_best_by_personality, send_email, calculate_age, distance_between, get_client_ip, \
     have_i_question
 from .utils.personality_test import get_personality_type
+
 
 @login_required
 @require_http_methods(["POST"])
@@ -304,8 +304,8 @@ def questions_delete(us1, us2):
             PersonalQuestionAnswer.objects.filter(user=us2, questionID=ques.questionID).delete()
 
 
-def match_decline(user1, id):
-    comrade = User.objects.get(id=str(id))
+def match_decline(user1, user_id):
+    comrade = User.objects.get(id=str(user_id))
     questions_delete(user1, comrade)  # usuwam odpowiedzi comrade'a na pytania zalogowanego uzytkownika
     questions_delete(comrade, user1)  # a tu vice versa
     # zmiana matchow na AGREE_NONE
@@ -330,13 +330,13 @@ def match_decline(user1, id):
         match.save()
 
 
-def match_delete(request, id=None):
-    match_decline(request.user, id)
+def match_delete(request, user_id=None):
+    match_decline(request.user, user_id)
     return redirect("view_answers")
 
 
-def match_accept(request, id=None):
-    comrade = User.objects.get(id=str(id))
+def match_accept(request, user_id=None):
+    comrade = User.objects.get(id=str(user_id))
     match = Match.objects.filter(user1=request.user, user2=comrade)
     if match:
         if len(match) > 1:
@@ -526,8 +526,6 @@ def update_geolocation(sender, user, request, *args, **kwargs):
         usr.save()
 
 
-
-
 "koniec lokalizacji"
 
 
@@ -576,5 +574,3 @@ def remind_pass(request):
         form = RemainForm()
 
     return render(request, 'registration/remain_pass.html', {'formset': form})
-
-
