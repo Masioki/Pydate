@@ -571,7 +571,7 @@ def remind_pass(request):
             except User.DoesNotExist:
                 return redirect('/')
 
-    # if a GET (or any other method) we'll create a blank form
+    # if a GET (or any other method) we'll create a blank forms
     else:
         form = RemainForm()
 
