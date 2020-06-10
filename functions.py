@@ -7,6 +7,8 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from math import radians, cos, sin, asin, sqrt
+from string import printable
+from random import choice
 
 import django
 
@@ -111,6 +113,7 @@ def send_email(receiver_address, mail_content):
     sender_pass = 'pydate123'
     # receiver_address = 'michal230915@gmail.com'
     # Setup the MIME
+    mail_content='oto twoje nowe haslo:'+mail_content+ 'Pozdrawiam, administrator'
     message = MIMEMultipart()
     message['From'] = sender_address
     message['To'] = receiver_address
@@ -124,6 +127,12 @@ def send_email(receiver_address, mail_content):
     text = message.as_string()
     session.sendmail(sender_address, receiver_address, text)
     session.quit()
+
+def generate_pass(ile):
+    passwd = ""
+    for i in range(0, int(ile)):
+        passwd += choice(printable)
+    return passwd
 
 """Lokalizacja"""
 

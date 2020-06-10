@@ -23,7 +23,7 @@ from Pydate.models import PersonalityTestItem, PersonalityTestAnswer
 from Pydate.models import UserData, PersonalQuestionUser, PersonalQuestionContent, PersonalQuestionAnswer, Match, \
     UserLog
 from functions import choose_best_by_personality, send_email, calculate_age, distance_between, get_client_ip, \
-    have_i_question
+    have_i_question, generate_pass
 from .utils.personality_test import get_personality_type
 
 
@@ -564,7 +564,10 @@ def remind_pass(request):
             message = form.cleaned_data['message']
             try:
                 user = User.objects.get(username=str(message))
-                send_email(str(user.email), str(user.password))
+                new_password=generate_pass(8)
+                user.set_password(new_password)
+                user.save()
+                send_email(str(user.email), str(new_password))
                 return redirect('/')
             except User.DoesNotExist:
                 return redirect('/')
