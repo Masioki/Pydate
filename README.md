@@ -34,31 +34,18 @@ Aplikacja randkowa, pozwalajaca na utworzenie konta, przegladanie interesujacych
 <br />Chat<br />
 <img src="https://raw.githubusercontent.com/Masioki/Pydate/master/readme_files/czat.png" height=350px/> 
 
-<br />Ankieta początkowa<br />
-<img src="https://raw.githubusercontent.com/Masioki/Pydate/master/readme_files/ankieta.png" height=350px/> 
-<br />Logowanie<br />
-<img src="https://raw.githubusercontent.com/Masioki/Pydate/master/readme_files/logowanie.png" height=350px/> 
-<br />Edycja profilu<br />
-<img src="https://raw.githubusercontent.com/Masioki/Pydate/master/readme_files/edycja.png" height=350px/> 
-<br />Pomoc<br />
-<img src="https://raw.githubusercontent.com/Masioki/Pydate/master/readme_files/pomoc.png" height=350px/> 
-<br />Przeglądanie dopasowań<br />
-<img src="https://raw.githubusercontent.com/Masioki/Pydate/master/readme_files/matches.png" height=350px/> 
-<br />Chat<br />
-<img src="https://raw.githubusercontent.com/Masioki/Pydate/master/readme_files/czat.png" height=350px/> 
 
 
 
+# Instalacja
 
-## INstalacja
+## Migration
 
-# Migration
-
-``python manage.py makemigrations Pydate``
+``python manage.py makemigrations``
 
 ``python manage.py migrate``
 
-# SuperUser Conf
+## SuperUser Conf
 
 ``./database_creation.sh``
 

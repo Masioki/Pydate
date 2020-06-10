@@ -178,10 +178,10 @@ def personal_questionnaire(request, username):
             answer = PersonalQuestionAnswer.objects.filter(user=request.user, questionID=p.questionID)
             if answer:
                 return redirect('/')
-            queryset = PersonalQuestionContent.objects.filter(questionID=str(p.id)).values("content").all()
+            queryset = PersonalQuestionContent.objects.filter(questionID=str(p.questionID_id)).values("content").all()
             if queryset:
                 questions += [q["content"] for q in queryset]
-                questions_ids.append(str(p.id))
+                questions_ids.append(str(p.questionID_id))
     formset_form = formset_factory(PersonalQuestionsForm, extra=len(questions_ids))
     if request.method == "POST":
         formset = formset_form(request.POST)
