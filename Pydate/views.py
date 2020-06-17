@@ -378,7 +378,10 @@ def select_comrade_for_me(suspect):
         suspect_data = UserData.objects.get(user=suspect)
     except User.DoesNotExist:
         return suspect
-    users_data = UserData.objects.filter(sex=suspect_data.searching_for, searching_for=suspect_data.sex).all()
+    if(suspect_data.searching_for=='Both'):
+        users_data = UserData.objects.filter(Q(searching_for=suspect_data.sex) or Q(searching_for='Both')).all()
+    else:
+        users_data = UserData.objects.filter(Q(sex=suspect_data.searching_for),(Q(searching_for=suspect_data.sex) | Q(searching_for='Both'))).all()
     for u in users_data:
         match = Match.objects.filter(
             Q(
