@@ -1,6 +1,13 @@
 let username = null;
 let openChats = {}
 
+function get_JSON(yourUrl){
+    var Httpreq = new XMLHttpRequest(); // a new request
+    Httpreq.open("GET",yourUrl,false);
+    Httpreq.send(null);
+    return Httpreq.responseText;
+}
+
 function displayChat() {
     document.getElementById("chat-list-window").style.display = "block";
     document.getElementById("chat-list-button").style.display = "none";
@@ -55,6 +62,18 @@ function openChat(chatID, user) {
         }
         openChats[chatID] = chatSocket;
         showNewChatPopup(chatID, user);
+
+        //brzydki sposob.
+        //Uzycie synchronicznej wersji metody XMLHttpRequest w głównym wątku.
+        //Jest to slabe, ale dziala
+        var json_obj = JSON.parse(get_JSON('/chat/messages/' + chatID));
+        for (var i = 0; i < json_obj.messages.length; i++) {
+            addMessage(json_obj.messages[i], chatID);
+        }
+
+        //Tu na dole jest zakomentowany kod Tomka, rozwiazanie lepsze od tego
+        // na gorze ale nie do konca dzialajace
+        /*
         $.get({
             url: '/chat/messages/' + chatID,
             success: function (data) {
@@ -63,7 +82,7 @@ function openChat(chatID, user) {
                     addMessage(data.messages[i], chatID);
                 }
             }
-        });
+        });*/
     }
 }
 
