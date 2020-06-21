@@ -52,4 +52,3 @@ Aplikacja randkowa, pozwalajaca na utworzenie konta, przegladanie interesujacych
 ## SuperUser Conf
 
 ``./database_creation.sh``
-
