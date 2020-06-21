@@ -86,6 +86,12 @@ class PersonalityTestAnswer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     answer = models.IntegerField(null=True)
 
+class PersonalQuestionContent(models.Model):
+    questionID = models.AutoField(auto_created=True, serialize=False, primary_key=True)
+    content = models.CharField(max_length=250)
+
+    def __str__(self):
+        return str(self.questionID)
 
 class PersonalQuestionUser(models.Model):
     questionID = models.ForeignKey(PersonalQuestionContent, on_delete=models.CASCADE)
@@ -93,7 +99,6 @@ class PersonalQuestionUser(models.Model):
 
     def __str__(self):
         return str(self.questionID)
-
 
 class PersonalQuestionAnswer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)  # ten co odpowiada

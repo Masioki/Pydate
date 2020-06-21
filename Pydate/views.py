@@ -258,8 +258,8 @@ def view_answers(request):
         display = True
         if personal_questions_user:
             for p in personal_questions_user:
-                answer_set = PersonalQuestionAnswer.objects.filter(questionID=str(p.id))
-                question_set = PersonalQuestionContent.objects.filter(questionID=str(p.id)).values("content").all()
+                answer_set = PersonalQuestionAnswer.objects.filter(questionID=str(p.questionID))
+                question_set = PersonalQuestionContent.objects.filter(questionID=str(p.questionID)).values("content").all()
                 if answer_set:
                     for usr in answer_set:
                         if str(usr.user) not in users_ids:
@@ -312,11 +312,13 @@ def match_decline(user1, user_id):
     match = Match.objects.filter(user1=user1, user2=comrade)
     if match:
         match[0].chatting_match = Match.Agreement.AGREE_NONE
+        match[0].save()
         return
     else:
         match = Match.objects.filter(user2=user1, user1=comrade)
         if match:
             match[0].chatting_match = Match.Agreement.AGREE_NONE
+            match[0].save()
             return
 
     # Jesli nie bylo matcha to go robie i ustawaim na AGREE_NONE
